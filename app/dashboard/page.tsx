@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 
-export default async function ProtectedPage() {
+export default async function DashboardPage() {
 	const supabase = await createClient()
 
 	const { data, error } = await supabase.auth.getClaims()
@@ -11,8 +11,8 @@ export default async function ProtectedPage() {
 	}
 
 	return (
-		<div className='flex-1 w-full flex flex-col gap-12'>
-			<Button className='bg-accent text-accent-foreground'>Test</Button>
+		<div className='p-4'>
+			<h1 className='text-2xl font-medium'>Dashboard</h1>
 		</div>
 	)
 }

@@ -11,26 +11,25 @@ import {
 	SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
-// Menu items.
 const items = [
 	{
 		title: 'Dashboard',
-		url: '/protected/dashboard',
+		url: '/dashboard',
 		icon: Home,
 	},
 	{
 		title: 'Workouts',
-		url: '/protected/workouts',
+		url: '/dashboard/workouts',
 		icon: Calendar,
 	},
 	{
 		title: 'Excercises',
-		url: '/protected/excercises',
+		url: '/dashboard/excercises',
 		icon: Dumbbell,
 	},
 	{
 		title: 'Progress',
-		url: '/protected/progress',
+		url: '/dashboard/progress',
 		icon: TrendingUp,
 	},
 ]
