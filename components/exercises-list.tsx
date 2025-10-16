@@ -60,7 +60,7 @@ export async function ExercisesList() {
   })
 
   return (
-    <div className='grid gap-4'>
+    <div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-4'>
       {exercises.map(ex => (
         <ExerciseCard
           key={ex.id}
