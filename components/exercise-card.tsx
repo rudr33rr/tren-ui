@@ -1,17 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 
-export const ExerciseCard = ({
-	name,
-	difficulty,
-	primaryMuscle,
-	secondaryMuscles,
-}: {
+type ExerciseCardProps = {
 	name: string | null
 	difficulty: 'easy' | 'intermediate' | 'hard'
 	primaryMuscle: string | null
 	secondaryMuscles?: { id: number; name: string }[]
-}) => {
+}
+
+export const ExerciseCard = ({ name, difficulty, primaryMuscle, secondaryMuscles }: ExerciseCardProps) => {
 	const colorMap = {
 		easy: 'bg-green-100 text-green-800 border-green-300',
 		intermediate: 'bg-yellow-100 text-yellow-800 border-yellow-300',

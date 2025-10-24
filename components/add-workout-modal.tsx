@@ -1,14 +1,7 @@
 'use client'
 
 import React from 'react'
-import {
-	Dialog,
-	DialogTrigger,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogDescription,
-} from './ui/dialog'
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog'
 import { Button } from './ui/button'
 import { Plus } from 'lucide-react'
 import { Input } from './ui/input'
@@ -17,6 +10,9 @@ import { Select, SelectValue, SelectTrigger, SelectContent, SelectGroup, SelectI
 import { FieldSet, FieldGroup, Field, FieldLabel } from './ui/field'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import type { WorkoutCardData } from '@/types/view'
+
+type WorkoutFormData = Omit<WorkoutCardData, 'id' | 'exerciseCount'>
 
 export const AddWorkoutModal = () => {
 	const router = useRouter()
@@ -24,27 +20,32 @@ export const AddWorkoutModal = () => {
 
 	const [open, setOpen] = React.useState(false)
 	const [submitting, setSubmitting] = React.useState(false)
-	const [name, setName] = React.useState('')
-	const [description, setDescription] = React.useState('')
-	const [tag, setTag] = React.useState<string | null>(null)
-	const [duration, setDuration] = React.useState<string>('')
 	const [error, setError] = React.useState<string | null>(null)
+
+	const [workout, setWorkout] = React.useState<WorkoutFormData>({
+		name: '',
+		description: null,
+		tag: null,
+		duration: 0,
+	})
 
 	async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault()
 		setError(null)
 		console.log('[add-workout] submitting')
-		if (!name.trim()) {
+
+		if (!workout.name.trim()) {
 			setError('Workout name is required')
 			return
 		}
+
 		setSubmitting(true)
 		try {
 			const payload = {
-				name: name.trim(),
-				description: description.trim() || null,
-				tag: tag,
-				duration: duration ? Number.parseInt(duration, 10) : null,
+				name: workout.name.trim(),
+				description: workout.description?.trim?.() || null,
+				tag: workout.tag,
+				duration: workout.duration ?? null,
 			}
 
 			const { error: insertError } = await supabase.from('workouts').insert(payload)
@@ -53,10 +54,12 @@ export const AddWorkoutModal = () => {
 				return
 			}
 
-			setName('')
-			setDescription('')
-			setTag(null)
-			setDuration('')
+			setWorkout({
+				name: '',
+				description: null,
+				tag: null,
+				duration: 0,
+			})
 			setOpen(false)
 			router.refresh()
 		} catch (err: any) {
@@ -69,7 +72,7 @@ export const AddWorkoutModal = () => {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button type="button">
+				<Button type='button'>
 					<Plus />
 					<span>Add workout</span>
 				</Button>
@@ -84,15 +87,37 @@ export const AddWorkoutModal = () => {
 						<FieldGroup>
 							<Field>
 								<FieldLabel htmlFor='workout-name'>Workout name</FieldLabel>
-								<Input id='workout-name' type='text' value={name} onChange={e => setName(e.target.value)} required />
+								<Input
+									id='workout-name'
+									type='text'
+									value={workout.name}
+									onChange={e => setWorkout({ ...workout, name: e.target.value })}
+									required
+								/>
 							</Field>
 							<Field>
 								<FieldLabel htmlFor='workout-description'>Workout description</FieldLabel>
-								<Textarea id='workout-description' value={description} onChange={e => setDescription(e.target.value)} />
+								<Textarea
+									id='workout-description'
+									value={workout.description ?? ''}
+									onChange={e =>
+										setWorkout({
+											...workout,
+											description: e.target.value || null,
+										})
+									}
+								/>
 							</Field>
 							<Field>
 								<FieldLabel htmlFor='workout-tag'>Workout tag</FieldLabel>
-								<Select value={tag ?? ''} onValueChange={v => setTag(v)}>
+								<Select
+									value={workout.tag ?? ''}
+									onValueChange={v =>
+										setWorkout({
+											...workout,
+											tag: v as WorkoutFormData['tag'],
+										})
+									}>
 									<SelectTrigger id='workout-tag'>
 										<SelectValue placeholder='Select tag (optional)' />
 									</SelectTrigger>
@@ -108,7 +133,19 @@ export const AddWorkoutModal = () => {
 							</Field>
 							<Field>
 								<FieldLabel htmlFor='workout-duration'>Workout duration (min)</FieldLabel>
-								<Input id='workout-duration' inputMode='numeric' pattern='[0-9]*' value={duration} onChange={e => setDuration(e.target.value)} placeholder='e.g. 60' />
+								<Input
+									id='workout-duration'
+									inputMode='numeric'
+									pattern='[0-9]*'
+									value={workout.duration ?? ''}
+									onChange={e =>
+										setWorkout({
+											...workout,
+											duration: e.target.value ? Number.parseInt(e.target.value, 10) : 0,
+										})
+									}
+									placeholder='e.g. 60'
+								/>
 							</Field>
 						</FieldGroup>
 					</FieldSet>

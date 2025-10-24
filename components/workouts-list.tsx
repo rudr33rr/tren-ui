@@ -1,14 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { WorkoutCard } from './workout-card'
-
-type Workout = {
-	id: number
-	name: string
-	description: string | null
-	tag: string | null
-	duration: number | null
-	exerciseCount: number
-}
+import type { WorkoutCardData } from '@/types/view'
 
 export const WorkoutsList = async () => {
 	const supabase = await createClient()
@@ -26,14 +18,20 @@ export const WorkoutsList = async () => {
 		return <div className='text-sm opacity-70'>Brak treningów</div>
 	}
 
-	const workouts: Workout[] = workoutsData.map(w => ({
-		id: w.id as number,
-		name: w.name as string,
-		description: (w.description as string) ?? null,
-		tag: (w.tag as string) ?? null,
-		duration: (w.duration as number) ?? null,
-		exerciseCount: Array.isArray((w as any).workout_exercises) ? (w as any).workout_exercises.length : 0,
-	}))
+	const workouts: WorkoutCardData[] = workoutsData.map(w => {
+		const exercisesRel = Array.isArray((w as any).workout_exercises)
+			? (w as any).workout_exercises
+			: []
+
+		return {
+			id: w.id,
+			name: w.name,
+			description: w.description,
+			tag: w.tag,
+			duration: w.duration,
+			exerciseCount: exercisesRel.length,
+		}
+	})
 
 	return (
 		<div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-4'>
