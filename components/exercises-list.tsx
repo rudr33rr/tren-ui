@@ -1,13 +1,6 @@
 import { ExerciseCard } from './exercise-card'
 import { createClient } from '@/lib/supabase/server'
-
-type Exercise = {
-	id: number
-	name: string
-	difficulty: 'easy' | 'intermediate' | 'hard'
-	primaryMuscle: { id: number; name: string } | null
-	secondaryMuscles: string[]
-}
+import type { ExerciseCardData } from '@/types/view'
 
 export const ExercisesList = async () => {
 	const supabase = await createClient()
@@ -35,21 +28,25 @@ export const ExercisesList = async () => {
 		return <div className='text-sm opacity-70'>Brak ćwiczeń</div>
 	}
 
-	const musclesById = new Map<number, string>((musclesData ?? []).map(m => [m.id as number, m.name as string]))
+	const musclesById = new Map<number, { id: number; name: string }>(
+		(musclesData ?? []).map(m => [m.id, { id: m.id, name: m.name }])
+	)
 
-	const exercises: Exercise[] = exercisesData.map(item => {
+	const exercises: ExerciseCardData[] = exercisesData.map(item => {
 		const primary = Array.isArray(item.primaryMuscle) ? item.primaryMuscle[0] ?? null : item.primaryMuscle ?? null
 
-		const secondaryNames = Array.isArray(item.secondary_muscle_ids)
-			? (item.secondary_muscle_ids as number[]).map(mid => musclesById.get(mid)).filter((x): x is string => Boolean(x))
+		const secondaryMusclesObjects = Array.isArray(item.secondary_muscle_ids)
+			? item.secondary_muscle_ids
+					.map(mid => musclesById.get(mid))
+					.filter((x): x is { id: number; name: string } => Boolean(x))
 			: []
 
 		return {
-			id: item.id as number,
-			name: item.exercise_name as string,
-			difficulty: item.difficulty as 'easy' | 'intermediate' | 'hard',
-			primaryMuscle: primary,
-			secondaryMuscles: secondaryNames,
+			id: item.id,
+			name: item.exercise_name,
+			difficulty: item.difficulty,
+			primaryMuscle: primary ? { id: primary.id, name: primary.name } : null,
+			secondaryMuscles: secondaryMusclesObjects,
 		}
 	})
 
