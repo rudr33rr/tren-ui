@@ -3,7 +3,7 @@
 import React from 'react'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog'
 import { Button } from './ui/button'
-import { Plus } from 'lucide-react'
+import { Plus, Trash } from 'lucide-react'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectGroup, SelectItem } from './ui/select'
@@ -27,7 +27,7 @@ export const AddWorkoutModal = () => {
 		name: '',
 		description: null,
 		tag: null,
-		duration: 0,
+		duration: 10,
 	})
 	const [exList, setExList] = React.useState<number[]>([])
 	const [selectedExerciseId, setSelectedExerciseId] = React.useState<number | null>(null)
@@ -82,7 +82,7 @@ export const AddWorkoutModal = () => {
 				name: '',
 				description: null,
 				tag: null,
-				duration: 0,
+				duration: 10,
 			})
 			setExList([])
 			setSelectedExerciseId(null)
@@ -110,20 +110,51 @@ export const AddWorkoutModal = () => {
 						<DialogTitle>Add Workout</DialogTitle>
 						<DialogDescription>Describe your workout and add exercises</DialogDescription>
 					</DialogHeader>
-					<FieldSet>
-						<FieldGroup>
-							<Field>
-								<FieldLabel htmlFor='workout-name'>Workout name</FieldLabel>
-								<Input
-									id='workout-name'
-									type='text'
-									value={workout.name}
-									onChange={e => setWorkout({ ...workout, name: e.target.value })}
-									required
-								/>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor='workout-description'>Workout description</FieldLabel>
+					<FieldSet className='mt-4'>
+						<FieldGroup className='gap-4'>
+							<div className='flex gap-2'>
+								<Field className='gap-1'>
+									<FieldLabel className='text-xs' htmlFor='workout-name'>
+										Workout name
+									</FieldLabel>
+									<Input
+										id='workout-name'
+										type='text'
+										value={workout.name}
+										onChange={e => setWorkout({ ...workout, name: e.target.value })}
+										required
+									/>
+								</Field>
+								<Field className='gap-1'>
+									<FieldLabel className='text-xs' htmlFor='workout-tag'>
+										Workout tag
+									</FieldLabel>
+									<Select
+										value={workout.tag ?? ''}
+										onValueChange={v =>
+											setWorkout({
+												...workout,
+												tag: v as WorkoutFormData['tag'],
+											})
+										}>
+										<SelectTrigger id='workout-tag'>
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectGroup>
+												<SelectItem value='push'>Push</SelectItem>
+												<SelectItem value='pull'>Pull</SelectItem>
+												<SelectItem value='legs'>Legs</SelectItem>
+												<SelectItem value='cardio'>Cardio</SelectItem>
+											</SelectGroup>
+										</SelectContent>
+									</Select>
+								</Field>
+							</div>
+							<Field className='gap-1'>
+								<FieldLabel className='text-xs' htmlFor='workout-description'>
+									Workout description
+								</FieldLabel>
 								<Textarea
 									id='workout-description'
 									value={workout.description ?? ''}
@@ -135,44 +166,29 @@ export const AddWorkoutModal = () => {
 									}
 								/>
 							</Field>
-							<Field>
-								<FieldLabel htmlFor='workout-tag'>Workout tag</FieldLabel>
-								<Select
-									value={workout.tag ?? ''}
-									onValueChange={v =>
-										setWorkout({
-											...workout,
-											tag: v as WorkoutFormData['tag'],
-										})
-									}>
-									<SelectTrigger id='workout-tag'>
-										<SelectValue placeholder='Select tag (optional)' />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectGroup>
-											<SelectItem value='push'>Push</SelectItem>
-											<SelectItem value='pull'>Pull</SelectItem>
-											<SelectItem value='legs'>Legs</SelectItem>
-											<SelectItem value='cardio'>Cardio</SelectItem>
-										</SelectGroup>
-									</SelectContent>
-								</Select>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor='workout-duration'>Workout duration (min)</FieldLabel>
-								<Input
-									id='workout-duration'
-									inputMode='numeric'
-									pattern='[0-9]*'
-									value={workout.duration ?? ''}
-									onChange={e =>
-										setWorkout({
-											...workout,
-											duration: e.target.value ? Number.parseInt(e.target.value, 10) : 0,
-										})
-									}
-									placeholder='e.g. 60'
-								/>
+
+							<Field className='gap-1'>
+								<FieldLabel className='text-xs' htmlFor='exercise-picker'>
+									Add exercise
+								</FieldLabel>
+								<div className='flex gap-2'>
+									<ExerciseCombobox
+										value={selectedExerciseId}
+										onChange={id => setSelectedExerciseId(id)}
+										disabled={submitting}
+										placeholder='Choose exercise'
+									/>
+									<Button
+										type='button'
+										variant='secondary'
+										onClick={() => {
+											if (selectedExerciseId == null) return
+											setExList(prev => [...prev, selectedExerciseId])
+											setSelectedExerciseId(null)
+										}}>
+										Add <Plus />
+									</Button>
+								</div>
 							</Field>
 						</FieldGroup>
 					</FieldSet>
@@ -180,46 +196,24 @@ export const AddWorkoutModal = () => {
 					<div className='mt-6 space-y-3 border-t pt-4'>
 						<h3 className='text-sm font-medium'>Exercises in this workout</h3>
 
-						<div className='flex flex-wrap items-end gap-2'>
-							<div className='min-w-[200px] flex-1'>
-								<FieldLabel htmlFor='exercise-picker'>Add exercise</FieldLabel>
-								<ExerciseCombobox
-									value={selectedExerciseId}
-									onChange={id => setSelectedExerciseId(id)}
-									disabled={submitting}
-									placeholder="Choose exercise"
-								/>
-							</div>
-
-							<Button
-								type='button'
-								variant='secondary'
-								onClick={() => {
-									if (selectedExerciseId == null) return
-									setExList(prev => [...prev, selectedExerciseId])
-									setSelectedExerciseId(null)
-								}}>
-								Add
-							</Button>
-						</div>
-
 						{exList.length === 0 ? (
 							<p className='text-xs opacity-60'>No exercises added yet.</p>
 						) : (
-							<ol className='space-y-1 text-sm'>
+							<ol className='space-y-0.5 text-sm'>
 								{exList.map((id, i) => {
 									return (
-										<li key={i} className='flex items-center justify-between rounded border px-2 py-1'>
+										<li key={i} className='flex items-center justify-between'>
 											<span className='font-medium'>
-												{i + 1}. {`Exercise ${id}`}
+												<span className='text-muted-foreground'>{i + 1}.</span> {`Exercise ${id}`}
 											</span>
 
 											<Button
 												type='button'
 												size='sm'
+												className='text-destructive hover:text-destructive'
 												variant='ghost'
 												onClick={() => setExList(prev => prev.filter((_, idx) => idx !== i))}>
-												Remove
+												<Trash />
 											</Button>
 										</li>
 									)
@@ -228,7 +222,7 @@ export const AddWorkoutModal = () => {
 						)}
 					</div>
 
-					<div className='flex items-center justify-between gap-3'>
+					<div className='flex items-center justify-between gap-3 mt-4'>
 						{error ? <p className='text-sm text-destructive bg-destructive/10 rounded px-2 py-1'>{error}</p> : <span />}
 						<div className='flex gap-2'>
 							<Button type='button' variant='outline' onClick={() => setOpen(false)} disabled={submitting}>
