@@ -1,17 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 
-export function ExerciseCard({
-	name,
-	difficulty,
-	primaryMuscle,
-	secondaryMuscles,
-}: {
-	name: string
+type ExerciseCardProps = {
+	name: string | null
 	difficulty: 'easy' | 'intermediate' | 'hard'
 	primaryMuscle: string | null
-	secondaryMuscles?: string[]
-}) {
+	secondaryMuscles?: { id: number; name: string }[]
+}
+
+export const ExerciseCard = ({ name, difficulty, primaryMuscle, secondaryMuscles }: ExerciseCardProps) => {
 	const colorMap = {
 		easy: 'bg-green-100 text-green-800 border-green-300',
 		intermediate: 'bg-yellow-100 text-yellow-800 border-yellow-300',
@@ -34,7 +31,7 @@ export function ExerciseCard({
 						<div className='flex gap-2 mt-1 flex-wrap'>
 							{secondaryMuscles.map((m, index) => (
 								<Badge key={index} variant='outline'>
-									{m}
+									{m.name}
 								</Badge>
 							))}
 						</div>
