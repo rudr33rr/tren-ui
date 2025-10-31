@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
-import { Car } from 'lucide-react'
 
 type ExercisePageProps = {
 	params: {
@@ -56,58 +55,60 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
 	const instructions = Array.isArray(exercise.instructions) ? exercise.instructions : []
 
 	return (
-		<div>
-			<Card>
-				<CardHeader>
-					<div className='flex flex-row w-full justify-between items-start gap-2'>
-						<div>
-							<CardTitle className='mb-1 text-xl'>{exercise.exercise_name}</CardTitle>
-							<div className='text-sm opacity-70'>Primary: {primary ? primary.name : '—'}</div>
-						</div>
+		<div className='w-full grid grid-cols-1 lg:grid-cols-3 gap-6'>
+			<div className='lg:col-span-2'>
+				<h1 className='text-3xl font-semibold mb-4'>{exercise.exercise_name}</h1>
 
-						<Badge
-							className={
-								exercise.difficulty === 'easy'
-									? 'bg-green-100 text-green-800 border-green-300'
-									: exercise.difficulty === 'intermediate'
-									? 'bg-yellow-100 text-yellow-800 border-yellow-300'
-									: 'bg-red-100 text-red-800 border-red-300'
-							}>
-							{exercise.difficulty}
-						</Badge>
-					</div>
-				</CardHeader>
-
-				<CardContent>
-					{secondaryMuscles.length > 0 ? (
-						<div>
-							<div className='text-sm opacity-70 mb-1'>Secondary muscles:</div>
-							<div className='flex flex-wrap gap-2'>
-								{secondaryMuscles.map(m => (
-									<Badge key={m.id} variant='outline'>
-										{m.name}
-									</Badge>
-								))}
-							</div>
-						</div>
-					) : (
-						<div className='text-sm opacity-50 italic'>No secondary muscles set</div>
-					)}
-				</CardContent>
-			</Card>
-			<Card>
-				<CardContent>
-					<ol>
+				<Card className='mb-6'>
+					<CardHeader>
+						<CardTitle>Instructions</CardTitle>
+					</CardHeader>
+					<CardContent>
 						{instructions.length > 0 ? (
-							instructions.map((ins: string, i: number) => (
-								<li key={i}>{ins}</li>
-							))
+							<ol className='list-decimal pl-5 space-y-2'>
+								{instructions.map((ins: string, i: number) => (
+									<li key={i} className='text-sm leading-tight'>
+										{ins}
+									</li>
+								))}
+							</ol>
 						) : (
 							<div className='text-sm opacity-50 italic'>No instructions set</div>
 						)}
-					</ol>
-				</CardContent>
-			</Card>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>Details</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className='mb-3'>
+							<div className='text-sm opacity-70 mb-1'>Primary muscle:</div>
+							{primary ? (
+								<Badge variant='outline'>{primary.name}</Badge>
+							) : (
+								<div className='text-sm opacity-50 italic'>No primary muscle set</div>
+							)}
+						</div>
+
+						<div>
+							<div className='text-sm opacity-70 mb-1'>Secondary muscles:</div>
+							{secondaryMuscles.length > 0 ? (
+								<div className='flex flex-wrap gap-2'>
+									{secondaryMuscles.map(m => (
+										<Badge key={m.id} variant='outline'>
+											{m.name}
+										</Badge>
+									))}
+								</div>
+							) : (
+								<div className='text-sm opacity-50 italic'>No secondary muscles set</div>
+							)}
+						</div>
+					</CardContent>
+				</Card>
+			</div>
 		</div>
 	)
 }
