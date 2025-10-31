@@ -3,13 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 
-type ExercisePageProps = {
-	params: {
-		id: string
-	}
-}
+export default async function ExercisePage(props: unknown) {
+	const { params } = props as { params: { id: string } }
 
-export default async function ExercisePage({ params }: ExercisePageProps) {
 	const supabase = await createClient()
 
 	const exerciseId = Number(params.id)
