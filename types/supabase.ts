@@ -38,6 +38,7 @@ export type Database = {
 					difficulty: Database['public']['Enums']['difficulty_level']
 					exercise_name: string | null
 					id: number
+					instructions: string[] | null
 					primary_muscle_id: number | null
 					secondary_muscle_ids: number[] | null
 				}
@@ -45,6 +46,7 @@ export type Database = {
 					difficulty?: Database['public']['Enums']['difficulty_level']
 					exercise_name?: string | null
 					id?: number
+					instructions?: string[] | null
 					primary_muscle_id?: number | null
 					secondary_muscle_ids?: number[] | null
 				}
@@ -52,6 +54,7 @@ export type Database = {
 					difficulty?: Database['public']['Enums']['difficulty_level']
 					exercise_name?: string | null
 					id?: number
+					instructions?: string[] | null
 					primary_muscle_id?: number | null
 					secondary_muscle_ids?: number[] | null
 				}

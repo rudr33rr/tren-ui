@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
+import { Car } from 'lucide-react'
 
 type ExercisePageProps = {
 	params: {
@@ -12,7 +13,7 @@ type ExercisePageProps = {
 export default async function ExercisePage({ params }: ExercisePageProps) {
 	const supabase = await createClient()
 
-	const exerciseId = await Number(params.id)
+	const exerciseId = Number(params.id)
 	if (Number.isNaN(exerciseId)) {
 		notFound()
 	}
@@ -25,7 +26,8 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
         exercise_name,
         difficulty,
         primaryMuscle:muscle_groups!exercises_primary_muscle_id_fkey ( id, name ),
-        secondary_muscle_ids
+        secondary_muscle_ids,
+		instructions
       `
 		)
 		.eq('id', exerciseId)
@@ -50,6 +52,8 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
 				.map((mid: number) => musclesById.get(mid))
 				.filter((x): x is { id: number; name: string } => Boolean(x))
 		: []
+
+	const instructions = Array.isArray(exercise.instructions) ? exercise.instructions : []
 
 	return (
 		<div>
@@ -89,6 +93,19 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
 					) : (
 						<div className='text-sm opacity-50 italic'>No secondary muscles set</div>
 					)}
+				</CardContent>
+			</Card>
+			<Card>
+				<CardContent>
+					<ol>
+						{instructions.length > 0 ? (
+							instructions.map((ins: string, i: number) => (
+								<li key={i}>{ins}</li>
+							))
+						) : (
+							<div className='text-sm opacity-50 italic'>No instructions set</div>
+						)}
+					</ol>
 				</CardContent>
 			</Card>
 		</div>
