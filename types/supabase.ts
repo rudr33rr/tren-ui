@@ -33,6 +33,48 @@ export type Database = {
 	}
 	public: {
 		Tables: {
+			exercise_session: {
+				Row: {
+					exercise_id: number
+					id: number
+					intensivity: number | null
+					notes: string | null
+					session_id: number
+					sets: Json
+				}
+				Insert: {
+					exercise_id: number
+					id?: number
+					intensivity?: number | null
+					notes?: string | null
+					session_id: number
+					sets: Json
+				}
+				Update: {
+					exercise_id?: number
+					id?: number
+					intensivity?: number | null
+					notes?: string | null
+					session_id?: number
+					sets?: Json
+				}
+				Relationships: [
+					{
+						foreignKeyName: 'exercise_session_exercise_id_fkey'
+						columns: ['exercise_id']
+						isOneToOne: false
+						referencedRelation: 'exercises'
+						referencedColumns: ['id']
+					},
+					{
+						foreignKeyName: 'exercise_session_session_id_fkey'
+						columns: ['session_id']
+						isOneToOne: false
+						referencedRelation: 'workout_session'
+						referencedColumns: ['id']
+					}
+				]
+			}
 			exercises: {
 				Row: {
 					difficulty: Database['public']['Enums']['difficulty_level']
@@ -109,6 +151,35 @@ export type Database = {
 					},
 					{
 						foreignKeyName: 'workout_exercises_workout_id_fkey'
+						columns: ['workout_id']
+						isOneToOne: false
+						referencedRelation: 'workouts'
+						referencedColumns: ['id']
+					}
+				]
+			}
+			workout_session: {
+				Row: {
+					finished_at: string | null
+					id: number
+					started_at: string
+					workout_id: number
+				}
+				Insert: {
+					finished_at?: string | null
+					id?: number
+					started_at?: string
+					workout_id: number
+				}
+				Update: {
+					finished_at?: string | null
+					id?: number
+					started_at?: string
+					workout_id?: number
+				}
+				Relationships: [
+					{
+						foreignKeyName: 'session_workout_id_fkey'
 						columns: ['workout_id']
 						isOneToOne: false
 						referencedRelation: 'workouts'
