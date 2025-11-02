@@ -43,6 +43,7 @@ export const WorkoutsList = async () => {
 			{workouts.map(w => (
 				<WorkoutCard
 					key={w.id}
+					id={w.id}
 					name={w.name}
 					description={w.description}
 					tag={w.tag}

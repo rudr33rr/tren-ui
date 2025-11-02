@@ -1,7 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
+import { Button } from './ui/button'
+import { Play } from 'lucide-react'
+import Link from 'next/link'
 
 export type WorkoutCardProps = {
+	id: number
 	name: string
 	description: string | null
 	tag: string | null
@@ -9,7 +13,7 @@ export type WorkoutCardProps = {
 	exerciseCount: number
 }
 
-export const WorkoutCard = ({ name, description, tag, duration, exerciseCount }: WorkoutCardProps) => {
+export const WorkoutCard = ({ id, name, description, tag, duration, exerciseCount }: WorkoutCardProps) => {
 	const colorMap = {
 		push: 'bg-green-100 text-green-800 border-green-300',
 		pull: 'bg-yellow-100 text-yellow-800 border-yellow-300',
@@ -34,6 +38,13 @@ export const WorkoutCard = ({ name, description, tag, duration, exerciseCount }:
 					{typeof exerciseCount === 'number' ? <span>{exerciseCount} exercises</span> : null}
 				</div>
 			</CardContent>
+			<CardFooter>
+				<Button className='w-full' asChild>
+					<Link className='flex gap-1 items-center w-full' href={`/dashboard/workouts/${id}`}>
+						<Play /> Start workout
+					</Link>
+				</Button>
+			</CardFooter>
 		</Card>
 	)
 }
