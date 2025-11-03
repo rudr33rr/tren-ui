@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
-import { StartWorkoutButton } from './start-workout-button'
+import { StartWorkoutButton } from './shared/start-workout-button'
 
 export type WorkoutCardProps = {
 	id: number

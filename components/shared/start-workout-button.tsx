@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Play } from 'lucide-react'
@@ -19,6 +19,7 @@ export function StartWorkoutButton({ workoutId }: { workoutId: number }) {
 				.insert({
 					workout_id: workoutId,
 					started_at: new Date().toISOString(),
+					status: 'started',
 				})
 				.select()
 				.single()
