@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 export default function FinishWorkoutButton({ sessionId }: { sessionId: string }) {
 	const supabase = createClient()
 	const [loading, setLoading] = useState(false)
+	const [finished, setFinished] = useState(false)
 
 	async function finishWorkout() {
 		try {
@@ -17,6 +18,8 @@ export default function FinishWorkoutButton({ sessionId }: { sessionId: string }
 				.eq('id', parseInt(sessionId))
 
 			if (error) throw error
+
+			setFinished(true)
 		} catch (err) {
 			console.error('Failed to finish workout:', err)
 		} finally {
@@ -25,8 +28,8 @@ export default function FinishWorkoutButton({ sessionId }: { sessionId: string }
 	}
 
 	return (
-		<Button onClick={finishWorkout} disabled={loading} className='w-full'>
-			{loading ? 'Finishing…' : 'Finish workout'}
+		<Button onClick={finishWorkout} disabled={loading || finished} className='w-full'>
+			{finished ? 'Workout Finished' : loading ? 'Finishing…' : 'Finish workout'}
 		</Button>
 	)
 }
