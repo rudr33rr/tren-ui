@@ -8,7 +8,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 
 	const sessionId = Number(id)
 
-	const { data: session, error: sessionError } = await (await supabase)
+	const { data: session} = await (await supabase)
 		.from('workout_session')
 		.select('id, workout_id')
 		.eq('id', sessionId)
@@ -18,7 +18,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 		throw new Error('Workout session not found')
 	}
 
-	const { data: workoutExercises, error: exercisesError } = await (
+	const { data: workoutExercises } = await (
 		await supabase
 	)
 		.from('workout_exercises')
@@ -36,10 +36,10 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 	return (
 		<div>
 			<h1>Workout {id}</h1>
-			{workoutExercises?.map((item, index) => (
+			{workoutExercises?.map((item) => (
 				<div key={item.exercise.id} className='flex items-center gap-2'>
 					{item.exercise.exercise_name}
-					<ExerciseSetsForm exerciseId={item.exercise.id} />
+					<ExerciseSetsForm  />
 				</div>
 			))}
 			<FinishWorkoutButton sessionId={id} />
