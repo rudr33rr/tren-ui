@@ -23,8 +23,8 @@ const items = [
 		icon: Calendar,
 	},
 	{
-		title: 'Excercises',
-		url: '/dashboard/excercises',
+		title: 'Exercises',
+		url: '/dashboard/exercises',
 		icon: Dumbbell,
 	},
 	{
