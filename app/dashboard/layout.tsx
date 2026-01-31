@@ -1,14 +1,17 @@
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/shared/app-sidebar'
+import { AppHeader } from '@/components/shared/app-header'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<SidebarProvider>
 			<AppSidebar />
-			<main className='min-h-screen flex flex-col items-center w-full p-4 gap-2'>
-				<SidebarTrigger />
-				<div className='w-full max-w-7xl'>{children}</div>
-			</main>
+			<SidebarInset className='border shadow-2xl'>
+				<div className='flex flex-col items-center w-full gap-2'>
+					<AppHeader />
+					<div className='w-full max-w-7xl'>{children}</div>
+				</div>
+			</SidebarInset>
 		</SidebarProvider>
 	)
 }
