@@ -6,17 +6,15 @@ import type { ExerciseCardData } from '@/types/view'
 export const ExercisesList = async ({ search, muscle }: { search?: string; muscle?: string }) => {
 	const supabase = await createClient()
 
-	let query = supabase
-		.from('exercises')
-		.select(
-			`
+	let query = supabase.from('exercises').select(
+		`
       id,
       exercise_name,
       difficulty,
       primaryMuscle:muscle_groups!exercises_primary_muscle_id_fkey ( id, name ),
       secondary_muscle_ids
-    `
-		)
+    `,
+	)
 
 	if (search) {
 		query = query.ilike('exercise_name', `%${search}%`)
@@ -41,11 +39,11 @@ export const ExercisesList = async ({ search, muscle }: { search?: string; muscl
 	}
 
 	const musclesById = new Map<number, { id: number; name: string }>(
-		(musclesData ?? []).map(m => [m.id, { id: m.id, name: m.name }])
+		(musclesData ?? []).map(m => [m.id, { id: m.id, name: m.name }]),
 	)
 
 	const exercises: ExerciseCardData[] = exercisesData.map(item => {
-		const primary = Array.isArray(item.primaryMuscle) ? item.primaryMuscle[0] ?? null : item.primaryMuscle ?? null
+		const primary = Array.isArray(item.primaryMuscle) ? (item.primaryMuscle[0] ?? null) : (item.primaryMuscle ?? null)
 
 		const secondaryMusclesObjects = Array.isArray(item.secondary_muscle_ids)
 			? item.secondary_muscle_ids
@@ -63,7 +61,7 @@ export const ExercisesList = async ({ search, muscle }: { search?: string; muscl
 	})
 
 	return (
-		<div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+		<div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-4'>
 			{exercises.map(ex => (
 				<Link key={ex.id} href={`/dashboard/excercises/${ex.id}`} className='block'>
 					<ExerciseCard

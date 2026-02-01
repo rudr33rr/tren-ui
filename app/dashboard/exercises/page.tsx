@@ -18,11 +18,11 @@ export default async function ExcersisesPage({
 	const musclesError = Boolean(error)
 
 	return (
-		<>
+		<div className='w-full space-y-6 p-4'>
 			<h1 className='text-2xl font-medium'>Exercise Library</h1>
 			<p>Browse and learn proper form for exercises</p>
 			<ExerciseSearch muscles={muscleData ?? []} musclesError={musclesError} />
 			<ExercisesList search={search} muscle={muscle} />
-		</>
+		</div>
 	)
 }

@@ -103,7 +103,7 @@ export const AddWorkoutModal = () => {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button type='button'>
+				<Button type='button' variant='secondary'>
 					<Plus />
 					<span>Add workout</span>
 				</Button>

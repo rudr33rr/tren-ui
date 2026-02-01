@@ -23,8 +23,8 @@ const items = [
 		icon: Calendar,
 	},
 	{
-		title: 'Excercises',
-		url: '/dashboard/excercises',
+		title: 'Exercises',
+		url: '/dashboard/exercises',
 		icon: Dumbbell,
 	},
 	{
@@ -36,7 +36,7 @@ const items = [
 
 export function AppSidebar() {
 	return (
-		<Sidebar>
+		<Sidebar variant='inset'>
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarGroupLabel>TrenUI</SidebarGroupLabel>

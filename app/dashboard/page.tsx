@@ -23,14 +23,14 @@ export default async function DashboardPage() {
       description,
       tag
     )
-  `
+  `,
 		)
 		.order('finished_at', { ascending: false })
 		.limit(1)
 		.single()
 
 	return (
-		<div className='p-4 space-y-6'>
+		<div className='w-full p-4 space-y-6'>
 			<h1 className='text-2xl font-medium'>Dashboard</h1>
 
 			<section className='rounded-lg border p-4'>
@@ -47,9 +47,7 @@ export default async function DashboardPage() {
 						<div className='text-xs opacity-60 flex gap-3'>
 							{lastSession.workout.tag && <span>Tag: {lastSession.workout.tag}</span>}
 							{lastSession.finished_at && (
-							  <span>
-							    Finished: {new Date(lastSession.finished_at).toLocaleDateString()}
-							  </span>
+								<span>Finished: {new Date(lastSession.finished_at).toLocaleDateString()}</span>
 							)}
 						</div>
 					</div>
