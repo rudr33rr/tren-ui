@@ -55,7 +55,7 @@ export function ExerciseSearch({ muscles, musclesError }: Props) {
 					}
 				}}
 			>
-				<SelectTrigger>
+				<SelectTrigger className='w-36'>
 					<SelectValue placeholder='muscle' />
 				</SelectTrigger>
 				<SelectContent>

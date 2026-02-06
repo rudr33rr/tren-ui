@@ -3,12 +3,12 @@ import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 
-export default async function ExercisePage(props: unknown) {
-	const { params } = props as { params: { id: string } }
+export default async function ExercisePage({ params }: { params: Promise<{ id: string }> }) {
+	const { id } = await params
 
 	const supabase = await createClient()
 
-	const exerciseId = Number(params.id)
+	const exerciseId = Number(id)
 	if (Number.isNaN(exerciseId)) {
 		notFound()
 	}
@@ -23,7 +23,7 @@ export default async function ExercisePage(props: unknown) {
         primaryMuscle:muscle_groups!exercises_primary_muscle_id_fkey ( id, name ),
         secondary_muscle_ids,
 		instructions
-      `
+      `,
 		)
 		.eq('id', exerciseId)
 		.single()
@@ -35,12 +35,12 @@ export default async function ExercisePage(props: unknown) {
 	const { data: musclesData } = await supabase.from('muscle_groups').select('id, name')
 
 	const musclesById = new Map<number, { id: number; name: string }>(
-		(musclesData ?? []).map(m => [m.id, { id: m.id, name: m.name }])
+		(musclesData ?? []).map(m => [m.id, { id: m.id, name: m.name }]),
 	)
 
 	const primary = Array.isArray(exercise.primaryMuscle)
-		? exercise.primaryMuscle[0] ?? null
-		: exercise.primaryMuscle ?? null
+		? (exercise.primaryMuscle[0] ?? null)
+		: (exercise.primaryMuscle ?? null)
 
 	const secondaryMuscles = Array.isArray(exercise.secondary_muscle_ids)
 		? exercise.secondary_muscle_ids
@@ -51,11 +51,11 @@ export default async function ExercisePage(props: unknown) {
 	const instructions = Array.isArray(exercise.instructions) ? exercise.instructions : []
 
 	return (
-		<div className='w-full grid grid-cols-1 lg:grid-cols-3 gap-6'>
+		<div className='w-full space-y-6 p-4'>
 			<div className='lg:col-span-2'>
-				<h1 className='text-3xl font-semibold mb-4'>{exercise.exercise_name}</h1>
+				<h1 className='text-2xl font-medium'>{exercise.exercise_name}</h1>
 
-				<Card className='mb-6'>
+				<Card className='mb-6 mt-4'>
 					<CardHeader>
 						<CardTitle>Instructions</CardTitle>
 					</CardHeader>

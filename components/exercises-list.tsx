@@ -63,7 +63,7 @@ export const ExercisesList = async ({ search, muscle }: { search?: string; muscl
 	return (
 		<div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-4'>
 			{exercises.map(ex => (
-				<Link key={ex.id} href={`/dashboard/excercises/${ex.id}`} className='block'>
+				<Link key={ex.id} href={`/dashboard/exercises/${ex.id}`} className='block'>
 					<ExerciseCard
 						key={ex.id}
 						name={ex.name}
