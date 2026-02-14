@@ -1,6 +1,7 @@
 import FinishWorkoutButton from '@/components/shared/finish-workout-button'
 import { createClient } from '@/lib/supabase/server'
 import { ExerciseSetsForm } from '@/components/shared/exercise-sets-form'
+import { Table, TableBody, TableCaption, TableCell, TableRow } from '@/components/ui/table'
 
 export default async function WorkoutPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = await params
@@ -35,13 +36,17 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 
 	return (
 		<div>
-			<h1>Workout {id}</h1>
-			{workoutExercises?.map(item => (
-				<div key={item.exercise.id} className='flex items-center gap-2'>
-					{item.exercise.exercise_name}
-					<ExerciseSetsForm exerciseId={item.exercise.id} />
-				</div>
-			))}
+			<Table>
+				<TableCaption>Workout {id}</TableCaption>
+				<TableBody>
+					{workoutExercises?.map(item => (
+						<TableRow key={item.exercise.id}>
+							<TableCell>{item.exercise.exercise_name}</TableCell>
+							<ExerciseSetsForm exerciseId={item.exercise.id} />
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
 			<FinishWorkoutButton sessionId={id} />
 		</div>
 	)

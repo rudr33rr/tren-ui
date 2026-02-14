@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Input } from '../ui/input'
+import { Table, TableCell } from '../ui/table'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 
 export function ExerciseSetsForm({ exerciseId }: { exerciseId: number }) {
@@ -22,7 +23,7 @@ export function ExerciseSetsForm({ exerciseId }: { exerciseId: number }) {
 	}, [exerciseId, reps, setsCount, upsertExercise])
 
 	return (
-		<div className='flex gap-3 items-center'>
+		<TableCell className='flex gap-3 items-center'>
 			<Input
 				type='number'
 				min={1}
@@ -40,6 +41,6 @@ export function ExerciseSetsForm({ exerciseId }: { exerciseId: number }) {
 				onChange={e => setReps(Number(e.target.value))}
 				className='w-20'
 			/>
-		</div>
+		</TableCell>
 	)
 }
