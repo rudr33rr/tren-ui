@@ -6,6 +6,7 @@ import { Button } from '../ui/button'
 import { Label } from '../ui/label'
 import { Textarea } from '../ui/textarea'
 import { Slider } from '../ui/slider'
+import { Switch } from '../ui/switch'
 import { Trash, Plus } from 'lucide-react'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 
@@ -30,6 +31,9 @@ export default function WorkoutExerciseCard({
 		{ reps: 0, weight: 0, intensity: 5 },
 	])
 	const [notes, setNotes] = useState('')
+	const [showNotes, setShowNotes] = useState(false)
+
+	const completedSets = sets.filter(set => set.reps > 0).length
 
 	const updateSet = (index: number, field: keyof SetData, value: number) => {
 		const newSets = [...sets]
@@ -78,8 +82,12 @@ export default function WorkoutExerciseCard({
 
 	return (
 		<div className='space-y-2'>
-			<h3 className='text-xl font-medium'>{exerciseName}</h3>
-
+			<div className='flex items-center gap-2'>
+				<h3 className='text-xl font-medium'>{exerciseName}</h3>
+				<p className='text-xs text-muted-foreground'>
+					{completedSets} / {sets.length} sets completed
+				</p>
+			</div>
 			{sets.map((set, index) => (
 				<div key={index} className='flex gap-8 items-center'>
 					<Input
@@ -117,15 +125,28 @@ export default function WorkoutExerciseCard({
 				Add set <Plus />
 			</Button>
 
-			<div className='mt-2'>
-				<Label className='text-muted-foreground'>Exercise notes</Label>
-				<Textarea
-					placeholder='Type here...'
-					className='mt-1'
-					value={notes}
-					onChange={e => updateNotes(e.target.value)}
-				/>
-			</div>
+			<div className='flex items-center mt-2 gap-4'>
+                <Label htmlFor={`notes-toggle-${exerciseId}`} className='text-muted-foreground cursor-pointer'>
+                    Add exercise notes
+                </Label>
+                <Switch
+                    id={`notes-toggle-${exerciseId}`}
+                    checked={showNotes}
+                    onCheckedChange={setShowNotes}
+                    size='sm'
+                />
+            </div>
+
+            {showNotes && (
+                <div className='mt-4'>
+                    <Textarea
+                        placeholder='Type your notes here...'
+                        className='mt-1'
+                        value={notes}
+                        onChange={e => updateNotes(e.target.value)}
+                    />
+                </div>
+            )}
 		</div>
 	)
 }
