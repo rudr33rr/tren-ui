@@ -3,6 +3,7 @@ import { create } from 'zustand'
 type SetEntry = {
 	reps: number
 	weight?: number
+	intensity?: number
 }
 
 type ExerciseState = {
