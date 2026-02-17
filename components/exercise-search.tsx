@@ -22,6 +22,7 @@ type Props = {
 export function ExerciseSearch({ muscles, musclesError }: Props) {
 	const router = useRouter()
 	const params = useSearchParams()
+	const searchParam = params.get('search') ?? ''
 	const [searchValue, setSearchValue] = React.useState(params.get('search') ?? '')
 
 	const setParam = React.useCallback(
@@ -42,16 +43,15 @@ export function ExerciseSearch({ muscles, musclesError }: Props) {
 	React.useEffect(() => {
 		const handle = window.setTimeout(() => {
 			const normalized = searchValue.trim()
-			setParam('search', normalized === '' ? undefined : normalized)
+			setParam('search', normalized || undefined)
 		}, 300)
 
 		return () => window.clearTimeout(handle)
 	}, [searchValue, setParam])
 
 	React.useEffect(() => {
-		const current = params.get('search') ?? ''
-		setSearchValue(prev => (prev === current ? prev : current))
-	}, [params])
+		setSearchValue(prev => (prev === searchParam ? prev : searchParam))
+	}, [searchParam])
 
 	return (
 		<div className='flex gap-2'>
