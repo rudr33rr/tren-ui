@@ -1,6 +1,5 @@
 'use client'
 
-import * as React from 'react'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { Search } from 'lucide-react'
 import {
@@ -13,6 +12,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { useSearchParams, useRouter } from 'next/navigation'
+import { useState, useCallback, useEffect } from 'react'
 
 const SEARCH_DEBOUNCE_MS = 300
 
@@ -25,9 +25,9 @@ export function ExerciseSearch({ muscles, musclesError }: Props) {
 	const router = useRouter()
 	const params = useSearchParams()
 	const searchParam = params.get('search') ?? ''
-	const [searchValue, setSearchValue] = React.useState(searchParam)
+	const [searchValue, setSearchValue] = useState(searchParam)
 
-	const setParam = React.useCallback(
+	const setParam = useCallback(
 		(key: string, value?: string) => {
 			const sp = new URLSearchParams(params.toString())
 			if (!value) sp.delete(key)
@@ -42,7 +42,7 @@ export function ExerciseSearch({ muscles, musclesError }: Props) {
 		[params, router],
 	)
 
-	React.useEffect(() => {
+	useEffect(() => {
 		const handle = window.setTimeout(() => {
 			const normalized = searchValue.trim()
 			setParam('search', normalized || undefined)
@@ -51,18 +51,14 @@ export function ExerciseSearch({ muscles, musclesError }: Props) {
 		return () => window.clearTimeout(handle)
 	}, [searchValue, setParam])
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setSearchValue(prev => (prev === searchParam ? prev : searchParam))
 	}, [searchParam])
 
 	return (
 		<div className='flex gap-2'>
 			<InputGroup>
-				<InputGroupInput
-					placeholder='Search...'
-					value={searchValue}
-					onChange={e => setSearchValue(e.target.value)}
-				/>
+				<InputGroupInput placeholder='Search...' value={searchValue} onChange={e => setSearchValue(e.target.value)} />
 				<InputGroupAddon>
 					<Search />
 				</InputGroupAddon>
@@ -77,17 +73,14 @@ export function ExerciseSearch({ muscles, musclesError }: Props) {
 					} else {
 						setParam('muscle', value)
 					}
-				}}
-			>
+				}}>
 				<SelectTrigger className='w-36'>
 					<SelectValue placeholder='muscle' />
 				</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
 						<SelectLabel>Primary muscle</SelectLabel>
-						<SelectItem value='__all__'>
-							All muscles
-						</SelectItem>
+						<SelectItem value='__all__'>All muscles</SelectItem>
 						{muscles.map(mscl => (
 							<SelectItem key={mscl.id} value={String(mscl.id)}>
 								{mscl.name}
