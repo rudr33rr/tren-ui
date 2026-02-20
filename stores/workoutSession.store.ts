@@ -9,7 +9,6 @@ type SetEntry = {
 type ExerciseState = {
 	exerciseId: number
 	sets: SetEntry[]
-	intensity?: number
 	notes?: string
 }
 
