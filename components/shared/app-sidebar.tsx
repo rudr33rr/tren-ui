@@ -28,8 +28,8 @@ const items = [
 		icon: Dumbbell,
 	},
 	{
-		title: 'Progress',
-		url: '/dashboard/progress',
+		title: 'My Plan',
+		url: '/dashboard/my-plan',
 		icon: TrendingUp,
 	},
 ]
