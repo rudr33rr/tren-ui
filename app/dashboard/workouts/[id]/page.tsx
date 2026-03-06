@@ -20,9 +20,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 				<FinishWorkoutButton sessionId={id} />
 			</div>
 
-			{workoutExercises.length === 0 && (
-				<p className='text-sm opacity-70'>No exercises loaded</p>
-			)}
+			{workoutExercises.length === 0 && <p className='text-sm opacity-70'>No exercises loaded</p>}
 		</div>
 	)
 }

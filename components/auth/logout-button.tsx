@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 
 export function LogoutButton() {
-  const router = useRouter();
+	const router = useRouter()
 
-  const logout = async () => {
-    // TODO: Implement auth sign-out
-    router.push("/auth/login");
-  };
+	const logout = async () => {
+		// TODO: Implement auth sign-out
+		router.push('/auth/login')
+	}
 
-  return <Button onClick={logout}>Logout</Button>;
+	return <Button onClick={logout}>Logout</Button>
 }
