@@ -1,4 +1,4 @@
-import { ThemeSwitcher } from '../auth/theme-switcher'
+import { ThemeSwitcher } from './theme-switcher'
 import { SidebarTrigger } from '../ui/sidebar'
 import { HeaderBreadcrumbs } from './header-breadcrumb'
 

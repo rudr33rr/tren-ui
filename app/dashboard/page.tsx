@@ -1,4 +1,4 @@
-// TODO: Replace with Drizzle queries + new auth
+// TODO: Replace with Drizzle queries
 export default async function DashboardPage() {
 	return (
 		<div className='w-full p-4 space-y-6'>

@@ -29,7 +29,6 @@ export const workouts = pgTable('workouts', {
 	description: text('description'),
 	tag: workoutTagEnum('tag'),
 	duration: integer('duration'),
-	userId: varchar('user_id', { length: 255 }),
 })
 
 export const workoutExercises = pgTable('workout_exercises', {
@@ -47,7 +46,6 @@ export const workoutSession = pgTable('workout_session', {
 	workoutId: integer('workout_id')
 		.notNull()
 		.references(() => workouts.id),
-	userId: varchar('user_id', { length: 255 }),
 	startedAt: timestamp('started_at'),
 	finishedAt: timestamp('finished_at'),
 	status: sessionStatusEnum('status').notNull().default('started'),
@@ -62,7 +60,6 @@ export const exerciseSets = pgTable('exercise_sets', {
 	exerciseId: integer('exercise_id')
 		.notNull()
 		.references(() => exercises.id),
-	userId: varchar('user_id', { length: 255 }),
 	setNumber: integer('set_number').notNull(),
 	repetitions: integer('repetitions').notNull(),
 	weight: integer('weight'),
