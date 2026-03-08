@@ -1,7 +1,7 @@
-import { and, asc, eq, ilike, inArray, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, ilike, inArray, sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { exercises, muscleGroups } from '@/lib/db/schema'
-import type { ExerciseCardData } from '@/types/view'
+import { exerciseSets, exercises, muscleGroups, workouts, workoutSession } from '@/lib/db/schema'
+import type { ExerciseCardData, ExercisePageData, ExerciseSessionHistoryItem } from '@/types/view'
 
 type MuscleOption = {
 	id: number
@@ -106,6 +106,122 @@ export async function listExercises(filters: { search?: string; muscle?: string 
 			return muscle ? [muscle] : []
 		}),
 	}))
+}
+
+export async function getExercisePageData(exerciseId: number): Promise<ExercisePageData | null> {
+	const [exercise] = await db
+		.select({
+			id: exercises.id,
+			name: exercises.exerciseName,
+			difficulty: exercises.difficulty,
+			primaryMuscleId: muscleGroups.id,
+			primaryMuscleName: muscleGroups.name,
+			secondaryMuscleIds: exercises.secondaryMuscleIds,
+			instructions: exercises.instructions,
+		})
+		.from(exercises)
+		.leftJoin(muscleGroups, eq(exercises.primaryMuscleId, muscleGroups.id))
+		.where(eq(exercises.id, exerciseId))
+
+	if (!exercise) {
+		return null
+	}
+
+	const secondaryIds = exercise.secondaryMuscleIds ?? []
+	const secondaryRows =
+		secondaryIds.length > 0
+			? await db
+					.select({
+						id: muscleGroups.id,
+						name: muscleGroups.name,
+					})
+					.from(muscleGroups)
+					.where(inArray(muscleGroups.id, secondaryIds))
+			: []
+
+	const secondaryMap = new Map(secondaryRows.map(row => [row.id, row]))
+
+	const sessionRows = await db
+		.select({
+			sessionId: workoutSession.id,
+			workoutId: workouts.id,
+			workoutName: workouts.name,
+			finishedAt: workoutSession.finishedAt,
+			duration: workoutSession.duration,
+			setNumber: exerciseSets.setNumber,
+			repetitions: exerciseSets.repetitions,
+			weight: exerciseSets.weight,
+			intensity: exerciseSets.intensity,
+			notes: exerciseSets.notes,
+		})
+		.from(exerciseSets)
+		.innerJoin(workoutSession, eq(exerciseSets.sessionId, workoutSession.id))
+		.innerJoin(workouts, eq(workoutSession.workoutId, workouts.id))
+		.where(and(eq(exerciseSets.exerciseId, exerciseId), eq(workoutSession.status, 'completed')))
+		.orderBy(desc(workoutSession.finishedAt), desc(workoutSession.id), asc(exerciseSets.setNumber))
+
+	const sessions = sessionRows.reduce<ExerciseSessionHistoryItem[]>((result, row) => {
+		const existingSession = result.at(-1)
+
+		if (!existingSession || existingSession.sessionId !== row.sessionId) {
+			result.push({
+				sessionId: row.sessionId,
+				workoutId: row.workoutId,
+				workoutName: row.workoutName,
+				finishedAt: row.finishedAt,
+				duration: row.duration,
+				notes: row.notes,
+				totalRepetitions: row.repetitions,
+				maxWeight: row.weight,
+				sets: [
+					{
+						setNumber: row.setNumber,
+						repetitions: row.repetitions,
+						weight: row.weight,
+						intensity: row.intensity,
+					},
+				],
+			})
+
+			return result
+		}
+
+		existingSession.notes = existingSession.notes ?? row.notes
+		existingSession.totalRepetitions += row.repetitions
+		existingSession.maxWeight =
+			typeof row.weight === 'number'
+				? typeof existingSession.maxWeight === 'number'
+					? Math.max(existingSession.maxWeight, row.weight)
+					: row.weight
+				: existingSession.maxWeight
+		existingSession.sets.push({
+			setNumber: row.setNumber,
+			repetitions: row.repetitions,
+			weight: row.weight,
+			intensity: row.intensity,
+		})
+
+		return result
+	}, [])
+
+	return {
+		id: exercise.id,
+		name: exercise.name,
+		difficulty: exercise.difficulty,
+		primaryMuscle:
+			exercise.primaryMuscleId && exercise.primaryMuscleName
+				? {
+						id: exercise.primaryMuscleId,
+						name: exercise.primaryMuscleName,
+					}
+				: null,
+		secondaryMuscles: secondaryIds.flatMap(id => {
+			const muscle = secondaryMap.get(id)
+			return muscle ? [muscle] : []
+		}),
+		instructions: exercise.instructions ?? [],
+		sessions,
+	}
 }
 
 export async function createExercise(input: CreateExerciseInput): Promise<number> {

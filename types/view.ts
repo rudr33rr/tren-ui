@@ -17,8 +17,28 @@ export type ExerciseCardData = {
 	secondaryMuscles: { id: MuscleRow['id']; name: MuscleRow['name'] }[]
 }
 
+export type ExerciseSessionSetData = {
+	setNumber: number
+	repetitions: number
+	weight: number | null
+	intensity: number | null
+}
+
+export type ExerciseSessionHistoryItem = {
+	sessionId: number
+	workoutId: WorkoutRow['id']
+	workoutName: WorkoutRow['name']
+	finishedAt: Date | null
+	duration: number | null
+	notes: string | null
+	totalRepetitions: number
+	maxWeight: number | null
+	sets: ExerciseSessionSetData[]
+}
+
 export type ExercisePageData = ExerciseCardData & {
 	instructions: string[]
+	sessions: ExerciseSessionHistoryItem[]
 }
 
 export type WorkoutCardData = {

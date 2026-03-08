@@ -13,6 +13,7 @@ export const ExercisesList = async ({ search, muscle }: { search?: string; muscl
 			{exercises.map(exercise => (
 				<ExerciseCard
 					key={exercise.id}
+					id={exercise.id}
 					name={exercise.name}
 					difficulty={exercise.difficulty}
 					primaryMuscle={exercise.primaryMuscle?.name ?? null}
