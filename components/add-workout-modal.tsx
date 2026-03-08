@@ -36,7 +36,10 @@ export const AddWorkoutModal = ({ exerciseOptions }: { exerciseOptions: Exercise
 	})
 	const [exList, setExList] = React.useState<number[]>([])
 	const [selectedExerciseId, setSelectedExerciseId] = React.useState<number | null>(null)
-	const exerciseMap = React.useMemo(() => new Map(exerciseOptions.map(option => [option.id, option.name])), [exerciseOptions])
+	const exerciseMap = React.useMemo(
+		() => new Map(exerciseOptions.map(option => [option.id, option.name])),
+		[exerciseOptions],
+	)
 
 	function resetForm() {
 		setWorkout({
