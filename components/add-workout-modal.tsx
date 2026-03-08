@@ -18,7 +18,6 @@ type WorkoutFormData = {
 	name: string
 	description: string | null
 	tag: WorkoutTag | null
-	duration: number | null
 }
 
 export const AddWorkoutModal = ({ exerciseOptions }: { exerciseOptions: ExerciseOption[] }) => {
@@ -32,7 +31,6 @@ export const AddWorkoutModal = ({ exerciseOptions }: { exerciseOptions: Exercise
 		name: '',
 		description: null,
 		tag: null,
-		duration: 10,
 	})
 	const [exList, setExList] = React.useState<number[]>([])
 	const [selectedExerciseId, setSelectedExerciseId] = React.useState<number | null>(null)
@@ -46,7 +44,6 @@ export const AddWorkoutModal = ({ exerciseOptions }: { exerciseOptions: Exercise
 			name: '',
 			description: null,
 			tag: null,
-			duration: 10,
 		})
 		setExList([])
 		setSelectedExerciseId(null)
@@ -68,7 +65,6 @@ export const AddWorkoutModal = ({ exerciseOptions }: { exerciseOptions: Exercise
 				name: workout.name,
 				description: workout.description,
 				tag: workout.tag,
-				duration: workout.duration,
 				exerciseIds: exList,
 			})
 
@@ -152,23 +148,6 @@ export const AddWorkoutModal = ({ exerciseOptions }: { exerciseOptions: Exercise
 											</SelectGroup>
 										</SelectContent>
 									</Select>
-								</Field>
-								<Field className='gap-1 sm:max-w-40'>
-									<FieldLabel className='text-xs' htmlFor='workout-duration'>
-										Duration (min)
-									</FieldLabel>
-									<Input
-										id='workout-duration'
-										type='number'
-										min={1}
-										value={workout.duration ?? ''}
-										onChange={e =>
-											setWorkout({
-												...workout,
-												duration: e.target.value ? Number(e.target.value) : null,
-											})
-										}
-									/>
 								</Field>
 							</div>
 							<Field className='gap-1'>

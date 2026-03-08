@@ -7,11 +7,10 @@ export type WorkoutCardProps = {
 	name: string
 	description: string | null
 	tag: string | null
-	duration: number | null
 	exerciseCount: number
 }
 
-export const WorkoutCard = ({ id, name, description, tag, duration, exerciseCount }: WorkoutCardProps) => {
+export const WorkoutCard = ({ id, name, description, tag, exerciseCount }: WorkoutCardProps) => {
 	const colorMap = {
 		push: 'bg-green-100 text-green-800 border-green-300',
 		pull: 'bg-yellow-100 text-yellow-800 border-yellow-300',
@@ -33,7 +32,6 @@ export const WorkoutCard = ({ id, name, description, tag, duration, exerciseCoun
 			</CardHeader>
 			<CardContent>
 				<div className='text-sm opacity-70 flex gap-3'>
-					{typeof duration === 'number' ? <span>Duration: {duration} min</span> : null}
 					{typeof exerciseCount === 'number' ? <span>{exerciseCount} exercises</span> : null}
 				</div>
 			</CardContent>

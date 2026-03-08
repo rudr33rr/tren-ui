@@ -7,7 +7,6 @@ type CreateWorkoutInput = {
 	name: string
 	description: string | null
 	tag: WorkoutTag | null
-	duration: number | null
 	exerciseIds: number[]
 }
 
@@ -71,12 +70,11 @@ export async function listWorkouts(): Promise<WorkoutCardData[]> {
 			name: workouts.name,
 			description: workouts.description,
 			tag: workouts.tag,
-			duration: workouts.duration,
 			exerciseCount: sql<number>`cast(count(${workoutExercises.id}) as int)`,
 		})
 		.from(workouts)
 		.leftJoin(workoutExercises, eq(workouts.id, workoutExercises.workoutId))
-		.groupBy(workouts.id, workouts.name, workouts.description, workouts.tag, workouts.duration)
+		.groupBy(workouts.id, workouts.name, workouts.description, workouts.tag)
 		.orderBy(asc(workouts.name), asc(workouts.id))
 
 	return rows.map(row => ({
@@ -84,7 +82,6 @@ export async function listWorkouts(): Promise<WorkoutCardData[]> {
 		name: row.name,
 		description: row.description,
 		tag: row.tag,
-		duration: row.duration,
 		exerciseCount: row.exerciseCount,
 	}))
 }
@@ -96,7 +93,6 @@ export async function createWorkout(input: CreateWorkoutInput): Promise<number> 
 			name: input.name,
 			description: input.description,
 			tag: input.tag,
-			duration: input.duration,
 		})
 		.returning({ id: workouts.id })
 

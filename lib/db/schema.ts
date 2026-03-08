@@ -28,7 +28,6 @@ export const workouts = pgTable('workouts', {
 	name: varchar('name', { length: 255 }).notNull(),
 	description: text('description'),
 	tag: workoutTagEnum('tag'),
-	duration: integer('duration'),
 })
 
 export const workoutExercises = pgTable('workout_exercises', {

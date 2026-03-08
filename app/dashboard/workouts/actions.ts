@@ -9,7 +9,6 @@ type CreateWorkoutPayload = {
 	name: string
 	description: string | null
 	tag: WorkoutTag | null
-	duration: number | null
 	exerciseIds: number[]
 }
 
@@ -56,13 +55,6 @@ export async function createWorkoutAction(payload: CreateWorkoutPayload): Promis
 		}
 	}
 
-	if (payload.duration !== null && (!Number.isInteger(payload.duration) || payload.duration <= 0)) {
-		return {
-			ok: false,
-			error: 'Duration must be a positive number',
-		}
-	}
-
 	const exerciseOptions = await listExerciseOptions()
 	const validExerciseIds = new Set(exerciseOptions.map(exercise => exercise.id))
 	const exerciseIds = Array.from(new Set(payload.exerciseIds)).filter(id => validExerciseIds.has(id))
@@ -86,7 +78,6 @@ export async function createWorkoutAction(payload: CreateWorkoutPayload): Promis
 			name: normalizedName,
 			description: payload.description?.trim() || null,
 			tag: payload.tag,
-			duration: payload.duration,
 			exerciseIds,
 		})
 	} catch {
