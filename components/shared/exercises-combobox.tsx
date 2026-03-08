@@ -1,19 +1,16 @@
 'use client'
 
 import * as React from 'react'
-import { Check, ChevronsUpDown, Loader2, AlertTriangle } from 'lucide-react'
+import { Check, ChevronsUpDown } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-
-type ExerciseOption = {
-	id: number
-	name: string
-}
+import type { ExerciseOption } from '@/lib/db/exercises'
 
 export type ExerciseComboboxProps = {
+	options: ExerciseOption[]
 	value: number | null
 	onChange: (next: number | null) => void
 	disabled?: boolean
@@ -21,26 +18,13 @@ export type ExerciseComboboxProps = {
 }
 
 export function ExerciseCombobox({
+	options,
 	value,
 	onChange,
 	disabled,
 	placeholder = 'Choose exercise',
 }: ExerciseComboboxProps) {
 	const [open, setOpen] = React.useState(false)
-
-	const [options, setOptions] = React.useState<ExerciseOption[]>([])
-	const [loading, setLoading] = React.useState(false)
-	const [fetchError, setFetchError] = React.useState<string | null>(null)
-
-	const didFetchRef = React.useRef(false)
-	React.useEffect(() => {
-		if (!open) return
-		if (didFetchRef.current) return
-
-		// TODO: Replace with fetch from API route
-		setFetchError('Exercise loading not implemented yet')
-		didFetchRef.current = true
-	}, [open])
 
 	const selected = options.find(o => o.id === value)
 
@@ -56,51 +40,35 @@ export function ExerciseCombobox({
 						disabled={disabled}
 						className='w-full justify-between'>
 						<span className={cn('truncate text-left', !selected && 'text-muted-foreground')}>
-							{selected ? selected.name : loading ? 'Loading…' : placeholder}
+							{selected ? selected.name : placeholder}
 						</span>
 						<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent className='w-[--radix-popover-trigger-width] p-0 max-h-64 overflow-hidden'>
 					<Command>
-						<CommandInput placeholder='Search exercise...' className='h-9' disabled={loading} />
+						<CommandInput placeholder='Search exercise...' className='h-9' />
 						<CommandList className='max-h-56 overflow-y-auto'>
-							{loading ? (
-								<div className='flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground'>
-									<Loader2 className='h-4 w-4 animate-spin' />
-									<span>Loading…</span>
-								</div>
-							) : fetchError ? (
-								<div className='flex items-center gap-2 px-3 py-2 text-sm text-destructive'>
-									<AlertTriangle className='h-4 w-4' />
-									<span>{fetchError}</span>
-								</div>
-							) : (
-								<>
-									<CommandEmpty>No exercise found.</CommandEmpty>
-									<CommandGroup>
-										{options.map(opt => (
-											<CommandItem
-												key={opt.id}
-												value={opt.name}
-												onSelect={() => {
-													onChange(opt.id)
-													setOpen(false)
-												}}
-												className='flex items-center gap-2'>
-												<Check className={cn('h-4 w-4', opt.id === value ? 'opacity-100' : 'opacity-0')} />
-												<span className='truncate'>{opt.name}</span>
-											</CommandItem>
-										))}
-									</CommandGroup>
-								</>
-							)}
+							<CommandEmpty>No exercise found.</CommandEmpty>
+							<CommandGroup>
+								{options.map(opt => (
+									<CommandItem
+										key={opt.id}
+										value={opt.name}
+										onSelect={() => {
+											onChange(opt.id)
+											setOpen(false)
+										}}
+										className='flex items-center gap-2'>
+										<Check className={cn('h-4 w-4', opt.id === value ? 'opacity-100' : 'opacity-0')} />
+										<span className='truncate'>{opt.name}</span>
+									</CommandItem>
+								))}
+							</CommandGroup>
 						</CommandList>
 					</Command>
 				</PopoverContent>
 			</Popover>
-
-			{fetchError ? <p className='text-xs text-destructive mt-1'>{fetchError}</p> : null}
 		</div>
 	)
 }

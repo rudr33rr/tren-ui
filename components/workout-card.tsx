@@ -16,6 +16,7 @@ export const WorkoutCard = ({ id, name, description, tag, duration, exerciseCoun
 		push: 'bg-green-100 text-green-800 border-green-300',
 		pull: 'bg-yellow-100 text-yellow-800 border-yellow-300',
 		legs: 'bg-red-100 text-red-800 border-red-300',
+		cardio: 'bg-sky-100 text-sky-800 border-sky-300',
 	} as const
 
 	const tagKey = (tag ?? '').toLowerCase() as keyof typeof colorMap

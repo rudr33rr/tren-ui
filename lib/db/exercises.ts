@@ -8,6 +8,11 @@ type MuscleOption = {
 	name: string
 }
 
+export type ExerciseOption = {
+	id: number
+	name: string
+}
+
 type CreateExerciseInput = {
 	name: string
 	difficulty: 'easy' | 'intermediate' | 'hard'
@@ -24,6 +29,21 @@ export async function getMuscleGroups(): Promise<MuscleOption[]> {
 		})
 		.from(muscleGroups)
 		.orderBy(asc(muscleGroups.name))
+}
+
+export async function listExerciseOptions(): Promise<ExerciseOption[]> {
+	const rows = await db
+		.select({
+			id: exercises.id,
+			name: exercises.exerciseName,
+		})
+		.from(exercises)
+		.orderBy(asc(exercises.exerciseName), asc(exercises.id))
+
+	return rows.map(row => ({
+		id: row.id,
+		name: row.name ?? `Exercise ${row.id}`,
+	}))
 }
 
 export async function listExercises(filters: { search?: string; muscle?: string }): Promise<ExerciseCardData[]> {

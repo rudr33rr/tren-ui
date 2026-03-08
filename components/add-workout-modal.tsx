@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { createWorkoutAction } from '@/app/dashboard/workouts/actions'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog'
 import { Button } from './ui/button'
 import { Plus, Trash } from 'lucide-react'
@@ -9,12 +10,18 @@ import { Textarea } from './ui/textarea'
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectGroup, SelectItem } from './ui/select'
 import { FieldSet, FieldGroup, Field, FieldLabel } from './ui/field'
 import { useRouter } from 'next/navigation'
-import type { WorkoutCardData } from '@/types/view'
+import type { ExerciseOption } from '@/lib/db/exercises'
+import type { WorkoutTag } from '@/types/view'
 import { ExerciseCombobox } from '@/components/shared/exercises-combobox'
 
-type WorkoutFormData = Omit<WorkoutCardData, 'id' | 'exerciseCount'>
+type WorkoutFormData = {
+	name: string
+	description: string | null
+	tag: WorkoutTag | null
+	duration: number | null
+}
 
-export const AddWorkoutModal = () => {
+export const AddWorkoutModal = ({ exerciseOptions }: { exerciseOptions: ExerciseOption[] }) => {
 	const router = useRouter()
 
 	const [open, setOpen] = React.useState(false)
@@ -29,11 +36,23 @@ export const AddWorkoutModal = () => {
 	})
 	const [exList, setExList] = React.useState<number[]>([])
 	const [selectedExerciseId, setSelectedExerciseId] = React.useState<number | null>(null)
+	const exerciseMap = React.useMemo(() => new Map(exerciseOptions.map(option => [option.id, option.name])), [exerciseOptions])
+
+	function resetForm() {
+		setWorkout({
+			name: '',
+			description: null,
+			tag: null,
+			duration: 10,
+		})
+		setExList([])
+		setSelectedExerciseId(null)
+		setError(null)
+	}
 
 	async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault()
 		setError(null)
-		console.log('[add-workout] submitting')
 
 		if (!workout.name.trim()) {
 			setError('Workout name is required')
@@ -42,8 +61,22 @@ export const AddWorkoutModal = () => {
 
 		setSubmitting(true)
 		try {
-			// TODO: Replace with API route / Server Action
-			setError('Workout creation not implemented yet')
+			const result = await createWorkoutAction({
+				name: workout.name,
+				description: workout.description,
+				tag: workout.tag,
+				duration: workout.duration,
+				exerciseIds: exList,
+			})
+
+			if (!result.ok) {
+				setError(result.error ?? 'Unexpected error')
+				return
+			}
+
+			resetForm()
+			setOpen(false)
+			router.refresh()
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				setError(err.message)
@@ -56,14 +89,21 @@ export const AddWorkoutModal = () => {
 	}
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog
+			open={open}
+			onOpenChange={nextOpen => {
+				setOpen(nextOpen)
+				if (!nextOpen && !submitting) {
+					resetForm()
+				}
+			}}>
 			<DialogTrigger asChild>
 				<Button type='button' variant='secondary'>
 					<Plus />
 					<span>Add workout</span>
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
+			<DialogContent className='max-h-[85vh] overflow-y-auto sm:max-w-2xl'>
 				<form onSubmit={onSubmit}>
 					<DialogHeader>
 						<DialogTitle>Add Workout</DialogTitle>
@@ -71,7 +111,7 @@ export const AddWorkoutModal = () => {
 					</DialogHeader>
 					<FieldSet className='mt-4'>
 						<FieldGroup className='gap-4'>
-							<div className='flex gap-2'>
+							<div className='flex flex-col gap-4 sm:flex-row'>
 								<Field className='gap-1'>
 									<FieldLabel className='text-xs' htmlFor='workout-name'>
 										Workout name
@@ -84,16 +124,16 @@ export const AddWorkoutModal = () => {
 										required
 									/>
 								</Field>
-								<Field className='gap-1'>
+								<Field className='gap-1 sm:max-w-44'>
 									<FieldLabel className='text-xs' htmlFor='workout-tag'>
 										Workout tag
 									</FieldLabel>
 									<Select
-										value={workout.tag ?? ''}
+										value={workout.tag ?? '__none__'}
 										onValueChange={v =>
 											setWorkout({
 												...workout,
-												tag: v as WorkoutFormData['tag'],
+												tag: v === '__none__' ? null : (v as WorkoutFormData['tag']),
 											})
 										}>
 										<SelectTrigger id='workout-tag'>
@@ -101,6 +141,7 @@ export const AddWorkoutModal = () => {
 										</SelectTrigger>
 										<SelectContent>
 											<SelectGroup>
+												<SelectItem value='__none__'>No tag</SelectItem>
 												<SelectItem value='push'>Push</SelectItem>
 												<SelectItem value='pull'>Pull</SelectItem>
 												<SelectItem value='legs'>Legs</SelectItem>
@@ -108,6 +149,23 @@ export const AddWorkoutModal = () => {
 											</SelectGroup>
 										</SelectContent>
 									</Select>
+								</Field>
+								<Field className='gap-1 sm:max-w-40'>
+									<FieldLabel className='text-xs' htmlFor='workout-duration'>
+										Duration (min)
+									</FieldLabel>
+									<Input
+										id='workout-duration'
+										type='number'
+										min={1}
+										value={workout.duration ?? ''}
+										onChange={e =>
+											setWorkout({
+												...workout,
+												duration: e.target.value ? Number(e.target.value) : null,
+											})
+										}
+									/>
 								</Field>
 							</div>
 							<Field className='gap-1'>
@@ -132,6 +190,7 @@ export const AddWorkoutModal = () => {
 								</FieldLabel>
 								<div className='flex gap-2'>
 									<ExerciseCombobox
+										options={exerciseOptions}
 										value={selectedExerciseId}
 										onChange={id => setSelectedExerciseId(id)}
 										disabled={submitting}
@@ -140,9 +199,10 @@ export const AddWorkoutModal = () => {
 									<Button
 										type='button'
 										variant='secondary'
+										disabled={selectedExerciseId == null || submitting}
 										onClick={() => {
 											if (selectedExerciseId == null) return
-											setExList(prev => [...prev, selectedExerciseId])
+											setExList(prev => Array.from(new Set([...prev, selectedExerciseId])))
 											setSelectedExerciseId(null)
 										}}>
 										Add <Plus />
@@ -160,10 +220,12 @@ export const AddWorkoutModal = () => {
 						) : (
 							<ol className='space-y-0.5 text-sm'>
 								{exList.map((id, i) => {
+									const exerciseName = exerciseMap.get(id) ?? `Exercise ${id}`
+
 									return (
 										<li key={i} className='flex items-center justify-between'>
 											<span className='font-medium'>
-												<span className='text-muted-foreground'>{i + 1}.</span> {`Exercise ${id}`}
+												<span className='text-muted-foreground'>{i + 1}.</span> {exerciseName}
 											</span>
 
 											<Button
