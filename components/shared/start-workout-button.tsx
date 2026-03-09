@@ -1,54 +1,46 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '../ui/button'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { startWorkoutAction } from '@/app/dashboard/workouts/actions'
+import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
+import { Button } from '../ui/button'
 import { Play } from 'lucide-react'
 
 export function StartWorkoutButton({ workoutId }: { workoutId: number }) {
-	const supabase = createClient()
 	const router = useRouter()
 	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<string | null>(null)
 
 	async function startWorkout() {
 		try {
 			setLoading(true)
+			setError(null)
 
-			const {
-				data: { user },
-			} = await supabase.auth.getUser()
+			const result = await startWorkoutAction(workoutId)
 
-			if (!user) {
-				console.error('You must be logged in to start a workout')
+			if (!result.ok || result.sessionId === null) {
+				setError(result.error ?? 'Failed to start workout')
 				return
 			}
 
-			const { data, error } = await supabase
-				.from('workout_session')
-				.insert({
-					workout_id: workoutId,
-					started_at: new Date().toISOString(),
-					status: 'started',
-					user_id: user.id,
-				})
-				.select()
-				.single()
-
-			if (error) throw error
-
-			router.push(`/dashboard/workouts/${data.id}`)
+			useWorkoutSessionStore.getState().clear()
+			router.push(`/dashboard/workouts/${result.sessionId}`)
 		} catch (err) {
 			console.error('Failed to create session:', err)
+			setError('Failed to start workout')
 		} finally {
 			setLoading(false)
 		}
 	}
 
 	return (
-		<Button className='w-full flex gap-1 items-center justify-center' onClick={startWorkout} disabled={loading}>
-			<Play />
-			{loading ? 'Starting…' : 'Start workout'}
-		</Button>
+		<div className='w-full space-y-2'>
+			<Button className='w-full flex gap-1 items-center justify-center' onClick={startWorkout} disabled={loading}>
+				<Play />
+				{loading ? 'Starting…' : 'Start workout'}
+			</Button>
+			{error ? <p className='text-sm text-destructive'>{error}</p> : null}
+		</div>
 	)
 }

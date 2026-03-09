@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { createWorkoutAction } from '@/app/dashboard/workouts/actions'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog'
 import { Button } from './ui/button'
 import { Plus, Trash } from 'lucide-react'
@@ -8,17 +9,17 @@ import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectGroup, SelectItem } from './ui/select'
 import { FieldSet, FieldGroup, Field, FieldLabel } from './ui/field'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import type { WorkoutCardData } from '@/types/view'
+import type { ExerciseOption } from '@/types/view'
+import type { WorkoutTag } from '@/types/view'
 import { ExerciseCombobox } from '@/components/shared/exercises-combobox'
 
-type WorkoutFormData = Omit<WorkoutCardData, 'id' | 'exerciseCount'>
+type WorkoutFormData = {
+	name: string
+	description: string | null
+	tag: WorkoutTag | null
+}
 
-export const AddWorkoutModal = () => {
-	const router = useRouter()
-	const supabase = createClient()
-
+export const AddWorkoutModal = ({ exerciseOptions }: { exerciseOptions: ExerciseOption[] }) => {
 	const [open, setOpen] = React.useState(false)
 	const [submitting, setSubmitting] = React.useState(false)
 	const [error, setError] = React.useState<string | null>(null)
@@ -27,15 +28,28 @@ export const AddWorkoutModal = () => {
 		name: '',
 		description: null,
 		tag: null,
-		duration: 10,
 	})
 	const [exList, setExList] = React.useState<number[]>([])
 	const [selectedExerciseId, setSelectedExerciseId] = React.useState<number | null>(null)
+	const exerciseMap = React.useMemo(
+		() => new Map(exerciseOptions.map(option => [option.id, option.name])),
+		[exerciseOptions],
+	)
+
+	function resetForm() {
+		setWorkout({
+			name: '',
+			description: null,
+			tag: null,
+		})
+		setExList([])
+		setSelectedExerciseId(null)
+		setError(null)
+	}
 
 	async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault()
 		setError(null)
-		console.log('[add-workout] submitting')
 
 		if (!workout.name.trim()) {
 			setError('Workout name is required')
@@ -44,61 +58,20 @@ export const AddWorkoutModal = () => {
 
 		setSubmitting(true)
 		try {
-			const {
-				data: { user },
-			} = await supabase.auth.getUser()
-
-			if (!user) {
-				setError('You must be logged in to create a workout')
-				return
-			}
-
-			const payload = {
-				name: workout.name.trim(),
-				description: workout.description?.trim?.() || null,
+			const result = await createWorkoutAction({
+				name: workout.name,
+				description: workout.description,
 				tag: workout.tag,
-				duration: workout.duration ?? null,
-				user_id: user.id,
-			}
+				exerciseIds: exList,
+			})
 
-			const { data: workoutRows, error: insertWorkoutError } = await supabase
-				.from('workouts')
-				.insert(payload)
-				.select('id')
-				.single()
-
-			if (insertWorkoutError) {
-				setError(insertWorkoutError.message)
+			if (!result.ok) {
+				setError(result.error ?? 'Unexpected error')
 				return
 			}
 
-			const newWorkoutId = workoutRows.id
-
-			if (exList.length > 0) {
-				const relRows = exList.map(exerciseId => ({
-					workout_id: newWorkoutId,
-					exercise_id: exerciseId,
-				}))
-
-				const { error: relError } = await supabase.from('workout_exercises').insert(relRows)
-
-				if (relError) {
-					setError(relError.message)
-					return
-				}
-			}
-
-			setWorkout({
-				name: '',
-				description: null,
-				tag: null,
-				duration: 10,
-			})
-			setExList([])
-			setSelectedExerciseId(null)
-
+			resetForm()
 			setOpen(false)
-			router.refresh()
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				setError(err.message)
@@ -111,14 +84,21 @@ export const AddWorkoutModal = () => {
 	}
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog
+			open={open}
+			onOpenChange={nextOpen => {
+				setOpen(nextOpen)
+				if (!nextOpen && !submitting) {
+					resetForm()
+				}
+			}}>
 			<DialogTrigger asChild>
 				<Button type='button' variant='secondary'>
 					<Plus />
 					<span>Add workout</span>
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
+			<DialogContent className='max-h-[85vh] overflow-y-auto sm:max-w-2xl'>
 				<form onSubmit={onSubmit}>
 					<DialogHeader>
 						<DialogTitle>Add Workout</DialogTitle>
@@ -126,7 +106,7 @@ export const AddWorkoutModal = () => {
 					</DialogHeader>
 					<FieldSet className='mt-4'>
 						<FieldGroup className='gap-4'>
-							<div className='flex gap-2'>
+							<div className='flex flex-col gap-4 sm:flex-row'>
 								<Field className='gap-1'>
 									<FieldLabel className='text-xs' htmlFor='workout-name'>
 										Workout name
@@ -139,16 +119,16 @@ export const AddWorkoutModal = () => {
 										required
 									/>
 								</Field>
-								<Field className='gap-1'>
+								<Field className='gap-1 sm:max-w-44'>
 									<FieldLabel className='text-xs' htmlFor='workout-tag'>
 										Workout tag
 									</FieldLabel>
 									<Select
-										value={workout.tag ?? ''}
+										value={workout.tag ?? '__none__'}
 										onValueChange={v =>
 											setWorkout({
 												...workout,
-												tag: v as WorkoutFormData['tag'],
+												tag: v === '__none__' ? null : (v as WorkoutFormData['tag']),
 											})
 										}>
 										<SelectTrigger id='workout-tag'>
@@ -156,6 +136,7 @@ export const AddWorkoutModal = () => {
 										</SelectTrigger>
 										<SelectContent>
 											<SelectGroup>
+												<SelectItem value='__none__'>No tag</SelectItem>
 												<SelectItem value='push'>Push</SelectItem>
 												<SelectItem value='pull'>Pull</SelectItem>
 												<SelectItem value='legs'>Legs</SelectItem>
@@ -187,6 +168,7 @@ export const AddWorkoutModal = () => {
 								</FieldLabel>
 								<div className='flex gap-2'>
 									<ExerciseCombobox
+										options={exerciseOptions}
 										value={selectedExerciseId}
 										onChange={id => setSelectedExerciseId(id)}
 										disabled={submitting}
@@ -195,9 +177,10 @@ export const AddWorkoutModal = () => {
 									<Button
 										type='button'
 										variant='secondary'
+										disabled={selectedExerciseId == null || submitting}
 										onClick={() => {
 											if (selectedExerciseId == null) return
-											setExList(prev => [...prev, selectedExerciseId])
+											setExList(prev => Array.from(new Set([...prev, selectedExerciseId])))
 											setSelectedExerciseId(null)
 										}}>
 										Add <Plus />
@@ -215,10 +198,12 @@ export const AddWorkoutModal = () => {
 						) : (
 							<ol className='space-y-0.5 text-sm'>
 								{exList.map((id, i) => {
+									const exerciseName = exerciseMap.get(id) ?? `Exercise ${id}`
+
 									return (
 										<li key={i} className='flex items-center justify-between'>
 											<span className='font-medium'>
-												<span className='text-muted-foreground'>{i + 1}.</span> {`Exercise ${id}`}
+												<span className='text-muted-foreground'>{i + 1}.</span> {exerciseName}
 											</span>
 
 											<Button

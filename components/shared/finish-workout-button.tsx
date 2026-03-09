@@ -1,72 +1,59 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { finishWorkoutAction } from '@/app/dashboard/workouts/actions'
 import { Button } from '../ui/button'
-import { createClient } from '@/lib/supabase/client'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 import { Save } from 'lucide-react'
 
-export default function FinishWorkoutButton({ sessionId }: { sessionId: string }) {
-	const supabase = createClient()
+export function FinishWorkoutButton({ sessionId }: { sessionId: number }) {
+	const router = useRouter()
+	const exercises = useWorkoutSessionStore(state => state.exercises)
 	const [loading, setLoading] = useState(false)
-	const [finished, setFinished] = useState(false)
+	const [error, setError] = useState<string | null>(null)
 
 	async function finishWorkout() {
 		try {
 			setLoading(true)
+			setError(null)
 
-			const {
-				data: { user },
-			} = await supabase.auth.getUser()
+			const result = await finishWorkoutAction({
+				sessionId,
+				exercises: Object.values(exercises).map(exercise => ({
+					exerciseId: exercise.exerciseId,
+					sets: exercise.sets.map(set => ({
+						reps: set.reps,
+						weight: typeof set.weight === 'number' ? set.weight : null,
+						intensity: typeof set.intensity === 'number' ? set.intensity : null,
+					})),
+					notes: exercise.notes ?? null,
+				})),
+			})
 
-			if (!user) {
-				console.error('You must be logged in to finish a workout')
+			if (!result.ok) {
+				setError(result.error ?? 'Failed to save workout')
 				return
 			}
 
-			const exercises = useWorkoutSessionStore.getState().exercises
-
-			const rows = Object.values(exercises).flatMap(ex =>
-				ex.sets.map((set, index) => ({
-					session_id: Number(sessionId),
-					exercise_id: ex.exerciseId,
-					set_number: index + 1,
-					repetitions: set.reps,
-					weight: set.weight ?? null,
-					intensity: set.intensity ?? 5,
-					notes: ex.notes ?? '',
-					user_id: user.id,
-				})),
-			)
-
-			if (rows.length > 0) {
-				const { error: exerciseError } = await supabase.from('exercise_sets').insert(rows)
-
-				if (exerciseError) throw exerciseError
-			}
-
-			const { error } = await supabase
-				.from('workout_session')
-				.update({
-					status: 'completed',
-					finished_at: new Date().toISOString(),
-				})
-				.eq('id', Number(sessionId))
-
-			if (error) throw error
 			useWorkoutSessionStore.getState().clear()
-			setFinished(true)
+			router.replace('/dashboard')
+			router.refresh()
 		} catch (err) {
 			console.error('Failed to finish workout:', err)
+			setError('Failed to save workout')
 		} finally {
 			setLoading(false)
 		}
 	}
 
 	return (
-		<Button onClick={finishWorkout} disabled={loading || finished}>
-			<Save className='ml-1 h-4 w-4' />
-			{finished ? 'Workout Saved' : loading ? 'Saving…' : 'Save workout'}
-		</Button>
+		<div className='space-y-2'>
+			<Button onClick={finishWorkout} disabled={loading}>
+				<Save className='ml-1 h-4 w-4' />
+				{loading ? 'Saving…' : 'Save workout'}
+			</Button>
+			{error ? <p className='text-sm text-destructive'>{error}</p> : null}
+		</div>
 	)
 }

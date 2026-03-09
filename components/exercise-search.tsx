@@ -13,15 +13,15 @@ import {
 } from '@/components/ui/select'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useState, useCallback, useEffect } from 'react'
+import type { MuscleOption } from '@/types/view'
 
 const SEARCH_DEBOUNCE_MS = 300
 
 type Props = {
-	muscles: { id: number; name: string }[]
-	musclesError: boolean
+	muscles: MuscleOption[]
 }
 
-export function ExerciseSearch({ muscles, musclesError }: Props) {
+export function ExerciseSearch({ muscles }: Props) {
 	const router = useRouter()
 	const params = useSearchParams()
 	const searchParam = params.get('search') ?? ''
@@ -65,7 +65,6 @@ export function ExerciseSearch({ muscles, musclesError }: Props) {
 			</InputGroup>
 
 			<Select
-				disabled={musclesError}
 				defaultValue={params.get('muscle') ?? undefined}
 				onValueChange={value => {
 					if (value === '__all__') {

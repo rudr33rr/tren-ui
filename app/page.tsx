@@ -1,5 +1,5 @@
-import { AuthButton } from '@/components/auth/auth-button'
-import { ThemeSwitcher } from '@/components/auth/theme-switcher'
+import { Button } from '@/components/ui/button'
+import { ThemeSwitcher } from '@/components/shared/theme-switcher'
 import Link from 'next/link'
 
 export default function Home() {
@@ -11,7 +11,9 @@ export default function Home() {
 						<div className='flex gap-5 items-center font-semibold'>
 							<Link href={'/'}>TrenUI</Link>
 						</div>
-						<AuthButton />
+						<Button asChild size='sm'>
+							<Link href='/dashboard'>Dashboard</Link>
+						</Button>
 					</div>
 				</nav>
 				<div className='flex-1 flex flex-col gap-20 max-w-5xl p-5'>

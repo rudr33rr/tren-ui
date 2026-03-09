@@ -1,8 +1,9 @@
 import { ExercisesList } from '@/components/exercises-list'
 import { ExerciseSearch } from '@/components/exercise-search'
-import { createClient } from '@/lib/supabase/server'
+import { AddExerciseModal } from '@/components/add-exercise-modal'
+import { getMuscleGroups } from '@/lib/db/exercises'
 
-export default async function ExcersisesPage({
+export default async function ExercisesPage({
 	searchParams,
 }: {
 	searchParams: Promise<{
@@ -10,18 +11,16 @@ export default async function ExcersisesPage({
 		muscle?: string
 	}>
 }) {
-	const supabse = await createClient()
 	const { search, muscle } = await searchParams
-
-	const { data: muscleData, error } = await supabse.from('muscle_groups').select('id, name').order('name')
-
-	const musclesError = Boolean(error)
+	const muscleData = await getMuscleGroups()
 
 	return (
 		<div className='w-full space-y-6 p-4'>
-			<h1 className='text-2xl font-medium'>Exercise Library</h1>
-			<p>Browse and learn proper form for exercises</p>
-			<ExerciseSearch muscles={muscleData ?? []} musclesError={musclesError} />
+			<div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+				<h1 className='text-2xl font-medium'>Exercise Library</h1>
+				<AddExerciseModal muscles={muscleData} />
+			</div>
+			<ExerciseSearch muscles={muscleData} />
 			<ExercisesList search={search} muscle={muscle} />
 		</div>
 	)

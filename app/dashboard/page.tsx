@@ -1,33 +1,8 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { Badge } from '@/components/ui/badge'
+import { getLastCompletedWorkout } from '@/lib/db/workouts'
 
 export default async function DashboardPage() {
-	const supabase = await createClient()
-
-	const { data, error } = await supabase.auth.getClaims()
-	if (error || !data?.claims) {
-		redirect('/auth/login')
-	}
-
-	const { data: lastSession } = await supabase
-		.from('workout_session')
-		.select(
-			`
-    id,
-    status,
-    finished_at,
-    workout_id,
-    workout:workouts (
-      id,
-      name,
-      description,
-      tag
-    )
-  `,
-		)
-		.order('finished_at', { ascending: false })
-		.limit(1)
-		.single()
+	const lastCompletedWorkout = await getLastCompletedWorkout()
 
 	return (
 		<div className='w-full p-4 space-y-6'>
@@ -35,22 +10,19 @@ export default async function DashboardPage() {
 
 			<section className='rounded-lg border p-4'>
 				<h2 className='text-lg font-medium mb-2'>Last completed workout</h2>
-
-				{!lastSession ? (
-					<p className='text-sm opacity-60'>No completed workouts yet.</p>
-				) : (
-					<div className='space-y-1'>
-						<p className='font-medium'>{lastSession.workout?.name ?? 'Unnamed Workout'}</p>
-
-						{lastSession.workout?.description && <p className='text-sm opacity-70'>{lastSession.workout.description}</p>}
-
-						<div className='text-xs opacity-60 flex gap-3'>
-							{lastSession.workout?.tag && <span>Tag: {lastSession.workout.tag}</span>}
-							{lastSession.finished_at && (
-								<span>Finished: {new Date(lastSession.finished_at).toLocaleDateString()}</span>
-							)}
+				{lastCompletedWorkout ? (
+					<div className='space-y-2'>
+						<div className='flex items-center gap-3'>
+							<p className='text-base font-medium'>{lastCompletedWorkout.workoutName}</p>
+							{lastCompletedWorkout.tag ? <Badge variant='outline'>{lastCompletedWorkout.tag}</Badge> : null}
 						</div>
+						<p className='text-sm opacity-70'>
+							Finished {lastCompletedWorkout.finishedAt?.toLocaleDateString() ?? 'recently'}
+							{typeof lastCompletedWorkout.duration === 'number' ? ` • ${lastCompletedWorkout.duration} min` : ''}
+						</p>
 					</div>
+				) : (
+					<p className='text-sm opacity-60'>No completed workouts yet.</p>
 				)}
 			</section>
 		</div>
