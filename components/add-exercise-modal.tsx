@@ -1,10 +1,9 @@
 'use client'
 
 import React from 'react'
-import { useRouter } from 'next/navigation'
 import { Plus } from 'lucide-react'
 import { createExerciseAction } from '@/app/dashboard/exercises/actions'
-import type { DifficultyLevel } from '@/types/view'
+import type { DifficultyLevel, MuscleOption } from '@/types/view'
 import { Button } from './ui/button'
 import { Checkbox } from './ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
@@ -12,11 +11,6 @@ import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSet } from './ui/
 import { Input } from './ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Textarea } from './ui/textarea'
-
-type MuscleOption = {
-	id: number
-	name: string
-}
 
 type ExerciseFormData = {
 	name: string
@@ -35,7 +29,6 @@ const initialFormState: ExerciseFormData = {
 }
 
 export function AddExerciseModal({ muscles }: { muscles: MuscleOption[] }) {
-	const router = useRouter()
 	const [open, setOpen] = React.useState(false)
 	const [submitting, setSubmitting] = React.useState(false)
 	const [error, setError] = React.useState<string | null>(null)
@@ -76,7 +69,6 @@ export function AddExerciseModal({ muscles }: { muscles: MuscleOption[] }) {
 
 			resetForm()
 			setOpen(false)
-			router.refresh()
 		} catch {
 			setError('Unexpected error')
 		} finally {

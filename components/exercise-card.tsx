@@ -1,16 +1,17 @@
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
+import type { DifficultyLevel } from '@/types/view'
 
 type ExerciseCardProps = {
 	id: number
-	name: string | null
-	difficulty: 'easy' | 'intermediate' | 'hard'
+	name: string
+	difficulty: DifficultyLevel
 	primaryMuscle: string | null
 	secondaryMuscles?: { id: number; name: string }[]
 }
 
-export const ExerciseCard = ({ id, name, difficulty, primaryMuscle, secondaryMuscles }: ExerciseCardProps) => {
+export function ExerciseCard({ id, name, difficulty, primaryMuscle, secondaryMuscles }: ExerciseCardProps) {
 	const colorMap = {
 		easy: 'bg-green-100 text-green-800 border-green-300',
 		intermediate: 'bg-yellow-100 text-yellow-800 border-yellow-300',

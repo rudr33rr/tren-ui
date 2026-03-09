@@ -9,8 +9,7 @@ import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectGroup, SelectItem } from './ui/select'
 import { FieldSet, FieldGroup, Field, FieldLabel } from './ui/field'
-import { useRouter } from 'next/navigation'
-import type { ExerciseOption } from '@/lib/db/exercises'
+import type { ExerciseOption } from '@/types/view'
 import type { WorkoutTag } from '@/types/view'
 import { ExerciseCombobox } from '@/components/shared/exercises-combobox'
 
@@ -21,8 +20,6 @@ type WorkoutFormData = {
 }
 
 export const AddWorkoutModal = ({ exerciseOptions }: { exerciseOptions: ExerciseOption[] }) => {
-	const router = useRouter()
-
 	const [open, setOpen] = React.useState(false)
 	const [submitting, setSubmitting] = React.useState(false)
 	const [error, setError] = React.useState<string | null>(null)
@@ -75,7 +72,6 @@ export const AddWorkoutModal = ({ exerciseOptions }: { exerciseOptions: Exercise
 
 			resetForm()
 			setOpen(false)
-			router.refresh()
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				setError(err.message)

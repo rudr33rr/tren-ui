@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { listExerciseOptions } from '@/lib/db/exercises'
 import { createWorkout, finishWorkoutSession, getWorkoutById, startWorkoutSession } from '@/lib/db/workouts'
+import { workoutTagValues } from '@/lib/db/schema'
 import type { WorkoutTag } from '@/types/view'
 
 type CreateWorkoutPayload = {
@@ -36,7 +37,7 @@ export type WorkoutActionResult = {
 	error: string | null
 }
 
-const workoutTags: WorkoutTag[] = ['push', 'pull', 'legs', 'cardio']
+const validWorkoutTags: readonly WorkoutTag[] = workoutTagValues
 
 export async function createWorkoutAction(payload: CreateWorkoutPayload): Promise<WorkoutActionResult> {
 	const normalizedName = payload.name.trim()
@@ -48,7 +49,7 @@ export async function createWorkoutAction(payload: CreateWorkoutPayload): Promis
 		}
 	}
 
-	if (payload.tag !== null && !workoutTags.includes(payload.tag)) {
+	if (payload.tag !== null && !validWorkoutTags.includes(payload.tag)) {
 		return {
 			ok: false,
 			error: 'Workout tag is invalid',

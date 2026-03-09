@@ -1,5 +1,5 @@
-import FinishWorkoutButton from '@/components/shared/finish-workout-button'
-import WorkoutExerciseCard from '@/components/shared/workout-exercise-card'
+import { FinishWorkoutButton } from '@/components/shared/finish-workout-button'
+import { WorkoutExerciseCard } from '@/components/shared/workout-exercise-card'
 import { getWorkoutSessionPageData } from '@/lib/db/workouts'
 import { Calendar } from 'lucide-react'
 import { notFound } from 'next/navigation'
@@ -25,7 +25,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 					<h1 className='font-semibold text-xl'>{session.workoutName}</h1>
 					<span className='flex items-center gap-1 text-xs text-muted-foreground'>
 						<Calendar className='h-3 w-3' />
-						{(session.startedAt ?? new Date()).toLocaleDateString()}
+						{session.startedAt.toLocaleDateString()}
 					</span>
 				</div>
 				<FinishWorkoutButton sessionId={session.sessionId} />

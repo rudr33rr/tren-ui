@@ -7,7 +7,7 @@ import { Button } from '../ui/button'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 import { Save } from 'lucide-react'
 
-export default function FinishWorkoutButton({ sessionId }: { sessionId: number }) {
+export function FinishWorkoutButton({ sessionId }: { sessionId: number }) {
 	const router = useRouter()
 	const exercises = useWorkoutSessionStore(state => state.exercises)
 	const [loading, setLoading] = useState(false)

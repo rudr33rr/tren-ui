@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import type { ExerciseOption } from '@/lib/db/exercises'
+import type { ExerciseOption } from '@/types/view'
 
 export type ExerciseComboboxProps = {
 	options: ExerciseOption[]

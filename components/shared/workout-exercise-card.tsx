@@ -16,13 +16,7 @@ type SetData = {
 	intensity: number
 }
 
-export default function WorkoutExerciseCard({
-	exerciseId,
-	exerciseName,
-}: {
-	exerciseId: number
-	exerciseName: string
-}) {
+export function WorkoutExerciseCard({ exerciseId, exerciseName }: { exerciseId: number; exerciseName: string }) {
 	const upsertExercise = useWorkoutSessionStore(s => s.upsertExercise)
 
 	const [sets, setSets] = useState<SetData[]>([
@@ -36,8 +30,7 @@ export default function WorkoutExerciseCard({
 	const completedSets = sets.filter(set => set.reps > 0).length
 
 	const updateSet = (index: number, field: keyof SetData, value: number) => {
-		const newSets = [...sets]
-		newSets[index][field] = value
+		const newSets = sets.map((s, i) => (i === index ? { ...s, [field]: value } : s))
 		setSets(newSets)
 
 		upsertExercise({
@@ -126,27 +119,22 @@ export default function WorkoutExerciseCard({
 			</Button>
 
 			<div className='flex items-center mt-2 gap-4'>
-                <Label htmlFor={`notes-toggle-${exerciseId}`} className='text-muted-foreground cursor-pointer'>
-                    Add exercise notes
-                </Label>
-                <Switch
-                    id={`notes-toggle-${exerciseId}`}
-                    checked={showNotes}
-                    onCheckedChange={setShowNotes}
-                    size='sm'
-                />
-            </div>
+				<Label htmlFor={`notes-toggle-${exerciseId}`} className='text-muted-foreground cursor-pointer'>
+					Add exercise notes
+				</Label>
+				<Switch id={`notes-toggle-${exerciseId}`} checked={showNotes} onCheckedChange={setShowNotes} size='sm' />
+			</div>
 
-            {showNotes && (
-                <div className='mt-4'>
-                    <Textarea
-                        placeholder='Type your notes here...'
-                        className='mt-1'
-                        value={notes}
-                        onChange={e => updateNotes(e.target.value)}
-                    />
-                </div>
-            )}
+			{showNotes && (
+				<div className='mt-4'>
+					<Textarea
+						placeholder='Type your notes here...'
+						className='mt-1'
+						value={notes}
+						onChange={e => updateNotes(e.target.value)}
+					/>
+				</div>
+			)}
 		</div>
 	)
 }

@@ -1,11 +1,15 @@
 import { relations } from 'drizzle-orm'
-import { integer, pgEnum, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core'
+import { integer, pgEnum, pgTable, real, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
 // ── Enums ──────────────────────────────────────────────────────
 
 export const difficultyLevelEnum = pgEnum('difficulty_level', ['easy', 'intermediate', 'hard'])
 export const sessionStatusEnum = pgEnum('session_status', ['started', 'completed', 'cancelled'])
 export const workoutTagEnum = pgEnum('workout_tag', ['push', 'pull', 'legs', 'cardio'])
+
+export const difficultyLevelValues = difficultyLevelEnum.enumValues
+export const sessionStatusValues = sessionStatusEnum.enumValues
+export const workoutTagValues = workoutTagEnum.enumValues
 
 // ── Tables ─────────────────────────────────────────────────────
 
@@ -16,9 +20,9 @@ export const muscleGroups = pgTable('muscle_groups', {
 
 export const exercises = pgTable('exercises', {
 	id: serial('id').primaryKey(),
-	exerciseName: varchar('exercise_name', { length: 255 }),
+	exerciseName: varchar('exercise_name', { length: 255 }).notNull(),
 	difficulty: difficultyLevelEnum('difficulty').notNull().default('easy'),
-	primaryMuscleId: integer('primary_muscle_id').references(() => muscleGroups.id),
+	primaryMuscleId: integer('primary_muscle_id').references(() => muscleGroups.id, { onDelete: 'set null' }),
 	secondaryMuscleIds: integer('secondary_muscle_ids').array(),
 	instructions: text('instructions').array(),
 })
@@ -34,18 +38,18 @@ export const workoutExercises = pgTable('workout_exercises', {
 	id: serial('id').primaryKey(),
 	workoutId: integer('workout_id')
 		.notNull()
-		.references(() => workouts.id),
+		.references(() => workouts.id, { onDelete: 'cascade' }),
 	exerciseId: integer('exercise_id')
 		.notNull()
-		.references(() => exercises.id),
+		.references(() => exercises.id, { onDelete: 'cascade' }),
 })
 
 export const workoutSession = pgTable('workout_session', {
 	id: serial('id').primaryKey(),
 	workoutId: integer('workout_id')
 		.notNull()
-		.references(() => workouts.id),
-	startedAt: timestamp('started_at'),
+		.references(() => workouts.id, { onDelete: 'cascade' }),
+	startedAt: timestamp('started_at').notNull().defaultNow(),
 	finishedAt: timestamp('finished_at'),
 	status: sessionStatusEnum('status').notNull().default('started'),
 	duration: integer('duration'),
@@ -55,13 +59,13 @@ export const exerciseSets = pgTable('exercise_sets', {
 	id: serial('id').primaryKey(),
 	sessionId: integer('session_id')
 		.notNull()
-		.references(() => workoutSession.id),
+		.references(() => workoutSession.id, { onDelete: 'cascade' }),
 	exerciseId: integer('exercise_id')
 		.notNull()
-		.references(() => exercises.id),
+		.references(() => exercises.id, { onDelete: 'cascade' }),
 	setNumber: integer('set_number').notNull(),
 	repetitions: integer('repetitions').notNull(),
-	weight: integer('weight'),
+	weight: real('weight'),
 	intensity: integer('intensity'),
 	notes: text('notes'),
 })

@@ -1,17 +1,13 @@
-import { and, asc, desc, eq, ilike, inArray, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, ilike, inArray } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { exerciseSets, exercises, muscleGroups, workouts, workoutSession } from '@/lib/db/schema'
-import type { ExerciseCardData, ExercisePageData, ExerciseSessionHistoryItem } from '@/types/view'
-
-type MuscleOption = {
-	id: number
-	name: string
-}
-
-export type ExerciseOption = {
-	id: number
-	name: string
-}
+import type {
+	ExerciseCardData,
+	ExerciseOption,
+	ExercisePageData,
+	ExerciseSessionHistoryItem,
+	MuscleOption,
+} from '@/types/view'
 
 type CreateExerciseInput = {
 	name: string
@@ -19,6 +15,17 @@ type CreateExerciseInput = {
 	primaryMuscleId: number | null
 	secondaryMuscleIds: number[]
 	instructions: string[]
+}
+
+async function resolveSecondaryMuscles(ids: number[]): Promise<Map<number, MuscleOption>> {
+	if (ids.length === 0) return new Map()
+
+	const rows = await db
+		.select({ id: muscleGroups.id, name: muscleGroups.name })
+		.from(muscleGroups)
+		.where(inArray(muscleGroups.id, ids))
+
+	return new Map(rows.map(row => [row.id, row]))
 }
 
 export async function getMuscleGroups(): Promise<MuscleOption[]> {
@@ -32,18 +39,13 @@ export async function getMuscleGroups(): Promise<MuscleOption[]> {
 }
 
 export async function listExerciseOptions(): Promise<ExerciseOption[]> {
-	const rows = await db
+	return db
 		.select({
 			id: exercises.id,
 			name: exercises.exerciseName,
 		})
 		.from(exercises)
 		.orderBy(asc(exercises.exerciseName), asc(exercises.id))
-
-	return rows.map(row => ({
-		id: row.id,
-		name: row.name ?? `Exercise ${row.id}`,
-	}))
 }
 
 export async function listExercises(filters: { search?: string; muscle?: string }): Promise<ExerciseCardData[]> {
@@ -72,23 +74,11 @@ export async function listExercises(filters: { search?: string; muscle?: string 
 		})
 		.from(exercises)
 		.leftJoin(muscleGroups, eq(exercises.primaryMuscleId, muscleGroups.id))
-		.where(conditions.length ? and(...conditions) : sql`true`)
+		.where(conditions.length ? and(...conditions) : undefined)
 		.orderBy(asc(exercises.exerciseName), asc(exercises.id))
 
 	const secondaryIds = Array.from(new Set(rows.flatMap(row => row.secondaryMuscleIds ?? [])))
-
-	const secondaryRows =
-		secondaryIds.length > 0
-			? await db
-					.select({
-						id: muscleGroups.id,
-						name: muscleGroups.name,
-					})
-					.from(muscleGroups)
-					.where(inArray(muscleGroups.id, secondaryIds))
-			: []
-
-	const secondaryMap = new Map(secondaryRows.map(row => [row.id, row]))
+	const secondaryMap = await resolveSecondaryMuscles(secondaryIds)
 
 	return rows.map(row => ({
 		id: row.id,
@@ -128,18 +118,7 @@ export async function getExercisePageData(exerciseId: number): Promise<ExerciseP
 	}
 
 	const secondaryIds = exercise.secondaryMuscleIds ?? []
-	const secondaryRows =
-		secondaryIds.length > 0
-			? await db
-					.select({
-						id: muscleGroups.id,
-						name: muscleGroups.name,
-					})
-					.from(muscleGroups)
-					.where(inArray(muscleGroups.id, secondaryIds))
-			: []
-
-	const secondaryMap = new Map(secondaryRows.map(row => [row.id, row]))
+	const secondaryMap = await resolveSecondaryMuscles(secondaryIds)
 
 	const sessionRows = await db
 		.select({

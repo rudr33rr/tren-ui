@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createExercise, getMuscleGroups } from '@/lib/db/exercises'
+import { difficultyLevelValues } from '@/lib/db/schema'
 import type { DifficultyLevel } from '@/types/view'
 
 type CreateExercisePayload = {
@@ -17,7 +18,7 @@ export type CreateExerciseActionResult = {
 	error: string | null
 }
 
-const difficultyLevels: DifficultyLevel[] = ['easy', 'intermediate', 'hard']
+const validDifficultyLevels: readonly DifficultyLevel[] = difficultyLevelValues
 
 export async function createExerciseAction(payload: CreateExercisePayload): Promise<CreateExerciseActionResult> {
 	const normalizedName = payload.name.trim()
@@ -29,7 +30,7 @@ export async function createExerciseAction(payload: CreateExercisePayload): Prom
 		}
 	}
 
-	if (!difficultyLevels.includes(payload.difficulty)) {
+	if (!validDifficultyLevels.includes(payload.difficulty)) {
 		return {
 			ok: false,
 			error: 'Difficulty level is invalid',

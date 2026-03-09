@@ -1,16 +1,9 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 import { StartWorkoutButton } from './shared/start-workout-button'
+import type { WorkoutCardData } from '@/types/view'
 
-export type WorkoutCardProps = {
-	id: number
-	name: string
-	description: string | null
-	tag: string | null
-	exerciseCount: number
-}
-
-export const WorkoutCard = ({ id, name, description, tag, exerciseCount }: WorkoutCardProps) => {
+export function WorkoutCard({ id, name, description, tag, exerciseCount }: WorkoutCardData) {
 	const colorMap = {
 		push: 'bg-green-100 text-green-800 border-green-300',
 		pull: 'bg-yellow-100 text-yellow-800 border-yellow-300',
@@ -18,8 +11,7 @@ export const WorkoutCard = ({ id, name, description, tag, exerciseCount }: Worko
 		cardio: 'bg-sky-100 text-sky-800 border-sky-300',
 	} as const
 
-	const tagKey = (tag ?? '').toLowerCase() as keyof typeof colorMap
-	const badgeClass = tag && colorMap[tagKey] ? colorMap[tagKey] : ''
+	const badgeClass = tag ? colorMap[tag] : ''
 
 	return (
 		<Card>

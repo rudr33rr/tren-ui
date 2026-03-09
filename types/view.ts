@@ -1,20 +1,29 @@
-import type { exercises, muscleGroups, workouts } from '@/lib/db/schema'
+import type { difficultyLevelEnum, exercises, muscleGroups, workoutTagEnum, workouts } from '@/lib/db/schema'
 
 // Drizzle inferred row types
 type ExerciseRow = typeof exercises.$inferSelect
 type MuscleRow = typeof muscleGroups.$inferSelect
 type WorkoutRow = typeof workouts.$inferSelect
 
-export type DifficultyLevel = ExerciseRow['difficulty']
-export type WorkoutTag = NonNullable<WorkoutRow['tag']>
-export type SessionStatus = 'completed' | 'started' | 'cancelled'
+export type DifficultyLevel = (typeof difficultyLevelEnum.enumValues)[number]
+export type WorkoutTag = (typeof workoutTagEnum.enumValues)[number]
+
+export type MuscleOption = {
+	id: MuscleRow['id']
+	name: MuscleRow['name']
+}
+
+export type ExerciseOption = {
+	id: ExerciseRow['id']
+	name: ExerciseRow['exerciseName']
+}
 
 export type ExerciseCardData = {
 	id: ExerciseRow['id']
 	name: ExerciseRow['exerciseName']
 	difficulty: ExerciseRow['difficulty']
-	primaryMuscle: { id: MuscleRow['id']; name: MuscleRow['name'] } | null
-	secondaryMuscles: { id: MuscleRow['id']; name: MuscleRow['name'] }[]
+	primaryMuscle: MuscleOption | null
+	secondaryMuscles: MuscleOption[]
 }
 
 export type ExerciseSessionSetData = {

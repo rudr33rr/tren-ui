@@ -23,14 +23,12 @@ export default async function ExercisePage({ params }: { params: Promise<{ id: s
 		hard: 'bg-red-100 text-red-800 border-red-300',
 	} as const
 
-	const exerciseName = exercise.name ?? `Exercise ${exercise.id}`
-
 	return (
 		<div className='w-full space-y-6 p-4'>
 			<div className='space-y-3'>
 				<div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
 					<div>
-						<h1 className='text-2xl font-medium'>{exerciseName}</h1>
+						<h1 className='text-2xl font-medium'>{exercise.name}</h1>
 						<p className='text-sm opacity-70'>
 							{exercise.sessions.length} completed session{exercise.sessions.length === 1 ? '' : 's'}
 						</p>

@@ -33,7 +33,7 @@ export type WorkoutSessionPageData = {
 	sessionId: number
 	workoutId: number
 	workoutName: string
-	startedAt: Date | null
+	startedAt: Date
 	exercises: Array<{
 		id: number
 		name: string
@@ -64,7 +64,7 @@ export async function getWorkoutById(workoutId: number): Promise<WorkoutSummary 
 }
 
 export async function listWorkouts(): Promise<WorkoutCardData[]> {
-	const rows = await db
+	return db
 		.select({
 			id: workouts.id,
 			name: workouts.name,
@@ -76,14 +76,6 @@ export async function listWorkouts(): Promise<WorkoutCardData[]> {
 		.leftJoin(workoutExercises, eq(workouts.id, workoutExercises.workoutId))
 		.groupBy(workouts.id, workouts.name, workouts.description, workouts.tag)
 		.orderBy(asc(workouts.name), asc(workouts.id))
-
-	return rows.map(row => ({
-		id: row.id,
-		name: row.name,
-		description: row.description,
-		tag: row.tag,
-		exerciseCount: row.exerciseCount,
-	}))
 }
 
 export async function createWorkout(input: CreateWorkoutInput): Promise<number> {
@@ -113,7 +105,6 @@ export async function startWorkoutSession(workoutId: number): Promise<number> {
 		.insert(workoutSession)
 		.values({
 			workoutId,
-			startedAt: new Date(),
 			status: 'started',
 		})
 		.returning({ id: workoutSession.id })
@@ -155,7 +146,7 @@ export async function getWorkoutSessionPageData(sessionId: number): Promise<Work
 		startedAt: session.startedAt,
 		exercises: exerciseRows.map(row => ({
 			id: row.id,
-			name: row.name ?? `Exercise ${row.id}`,
+			name: row.name,
 			difficulty: row.difficulty,
 		})),
 	}
@@ -205,20 +196,22 @@ export async function finishWorkoutSession(input: FinishWorkoutSessionInput): Pr
 		? Math.max(1, Math.round((input.finishedAt.getTime() - session.startedAt.getTime()) / 60000))
 		: null
 
-	await db.delete(exerciseSets).where(eq(exerciseSets.sessionId, input.sessionId))
+	await db.transaction(async tx => {
+		await tx.delete(exerciseSets).where(eq(exerciseSets.sessionId, input.sessionId))
 
-	if (exerciseSetRows.length > 0) {
-		await db.insert(exerciseSets).values(exerciseSetRows)
-	}
+		if (exerciseSetRows.length > 0) {
+			await tx.insert(exerciseSets).values(exerciseSetRows)
+		}
 
-	await db
-		.update(workoutSession)
-		.set({
-			finishedAt: input.finishedAt,
-			status: 'completed',
-			duration,
-		})
-		.where(eq(workoutSession.id, input.sessionId))
+		await tx
+			.update(workoutSession)
+			.set({
+				finishedAt: input.finishedAt,
+				status: 'completed',
+				duration,
+			})
+			.where(eq(workoutSession.id, input.sessionId))
+	})
 
 	return { ok: true }
 }
@@ -237,15 +230,5 @@ export async function getLastCompletedWorkout(): Promise<LastCompletedWorkoutDat
 		.where(eq(workoutSession.status, 'completed'))
 		.orderBy(desc(workoutSession.finishedAt), desc(workoutSession.id))
 
-	if (!session) {
-		return null
-	}
-
-	return {
-		sessionId: session.sessionId,
-		workoutName: session.workoutName,
-		finishedAt: session.finishedAt,
-		duration: session.duration,
-		tag: session.tag,
-	}
+	return session ?? null
 }

@@ -3,7 +3,7 @@ import { ExerciseSearch } from '@/components/exercise-search'
 import { AddExerciseModal } from '@/components/add-exercise-modal'
 import { getMuscleGroups } from '@/lib/db/exercises'
 
-export default async function ExcersisesPage({
+export default async function ExercisesPage({
 	searchParams,
 }: {
 	searchParams: Promise<{
@@ -20,7 +20,7 @@ export default async function ExcersisesPage({
 				<h1 className='text-2xl font-medium'>Exercise Library</h1>
 				<AddExerciseModal muscles={muscleData} />
 			</div>
-			<ExerciseSearch muscles={muscleData} musclesError={false} />
+			<ExerciseSearch muscles={muscleData} />
 			<ExercisesList search={search} muscle={muscle} />
 		</div>
 	)
