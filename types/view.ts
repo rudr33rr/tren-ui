@@ -4,6 +4,8 @@ type ExerciseRow = Tables<'exercises'>
 type MuscleRow = Tables<'muscle_groups'>
 type WorkoutRow = Tables<'workouts'>
 
+export type ExerciseType = NonNullable<Enums<'exercise_type'>>
+
 export type MuscleGroup = {
 	id: MuscleRow['id']
 	name: MuscleRow['name']
@@ -15,7 +17,7 @@ export type ExerciseCardData = {
 	difficulty: Enums<'difficulty_level'>
 	primaryMuscle: MuscleGroup | null
 	secondaryMuscles: MuscleGroup[]
-	type: Enums<'exercise_type'> | null
+	type: ExerciseType | null
 }
 
 export type ExercisePageData = ExerciseCardData & {

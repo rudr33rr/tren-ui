@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ExerciseCard } from '@/components/exercise-card'
 import { ExerciseSearch } from '@/components/exercise-search'
+import { isExerciseType } from '@/lib/exerciseTypeIcons'
 import { createClient } from '@/lib/supabase/server'
 import type { ExerciseCardData } from '@/types/view'
 
@@ -10,10 +11,11 @@ export default async function ExcersisesPage({
 	searchParams: Promise<{
 		search?: string
 		muscle?: string
+		type?: string
 	}>
 }) {
 	const supabase = await createClient()
-	const { search, muscle } = await searchParams
+	const { search, muscle, type } = await searchParams
 
 	const { data: muscleData, error: musclesFetchError } = await supabase
 		.from('muscle_groups')
@@ -37,6 +39,10 @@ export default async function ExcersisesPage({
 
 	if (muscle) {
 		exercisesQuery = exercisesQuery.eq('primary_muscle_id', Number(muscle))
+	}
+
+	if (type && isExerciseType(type)) {
+		exercisesQuery = exercisesQuery.eq('type', type)
 	}
 
 	const { data: exercisesData, error: exercisesError } = await exercisesQuery.order('id', {
@@ -83,7 +89,7 @@ export default async function ExcersisesPage({
 				<div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-4'>
 					{exercises.map(ex => (
 						<Link key={ex.id} href={`/dashboard/exercises/${ex.id}`} className='block'>
-							<ExerciseCard exercise={ex}/>
+							<ExerciseCard exercise={ex} />
 						</Link>
 					))}
 				</div>
