@@ -12,9 +12,10 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { useSearchParams, useRouter } from 'next/navigation'
+import type { MuscleGroup } from '@/types/view'
 
 type Props = {
-	muscles: { id: number; name: string }[]
+	muscles: MuscleGroup[]
 	musclesError: boolean
 }
 
@@ -53,17 +54,14 @@ export function ExerciseSearch({ muscles, musclesError }: Props) {
 					} else {
 						setParam('muscle', value)
 					}
-				}}
-			>
+				}}>
 				<SelectTrigger className='w-36'>
 					<SelectValue placeholder='muscle' />
 				</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
 						<SelectLabel>Primary muscle</SelectLabel>
-						<SelectItem value='__all__'>
-							All muscles
-						</SelectItem>
+						<SelectItem value='__all__'>All muscles</SelectItem>
 						{muscles.map(mscl => (
 							<SelectItem key={mscl.id} value={String(mscl.id)}>
 								{mscl.name}

@@ -1,14 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
+import type { ExerciseCardData } from '@/types/view'
 
-type ExerciseCardProps = {
-	name: string | null
-	difficulty: 'easy' | 'intermediate' | 'hard'
-	primaryMuscle: string | null
-	secondaryMuscles?: { id: number; name: string }[]
-}
-
-export const ExerciseCard = ({ name, difficulty, primaryMuscle, secondaryMuscles }: ExerciseCardProps) => {
+export const ExerciseCard = ({ exercise }: { exercise: ExerciseCardData }) => {
 	const colorMap = {
 		easy: 'bg-green-100 text-green-800 border-green-300',
 		intermediate: 'bg-yellow-100 text-yellow-800 border-yellow-300',
@@ -19,18 +13,18 @@ export const ExerciseCard = ({ name, difficulty, primaryMuscle, secondaryMuscles
 		<Card>
 			<CardHeader>
 				<div className='flex flex-row w-full justify-between items-center'>
-					<CardTitle className='mb-0 text-lg'>{name}</CardTitle>
-					<Badge className={colorMap[difficulty]}>{difficulty}</Badge>
+					<CardTitle className='mb-0 text-lg'>{exercise.name}</CardTitle>
+					<Badge className={colorMap[exercise.difficulty]}>{exercise.difficulty}</Badge>
 				</div>
-				<span className='text-md opacity-70'>Primary: {primaryMuscle}</span>
+				<span className='text-md opacity-70'>Primary: {exercise.primaryMuscle?.name ?? 'None'}</span>
 			</CardHeader>
 			<CardContent>
-				{secondaryMuscles && secondaryMuscles.length > 0 && (
+				{exercise.secondaryMuscles.length > 0 && (
 					<>
 						<span className='text-sm opacity-70'>Secondary muscles:</span>
 						<div className='flex gap-2 mt-1 flex-wrap'>
-							{secondaryMuscles.map((m, index) => (
-								<Badge key={index} variant='outline'>
+							{exercise.secondaryMuscles.map(m => (
+								<Badge key={m.id} variant='outline'>
 									{m.name}
 								</Badge>
 							))}

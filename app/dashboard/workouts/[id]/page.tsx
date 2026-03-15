@@ -50,8 +50,11 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 			{workoutExercises?.map(item => (
 				<WorkoutExerciseCard
 					key={item.exercise.id}
-					exerciseId={item.exercise.id}
-					exerciseName={item.exercise.exercise_name || 'Unnamed Exercise'}
+					exercise={{
+						id: item.exercise.id,
+						name: item.exercise.exercise_name,
+						difficulty: item.exercise.difficulty,
+					}}
 				/>
 			))}
 		</div>

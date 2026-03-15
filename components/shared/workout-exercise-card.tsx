@@ -9,6 +9,7 @@ import { Slider } from '../ui/slider'
 import { Switch } from '../ui/switch'
 import { Trash, Plus } from 'lucide-react'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
+import type { WorkoutExercise } from '@/types/view'
 
 type SetData = {
 	reps: number
@@ -16,13 +17,7 @@ type SetData = {
 	intensity: number
 }
 
-export default function WorkoutExerciseCard({
-	exerciseId,
-	exerciseName,
-}: {
-	exerciseId: number
-	exerciseName: string
-}) {
+export default function WorkoutExerciseCard({ exercise }: { exercise: WorkoutExercise }) {
 	const upsertExercise = useWorkoutSessionStore(s => s.upsertExercise)
 
 	const [sets, setSets] = useState<SetData[]>([
@@ -41,7 +36,7 @@ export default function WorkoutExerciseCard({
 		setSets(newSets)
 
 		upsertExercise({
-			exerciseId,
+			exerciseId: exercise.id,
 			sets: newSets,
 			notes: notes || undefined,
 		})
@@ -52,7 +47,7 @@ export default function WorkoutExerciseCard({
 		setSets(newSets)
 
 		upsertExercise({
-			exerciseId,
+			exerciseId: exercise.id,
 			sets: newSets,
 			notes: notes || undefined,
 		})
@@ -65,7 +60,7 @@ export default function WorkoutExerciseCard({
 		setSets(newSets)
 
 		upsertExercise({
-			exerciseId,
+			exerciseId: exercise.id,
 			sets: newSets,
 			notes: notes || undefined,
 		})
@@ -74,7 +69,7 @@ export default function WorkoutExerciseCard({
 	const updateNotes = (value: string) => {
 		setNotes(value)
 		upsertExercise({
-			exerciseId,
+			exerciseId: exercise.id,
 			sets,
 			notes: value || undefined,
 		})
@@ -83,7 +78,7 @@ export default function WorkoutExerciseCard({
 	return (
 		<div className='space-y-2'>
 			<div className='flex items-center gap-2'>
-				<h3 className='text-xl font-medium'>{exerciseName}</h3>
+				<h3 className='text-xl font-medium'>{exercise.name ?? 'Unnamed Exercise'}</h3>
 				<p className='text-xs text-muted-foreground'>
 					{completedSets} / {sets.length} sets completed
 				</p>
@@ -126,27 +121,22 @@ export default function WorkoutExerciseCard({
 			</Button>
 
 			<div className='flex items-center mt-2 gap-4'>
-                <Label htmlFor={`notes-toggle-${exerciseId}`} className='text-muted-foreground cursor-pointer'>
-                    Add exercise notes
-                </Label>
-                <Switch
-                    id={`notes-toggle-${exerciseId}`}
-                    checked={showNotes}
-                    onCheckedChange={setShowNotes}
-                    size='sm'
-                />
-            </div>
+				<Label htmlFor={`notes-toggle-${exercise.id}`} className='text-muted-foreground cursor-pointer'>
+					Add exercise notes
+				</Label>
+				<Switch id={`notes-toggle-${exercise.id}`} checked={showNotes} onCheckedChange={setShowNotes} size='sm' />
+			</div>
 
-            {showNotes && (
-                <div className='mt-4'>
-                    <Textarea
-                        placeholder='Type your notes here...'
-                        className='mt-1'
-                        value={notes}
-                        onChange={e => updateNotes(e.target.value)}
-                    />
-                </div>
-            )}
+			{showNotes && (
+				<div className='mt-4'>
+					<Textarea
+						placeholder='Type your notes here...'
+						className='mt-1'
+						value={notes}
+						onChange={e => updateNotes(e.target.value)}
+					/>
+				</div>
+			)}
 		</div>
 	)
 }

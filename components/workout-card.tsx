@@ -1,43 +1,35 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 import { StartWorkoutButton } from './shared/start-workout-button'
+import type { WorkoutCardData } from '@/types/view'
 
-export type WorkoutCardProps = {
-	id: number
-	name: string
-	description: string | null
-	tag: string | null
-	duration: number | null
-	exerciseCount: number
-}
-
-export const WorkoutCard = ({ id, name, description, tag, duration, exerciseCount }: WorkoutCardProps) => {
+export const WorkoutCard = ({ workout }: { workout: WorkoutCardData }) => {
 	const colorMap = {
 		push: 'bg-green-100 text-green-800 border-green-300',
 		pull: 'bg-yellow-100 text-yellow-800 border-yellow-300',
 		legs: 'bg-red-100 text-red-800 border-red-300',
 	} as const
 
-	const tagKey = (tag ?? '').toLowerCase() as keyof typeof colorMap
-	const badgeClass = tag && colorMap[tagKey] ? colorMap[tagKey] : ''
+	const tagKey = (workout.tag ?? '').toLowerCase() as keyof typeof colorMap
+	const badgeClass = workout.tag && colorMap[tagKey] ? colorMap[tagKey] : ''
 
 	return (
 		<Card>
 			<CardHeader>
 				<div className='flex flex-row w-full justify-between items-center'>
-					<CardTitle>{name}</CardTitle>
-					{tag ? <Badge className={`border ${badgeClass}`}>{tag}</Badge> : null}
+					<CardTitle>{workout.name}</CardTitle>
+					{workout.tag ? <Badge className={`border ${badgeClass}`}>{workout.tag}</Badge> : null}
 				</div>
-				{description ? <span className='text-sm opacity-80'>{description}</span> : null}
+				{workout.description ? <span className='text-sm opacity-80'>{workout.description}</span> : null}
 			</CardHeader>
 			<CardContent>
 				<div className='text-sm opacity-70 flex gap-3'>
-					{typeof duration === 'number' ? <span>Duration: {duration} min</span> : null}
-					{typeof exerciseCount === 'number' ? <span>{exerciseCount} exercises</span> : null}
+					{typeof workout.duration === 'number' ? <span>Duration: {workout.duration} min</span> : null}
+					{typeof workout.exerciseCount === 'number' ? <span>{workout.exerciseCount} exercises</span> : null}
 				</div>
 			</CardContent>
 			<CardFooter>
-				<StartWorkoutButton workoutId={id} />
+				<StartWorkoutButton workoutId={workout.id} />
 			</CardFooter>
 		</Card>
 	)

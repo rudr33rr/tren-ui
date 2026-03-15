@@ -81,12 +81,7 @@ export default async function ExcersisesPage({
 				<div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-4'>
 					{exercises.map(ex => (
 						<Link key={ex.id} href={`/dashboard/exercises/${ex.id}`} className='block'>
-							<ExerciseCard
-								name={ex.name}
-								difficulty={ex.difficulty}
-								primaryMuscle={ex.primaryMuscle?.name ?? null}
-								secondaryMuscles={ex.secondaryMuscles}
-							/>
+							<ExerciseCard exercise={ex} />
 						</Link>
 					))}
 				</div>

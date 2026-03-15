@@ -32,7 +32,6 @@ export const WorkoutsList = async () => {
 			id: w.id,
 			name: w.name,
 			description: w.description,
-			tag: w.tag,
 			duration: w.duration,
 			exerciseCount: exercisesRel.length,
 		}
@@ -41,15 +40,7 @@ export const WorkoutsList = async () => {
 	return (
 		<div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-4'>
 			{workouts.map(w => (
-				<WorkoutCard
-					key={w.id}
-					id={w.id}
-					name={w.name}
-					description={w.description}
-					tag={w.tag}
-					duration={w.duration}
-					exerciseCount={w.exerciseCount}
-				/>
+				<WorkoutCard key={w.id} workout={w} />
 			))}
 		</div>
 	)
