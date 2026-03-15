@@ -26,7 +26,8 @@ export default async function ExcersisesPage({
       exercise_name,
       difficulty,
       primaryMuscle:muscle_groups!exercises_primary_muscle_id_fkey ( id, name ),
-      secondary_muscle_ids
+      secondary_muscle_ids,
+	  type
     `,
 	)
 
@@ -67,6 +68,7 @@ export default async function ExcersisesPage({
 			difficulty: item.difficulty,
 			primaryMuscle: primary ? { id: primary.id, name: primary.name } : null,
 			secondaryMuscles: secondaryMusclesObjects,
+			type: item.type,
 		}
 	})
 

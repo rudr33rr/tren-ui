@@ -15,6 +15,7 @@ export type ExerciseCardData = {
 	difficulty: Enums<'difficulty_level'>
 	primaryMuscle: MuscleGroup | null
 	secondaryMuscles: MuscleGroup[]
+	type: Enums<'exercise_type'> | null
 }
 
 export type ExercisePageData = ExerciseCardData & {
