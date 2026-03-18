@@ -24,7 +24,7 @@ export function StartWorkoutButton({ workoutId }: { workoutId: number }) {
 
 			if (error) throw error
 
-			router.push(`/dashboard/workouts/${data.id}`)
+			router.push(`/workout-session/${data.id}`)
 		} catch (err) {
 			console.error('Failed to create session:', err)
 		} finally {

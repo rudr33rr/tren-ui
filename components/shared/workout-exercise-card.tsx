@@ -38,9 +38,9 @@ export default function WorkoutExerciseCard({
 	const upsertExercise = useWorkoutSessionStore(s => s.upsertExercise)
 
 	const [sets, setSets] = useState<SetData[]>([
-		{ reps: 0, weight: 0, intensity: 5, completed: false },
-		{ reps: 0, weight: 0, intensity: 5, completed: false },
-		{ reps: 0, weight: 0, intensity: 5, completed: false },
+		{ reps: 0, weight: 0, intensity: 0, completed: false },
+		{ reps: 0, weight: 0, intensity: 0, completed: false },
+		{ reps: 0, weight: 0, intensity: 0, completed: false },
 	])
 
 	const completedSets = sets.filter(set => set.completed).length
@@ -90,7 +90,7 @@ export default function WorkoutExerciseCard({
 	}
 
 	const addSet = () => {
-		const newSets = [...sets, { reps: 0, weight: 0, intensity: 5, completed: false }]
+		const newSets = [...sets, { reps: 0, weight: 0, intensity: 0, completed: false }]
 		setSets(newSets)
 		syncExercise(newSets)
 	}
@@ -141,6 +141,8 @@ export default function WorkoutExerciseCard({
 											<InputGroup className='max-w-40'>
 												<InputGroupInput
 													type='number'
+													min={0}
+													disabled={set.completed}
 													value={set.reps || ''}
 													onChange={e => updateSet(index, 'reps', Number(e.target.value))}
 												/>
@@ -149,6 +151,8 @@ export default function WorkoutExerciseCard({
 											<InputGroup className='max-w-40'>
 												<InputGroupInput
 													type='number'
+													min={0}
+													disabled={set.completed}
 													value={set.weight || ''}
 													onChange={e => updateSet(index, 'weight', Number(e.target.value))}
 												/>
@@ -163,6 +167,7 @@ export default function WorkoutExerciseCard({
 											<Slider
 												value={[set.intensity]}
 												onValueChange={([value]) => updateSet(index, 'intensity', value)}
+												disabled={set.completed}
 												max={10}
 												min={1}
 												step={1}

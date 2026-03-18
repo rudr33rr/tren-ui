@@ -1,9 +1,11 @@
 import FinishWorkoutButton from '@/components/shared/finish-workout-button'
 import WorkoutExercisesList from '@/components/shared/workout-exercises-list'
+import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
-import { Calendar } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import { Progress } from '@/components/ui/progress'
 
-export default async function WorkoutPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function WorkoutSessionPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = await params
 	const supabase = createClient()
 
@@ -36,23 +38,21 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 	const exercises =
 		workoutExercises?.map(item => ({
 			id: item.exercise.id,
-			name: item.exercise.exercise_name
+			name: item.exercise.exercise_name,
 		})) ?? []
 
 	return (
-		<div className='w-full space-y-6 p-4'>
-			<div className='flex items-center justify-between'>
-				<div className='flex gap-4'>
-					<h1 className='font-semibold text-xl'>Workout {id}</h1>
-					<span className='flex items-center gap-1 text-xs text-muted-foreground'>
-						<Calendar className='h-3 w-3' />
-						{new Date().toLocaleDateString()}
-					</span>
-				</div>
+		<div>
+			<div className='sticky top-0 flex items-center justify-between px-8 py-4'>
+                <Button>
+                    <ArrowLeft />
+                </Button>
+				<h1 className='font-semibold text-xl'>Workout {id}</h1>
 				<FinishWorkoutButton sessionId={id} />
 			</div>
-
-			<WorkoutExercisesList exercises={exercises} />
+			<div className='w-full space-y-6 p-4 max-w-7xl mx-auto'>
+				<WorkoutExercisesList exercises={exercises} />
+			</div>
 		</div>
 	)
 }
