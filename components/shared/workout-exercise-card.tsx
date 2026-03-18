@@ -11,7 +11,6 @@ import {
 	EllipsisVertical,
 	GripVertical,
 	Check,
-	CircleCheck,
 	CircleCheckBig,
 } from 'lucide-react'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
@@ -118,10 +117,10 @@ export default function WorkoutExerciseCard({
 		<div className={`flex ${isDragging ? 'opacity-80 shadow-sm' : ''}`}>
 			<button
 				type='button'
-				className='cursor-grab active:cursor-grabbing p-1 touch-none opacity-30 active:opacity-100 hover:opacity-100 transition-opacity self-start'
+				className='cursor-grab active:cursor-grabbing touch-none opacity-30 active:opacity-100 hover:opacity-100 transition-opacity self-start'
 				aria-label={`Move ${exercise.name ?? 'exercise'}`}
 				{...dragHandleProps}>
-				<GripVertical className='h-6 w-6' />
+				<GripVertical className='md:h-6 md:w-6 h-4 w-4' />
 			</button>
 			<div className='w-full'>
 				<Button
@@ -154,7 +153,7 @@ export default function WorkoutExerciseCard({
 					}`}>
 					<div className='overflow-hidden'>
 						<div className={`flex gap-4 ${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-							<div className='w-px self-stretch bg-accent rounded ms-3' />
+							<div className='w-px self-stretch bg-accent rounded ms-3 hidden md:block' />
 							<div className='w-full flex flex-col gap-6 items-start pt-2'>
 								{sets.map((set, index) => (
 									<div key={index} className='flex gap-4 items-start justify-between w-full'>

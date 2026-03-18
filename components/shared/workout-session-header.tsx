@@ -8,6 +8,15 @@ import type { WorkoutExercise } from '@/types/view'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 import { Button } from '../ui/button'
 import FinishWorkoutButton from './finish-workout-button'
+import {
+	AlertDialog,
+	AlertDialogTrigger,
+	AlertDialogContent,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogFooter,
+    AlertDialogTitle,
+} from '../ui/alert-dialog'
 
 type WorkoutSessionHeaderProps = {
 	sessionId: string
@@ -44,9 +53,21 @@ export default function WorkoutSessionHeader({ sessionId, workoutLabel, exercise
 	return (
 		<div className='w-full'>
 			<div className='sticky top-0 flex items-center justify-between px-8 py-4'>
-				<Button variant='ghost' size='icon' onClick={() => router.push('/dashboard/workouts')}>
-					<ArrowLeft />
-				</Button>
+				<AlertDialog>
+					<AlertDialogTrigger asChild>
+						<Button variant='ghost' size='icon'>
+							<ArrowLeft />
+						</Button>
+					</AlertDialogTrigger>
+					<AlertDialogContent>
+                        <AlertDialogTitle>Leave workout session</AlertDialogTitle>
+						<p>Are you sure you want to leave the workout session?</p>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogAction onClick={() => router.push('/dashboard/workouts')}>Continue</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 				<h1 className='font-semibold text-xl'>
 					{workoutLabel}{' '}
 					<span className='text-muted-foreground ms-4'>
