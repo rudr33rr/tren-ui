@@ -31,9 +31,6 @@ export default function ActiveWorkoutDialog() {
 		<AlertDialog open={shouldPrompt}>
 			<AlertDialogContent size='sm'>
 				<AlertDialogHeader>
-					<AlertDialogMedia className='bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'>
-						<Dumbbell />
-					</AlertDialogMedia>
 					<AlertDialogTitle>Active workout found</AlertDialogTitle>
 					<AlertDialogDescription>
 						You have an unfinished workout. Resume it or abandon and clear it from local state.
