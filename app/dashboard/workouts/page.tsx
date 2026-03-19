@@ -1,4 +1,6 @@
-import { AddWorkoutModal } from '@/components/add-workout-modal'
+import Link from 'next/link'
+import { Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { WorkoutsList } from '@/components/workouts-list'
 
 export default async function WorkoutsPage() {
@@ -6,9 +8,13 @@ export default async function WorkoutsPage() {
 		<div className='w-full space-y-6 p-4'>
 			<div className='flex w-full justify-between'>
 				<h1 className='text-2xl font-medium'>Workouts</h1>
-				<AddWorkoutModal />
+				<Button asChild type='button' variant='secondary'>
+					<Link href='/dashboard/workouts/add-workout'>
+						<Plus />
+						<span>Add workout</span>
+					</Link>
+				</Button>
 			</div>
-			<p>Create and manage your training routines</p>
 			<WorkoutsList />
 		</div>
 	)

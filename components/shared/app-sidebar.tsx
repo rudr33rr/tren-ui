@@ -27,12 +27,7 @@ const items = [
 		title: 'Exercises',
 		url: '/dashboard/exercises',
 		icon: Dumbbell,
-	},
-	{
-		title: 'Progress',
-		url: '/dashboard/progress',
-		icon: TrendingUp,
-	},
+	}
 ]
 
 export function AppSidebar() {

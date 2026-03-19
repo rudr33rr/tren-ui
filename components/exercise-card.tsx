@@ -1,43 +1,47 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
+import { Check, Plus } from 'lucide-react'
+import { exerciseTypeConfig } from '@/lib/exerciseTypeIcons'
+import type { ExerciseCardData } from '@/types/view'
+import { Item, ItemActions, ItemContent, ItemMedia } from './ui/item'
 
-type ExerciseCardProps = {
-	name: string | null
-	difficulty: 'easy' | 'intermediate' | 'hard'
-	primaryMuscle: string | null
-	secondaryMuscles?: { id: number; name: string }[]
-}
-
-export const ExerciseCard = ({ name, difficulty, primaryMuscle, secondaryMuscles }: ExerciseCardProps) => {
-	const colorMap = {
-		easy: 'bg-green-100 text-green-800 border-green-300',
-		intermediate: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-		hard: 'bg-red-100 text-red-800 border-red-300',
-	} as const
+export const ExerciseCard = ({
+	exercise,
+	variant = 'default',
+	selected = false,
+}: {
+	exercise: ExerciseCardData
+	variant?: 'default' | 'workout'
+	selected?: boolean
+}) => {
+	const ExerciseTypeIcon = exercise.type ? exerciseTypeConfig[exercise.type].icon : null
 
 	return (
-		<Card>
-			<CardHeader>
-				<div className='flex flex-row w-full justify-between items-center'>
-					<CardTitle className='mb-0 text-lg'>{name}</CardTitle>
-					<Badge className={colorMap[difficulty]}>{difficulty}</Badge>
-				</div>
-				<span className='text-md opacity-70'>Primary: {primaryMuscle}</span>
-			</CardHeader>
-			<CardContent>
-				{secondaryMuscles && secondaryMuscles.length > 0 && (
-					<>
-						<span className='text-sm opacity-70'>Secondary muscles:</span>
-						<div className='flex gap-2 mt-1 flex-wrap'>
-							{secondaryMuscles.map((m, index) => (
-								<Badge key={index} variant='outline'>
-									{m.name}
-								</Badge>
-							))}
-						</div>
-					</>
-				)}
-			</CardContent>
-		</Card>
+		<Item
+			variant='outline'
+			className={`shadow-none group hover:border-primary transition-colors ${selected ? 'border-primary' : ''}`}>
+			{ExerciseTypeIcon && (
+				<ItemMedia>
+					<div className='p-2 rounded-full bg-accent'>
+						<ExerciseTypeIcon className='w-4 h-4' />
+					</div>
+				</ItemMedia>
+			)}
+
+			<ItemContent>
+				<CardTitle>{exercise.name}</CardTitle>
+				<span className='text-xs opacity-70'>{exercise.primaryMuscle?.name ?? 'None'}</span>
+			</ItemContent>
+			{variant === 'workout' && (
+				<ItemActions>
+					<div
+						className={`p-2 rounded-full transition-colors ${
+							selected ? 'bg-primary text-background' : 'bg-accent group-hover:bg-primary group-hover:text-background'
+						}`}>
+						{selected ? <Check className='w-3 h-3' /> : <Plus className='w-3 h-3' />}
+					</div>
+				</ItemActions>
+			)}
+		</Item>
 	)
 }

@@ -2,33 +2,19 @@
 
 import { useState } from 'react'
 import { Button } from '../ui/button'
-import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Play } from 'lucide-react'
 
 export function StartWorkoutButton({ workoutId }: { workoutId: number }) {
-	const supabase = createClient()
 	const router = useRouter()
 	const [loading, setLoading] = useState(false)
 
 	async function startWorkout() {
 		try {
 			setLoading(true)
-			const { data, error } = await supabase
-				.from('workout_session')
-				.insert({
-					workout_id: workoutId,
-					started_at: new Date().toISOString(),
-					status: 'started',
-				})
-				.select()
-				.single()
-
-			if (error) throw error
-
-			router.push(`/dashboard/workouts/${data.id}`)
+			router.push(`/workout-session/${workoutId}`)
 		} catch (err) {
-			console.error('Failed to create session:', err)
+			console.error('Failed to start workout:', err)
 		} finally {
 			setLoading(false)
 		}

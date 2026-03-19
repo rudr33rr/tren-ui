@@ -4,8 +4,11 @@ import { createClient } from '@/lib/supabase/server'
 export default async function DashboardPage() {
 	const supabase = await createClient()
 
-	const { data, error } = await supabase.auth.getClaims()
-	if (error || !data?.claims) {
+	const {
+		data: { user },
+		error,
+	} = await supabase.auth.getUser()
+	if (error || !user) {
 		redirect('/auth/login')
 	}
 
@@ -14,18 +17,17 @@ export default async function DashboardPage() {
 		.select(
 			`
     id,
-    status,
-    finished_at,
+			created_at,
     workout_id,
     workout:workouts (
       id,
       name,
-      description,
-      tag
+			description
     )
   `,
 		)
-		.order('finished_at', { ascending: false })
+		.eq('user_id', user.id)
+		.order('created_at', { ascending: false })
 		.limit(1)
 		.single()
 
@@ -34,7 +36,7 @@ export default async function DashboardPage() {
 			<h1 className='text-2xl font-medium'>Dashboard</h1>
 
 			<section className='rounded-lg border p-4'>
-				<h2 className='text-lg font-medium mb-2'>Last completed workout</h2>
+				<h2 className='text-lg font-medium mb-2'>Last workout session</h2>
 
 				{!lastSession ? (
 					<p className='text-sm opacity-60'>No completed workouts yet.</p>
@@ -45,10 +47,7 @@ export default async function DashboardPage() {
 						{lastSession.workout.description && <p className='text-sm opacity-70'>{lastSession.workout.description}</p>}
 
 						<div className='text-xs opacity-60 flex gap-3'>
-							{lastSession.workout.tag && <span>Tag: {lastSession.workout.tag}</span>}
-							{lastSession.finished_at && (
-								<span>Finished: {new Date(lastSession.finished_at).toLocaleDateString()}</span>
-							)}
+							{lastSession.created_at && <span>Date: {new Date(lastSession.created_at).toLocaleDateString()}</span>}
 						</div>
 					</div>
 				)}

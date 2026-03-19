@@ -5,10 +5,19 @@ import type { Tables } from '@/types/supabase'
 
 export const WorkoutsList = async () => {
 	const supabase = await createClient()
+	const {
+		data: { user },
+		error: userError,
+	} = await supabase.auth.getUser()
+
+	if (userError || !user) {
+		return <div className='text-sm text-destructive'>Error: User not authenticated.</div>
+	}
 
 	const { data: workoutsData, error } = await supabase
 		.from('workouts')
-		.select('id, name, description, tag, duration, workout_exercises(id)')
+		.select('id, name, description, workout_exercises(id)')
+		.eq('user_id', user.id)
 		.order('id', { ascending: true })
 
 	if (error) {
@@ -32,8 +41,6 @@ export const WorkoutsList = async () => {
 			id: w.id,
 			name: w.name,
 			description: w.description,
-			tag: w.tag,
-			duration: w.duration,
 			exerciseCount: exercisesRel.length,
 		}
 	})
@@ -41,15 +48,7 @@ export const WorkoutsList = async () => {
 	return (
 		<div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-4'>
 			{workouts.map(w => (
-				<WorkoutCard
-					key={w.id}
-					id={w.id}
-					name={w.name}
-					description={w.description}
-					tag={w.tag}
-					duration={w.duration}
-					exerciseCount={w.exerciseCount}
-				/>
+				<WorkoutCard key={w.id} workout={w} />
 			))}
 		</div>
 	)

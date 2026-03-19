@@ -1,11 +1,12 @@
-import Link from 'next/link'
-import { ExerciseCard } from '@/components/exercise-card'
-import { ExerciseSearch } from '@/components/exercise-search'
+import { AddWorkoutExerciseDrawer } from '@/components/add-workout-exercise-drawer'
+import { AddWorkoutNameInput } from '@/components/add-workout-name-input'
+import { AddWorkoutSaveButton } from '@/components/add-workout-save-button'
+import { AddWorkoutSelectedExercises } from '@/components/add-workout-selected-exercises'
 import { isExerciseType } from '@/lib/exerciseTypeIcons'
 import { createClient } from '@/lib/supabase/server'
 import type { ExerciseCardData } from '@/types/view'
 
-export default async function ExcersisesPage({
+export default async function NewWorkoutPage({
 	searchParams,
 }: {
 	searchParams: Promise<{
@@ -17,7 +18,7 @@ export default async function ExcersisesPage({
 	const supabase = await createClient()
 	const { search, muscle, type } = await searchParams
 
-	const { data: muscleData, error: musclesFetchError } = await supabase
+	const { data: musclesData, error: musclesFetchError } = await supabase
 		.from('muscle_groups')
 		.select('id, name')
 		.order('name')
@@ -44,18 +45,12 @@ export default async function ExcersisesPage({
 		exercisesQuery = exercisesQuery.eq('type', type)
 	}
 
-	const { data: exercisesData, error: exercisesError } = await exercisesQuery.order('id', {
-		ascending: true,
-	})
+	const { data: exercisesData, error: exercisesError } = await exercisesQuery.order('id', { ascending: true })
 
 	const musclesError = Boolean(musclesFetchError)
 
-	if (exercisesError) {
-		return <div className='text-sm text-destructive'>Error: {exercisesError.message}</div>
-	}
-
 	const musclesById = new Map<number, { id: number; name: string }>(
-		(muscleData ?? []).map(m => [m.id, { id: m.id, name: m.name }]),
+		(musclesData ?? []).map(m => [m.id, { id: m.id, name: m.name }]),
 	)
 
 	const exercises: ExerciseCardData[] = (exercisesData ?? []).map(item => {
@@ -77,20 +72,23 @@ export default async function ExcersisesPage({
 	})
 
 	return (
-		<div className='flex flex-col gap-2 p-4'>
-			<h1 className='text-2xl font-medium'>Exercise Library</h1>
-			<ExerciseSearch muscles={muscleData ?? []} musclesError={musclesError} />
-			{exercises.length === 0 ? (
-				<div className='text-sm opacity-70'>No exercises available</div>
-			) : (
-				<div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-2'>
-					{exercises.map(ex => (
-						<Link key={ex.id} href={`/dashboard/exercises/${ex.id}`} className='block'>
-							<ExerciseCard exercise={ex} />
-						</Link>
-					))}
-				</div>
-			)}
+		<div className='w-full space-y-6 p-4 h-full'>
+			<div className='flex items-center justify-between'>
+				<h1 className='text-2xl font-medium'>New Workout</h1>
+				<AddWorkoutSaveButton />
+			</div>
+			<div className='flex flex-col gap-2'>
+				<AddWorkoutNameInput />
+				<AddWorkoutSelectedExercises />
+			</div>
+			<div className='flex justify-end'>
+				<AddWorkoutExerciseDrawer
+					muscles={musclesData ?? []}
+					musclesError={musclesError}
+					exercises={exercises}
+					exercisesErrorMessage={exercisesError?.message}
+				/>
+			</div>
 		</div>
 	)
 }

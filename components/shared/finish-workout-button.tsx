@@ -6,39 +6,80 @@ import { createClient } from '@/lib/supabase/client'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 import { Save } from 'lucide-react'
 
-export default function FinishWorkoutButton({ sessionId }: { sessionId: string }) {
+type FinishWorkoutButtonProps = {
+	workoutId: string
+	canSave?: boolean
+}
+
+export default function FinishWorkoutButton({ workoutId, canSave = true }: FinishWorkoutButtonProps) {
 	const supabase = createClient()
 	const [loading, setLoading] = useState(false)
 	const [finished, setFinished] = useState(false)
 
 	async function finishWorkout() {
+		if (!canSave || loading || finished) return
+
 		try {
 			setLoading(true)
 
-			const exercises = useWorkoutSessionStore.getState().exercises
+			const {
+				data: { user },
+				error: userError,
+			} = await supabase.auth.getUser()
 
-			const rows = Object.values(exercises).map(ex => ({
-				session_id: Number(sessionId),
-				exercise_id: ex.exerciseId,
-				sets: ex.sets,
-				notes: ex.notes ?? null,
-			}))
+			if (userError || !user) throw userError ?? new Error('User not authenticated')
 
-			if (rows.length > 0) {
-				const { error: exerciseError } = await supabase.from('exercise_session').insert(rows)
+			const { data: createdSession, error: sessionError } = await supabase
+				.from('workout_session')
+				.insert({
+					workout_id: Number(workoutId),
+					user_id: user.id,
+				})
+				.select('id')
+				.single()
 
-				if (exerciseError) throw exerciseError
+			if (sessionError || !createdSession) throw sessionError ?? new Error('Failed to create workout session')
+
+			const exercises = Object.values(useWorkoutSessionStore.getState().exercises)
+
+			if (exercises.length > 0) {
+				const exerciseRows = exercises.map(exercise => ({
+					session_id: createdSession.id,
+					exercise_id: exercise.exerciseId,
+					notes: exercise.notes ?? null,
+					user_id: user.id,
+				}))
+
+				const { data: insertedExerciseSessions, error: exerciseSessionError } = await supabase
+					.from('exercise_session')
+					.insert(exerciseRows)
+					.select('id, exercise_id')
+
+				if (exerciseSessionError) throw exerciseSessionError
+
+				const exercisesById = new Map(exercises.map(exercise => [exercise.exerciseId, exercise]))
+
+				const setRows = (insertedExerciseSessions ?? []).flatMap(insertedSession => {
+					const exercise = exercisesById.get(insertedSession.exercise_id)
+
+					if (!exercise) return []
+
+					return exercise.sets.map(set => ({
+						session_id: insertedSession.id,
+						reps: set.reps,
+						weight: set.weight ?? null,
+						inensity: set.intensity ?? null,
+						user_id: user.id,
+					}))
+				})
+
+				if (setRows.length > 0) {
+					const { error: exerciseSetError } = await supabase.from('exercise_set').insert(setRows)
+
+					if (exerciseSetError) throw exerciseSetError
+				}
 			}
 
-			const { error } = await supabase
-				.from('workout_session')
-				.update({
-					status: 'completed',
-					finished_at: new Date().toISOString(),
-				})
-				.eq('id', Number(sessionId))
-
-			if (error) throw error
 			useWorkoutSessionStore.getState().clear()
 			setFinished(true)
 		} catch (err) {
@@ -49,9 +90,9 @@ export default function FinishWorkoutButton({ sessionId }: { sessionId: string }
 	}
 
 	return (
-		<Button onClick={finishWorkout} disabled={loading || finished}>
+		<Button onClick={finishWorkout} disabled={loading || finished || !canSave}>
 			<Save className='ml-1 h-4 w-4' />
-			{finished ? 'Workout Saved' : loading ? 'Saving…' : 'Save workout'}
+			Save
 		</Button>
 	)
 }
