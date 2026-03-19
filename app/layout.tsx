@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 	metadataBase: new URL(defaultUrl),
 	title: 'TrenUI',
 	description: 'Description',
+	manifest: '/site.webmanifest',
+	icons: {
+		apple: '/apple-touch-icon.png',
+	},
 }
 
 const geistSans = Geist({
