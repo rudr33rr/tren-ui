@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '../ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
@@ -12,6 +13,7 @@ type FinishWorkoutButtonProps = {
 }
 
 export default function FinishWorkoutButton({ workoutId, canSave = true }: FinishWorkoutButtonProps) {
+	const router = useRouter()
 	const supabase = createClient()
 	const [loading, setLoading] = useState(false)
 	const [finished, setFinished] = useState(false)
@@ -82,6 +84,7 @@ export default function FinishWorkoutButton({ workoutId, canSave = true }: Finis
 
 			useWorkoutSessionStore.getState().clear()
 			setFinished(true)
+			router.replace('/dashboard')
 		} catch (err) {
 			console.error('Failed to finish workout:', err)
 		} finally {
