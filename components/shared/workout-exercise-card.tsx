@@ -35,15 +35,9 @@ type WorkoutExerciseCardProps = {
 	exercise: WorkoutExercise
 	isOpen: boolean
 	onOpenChange: (isOpen: boolean) => void
-	onExerciseCompleted: () => void
 }
 
-export default function WorkoutExerciseCard({
-	exercise,
-	isOpen,
-	onOpenChange,
-	onExerciseCompleted,
-}: WorkoutExerciseCardProps) {
+export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: WorkoutExerciseCardProps) {
 	const upsertExercise = useWorkoutSessionStore(s => s.upsertExercise)
 	const storedSets = useWorkoutSessionStore(s => s.exercises[exercise.id]?.sets)
 
@@ -81,10 +75,7 @@ export default function WorkoutExerciseCard({
 			...newSets[index],
 			[field]: value,
 		}
-
-		if (!isSetReady(newSets[index])) {
-			newSets[index].completed = false
-		}
+		newSets[index].completed = isSetReady(newSets[index])
 
 		setSets(newSets)
 		syncExercise(newSets)
@@ -93,21 +84,14 @@ export default function WorkoutExerciseCard({
 	const toggleSetCompleted = (index: number, checked: boolean) => {
 		if (checked && !isSetReady(sets[index])) return
 
-		const wasComplete = sets.every(set => set.completed)
 		const newSets = [...sets]
 		newSets[index] = {
 			...newSets[index],
 			completed: checked,
 		}
 
-		const isComplete = newSets.every(set => set.completed)
-
 		setSets(newSets)
 		syncExercise(newSets)
-
-		if (!wasComplete && isComplete) {
-			onExerciseCompleted()
-		}
 	}
 
 	const addSet = () => {
@@ -220,7 +204,10 @@ export default function WorkoutExerciseCard({
 												value={set.intensity > 0 ? String(set.intensity) : ''}
 												onValueChange={value => updateSet(index, 'intensity', value ? Number(value) : 0)}>
 												{INTENSITY_LEVELS.map(level => (
-													<ToggleGroupItem key={level} value={String(level)} className='w-full px-0 sm:w-auto sm:px-2'>
+													<ToggleGroupItem
+														key={level}
+														value={String(level)}
+														className='w-full px-0 sm:w-auto sm:px-2 data-[state=on]:border-foreground data-[state=on]:bg-foreground data-[state=on]:text-background hover:data-[state=on]:bg-foreground/90'>
 														{level}
 													</ToggleGroupItem>
 												))}
