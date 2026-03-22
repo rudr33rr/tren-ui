@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { WorkoutsList } from '@/components/workouts-list'
+import { WorkoutsList } from '@/components/workout/workouts-list'
 
 export default async function WorkoutsPage() {
 	return (

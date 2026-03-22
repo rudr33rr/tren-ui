@@ -1,9 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import { Badge } from './ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Check, Plus } from 'lucide-react'
 import { exerciseTypeConfig } from '@/lib/exerciseTypeIcons'
 import type { ExerciseCardData } from '@/types/view'
-import { Item, ItemActions, ItemContent, ItemMedia } from './ui/item'
+import { Item, ItemActions, ItemContent, ItemMedia } from '@/components/ui/item'
 
 export const ExerciseCard = ({
 	exercise,

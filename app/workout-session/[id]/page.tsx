@@ -1,5 +1,5 @@
-import WorkoutExercisesList from '@/components/shared/workout-exercises-list'
-import WorkoutSessionHeader from '@/components/shared/workout-session-header'
+import WorkoutExercisesList from '@/components/workout-session/workout-exercises-list'
+import WorkoutSessionHeader from '@/components/workout-session/workout-session-header'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 

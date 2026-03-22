@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { ExerciseCard } from '@/components/exercise-card'
-import { ExerciseSearch } from '@/components/exercise-search'
+import { ExerciseCard } from '@/components/exercise/exercise-card'
+import { ExerciseSearch } from '@/components/exercise/exercise-search'
 import { isExerciseType } from '@/lib/exerciseTypeIcons'
 import { createClient } from '@/lib/supabase/server'
 import type { ExerciseCardData } from '@/types/view'

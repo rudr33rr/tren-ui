@@ -1,14 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Button } from '../ui/button'
-import { Label } from '../ui/label'
-import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Trash, Plus, ChevronDown, EllipsisVertical, Check, CircleCheckBig } from 'lucide-react'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 import type { WorkoutExercise } from '@/types/view'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '../ui/dropdown-menu'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 
 type SetData = {
 	reps: number

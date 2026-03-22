@@ -1,6 +1,6 @@
-import { ThemeSwitcher } from '../auth/theme-switcher'
-import { SidebarTrigger } from '../ui/sidebar'
-import { HeaderBreadcrumbs } from './header-breadcrumb'
+import { ThemeSwitcher } from '@/components/layout/theme-switcher'
+import { SidebarTrigger } from '@/components/ui/sidebar'
+import { HeaderBreadcrumbs } from '@/components/layout/header-breadcrumb'
 
 export function AppHeader() {
 	return (

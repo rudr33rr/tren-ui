@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { WorkoutCard } from './workout-card'
+import { WorkoutCard } from '@/components/workout/workout-card'
 import type { WorkoutCardData } from '@/types/view'
 import type { Tables } from '@/types/supabase'
 

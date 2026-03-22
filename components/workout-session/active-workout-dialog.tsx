@@ -13,7 +13,7 @@ import {
 	AlertDialogHeader,
 	AlertDialogMedia,
 	AlertDialogTitle,
-} from '../ui/alert-dialog'
+} from '@/components/ui/alert-dialog'
 
 export default function ActiveWorkoutDialog() {
 	const router = useRouter()

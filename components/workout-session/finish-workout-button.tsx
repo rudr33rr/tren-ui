@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 import { Save } from 'lucide-react'

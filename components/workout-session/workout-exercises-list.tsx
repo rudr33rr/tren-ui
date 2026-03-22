@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { WorkoutExercise } from '@/types/view'
-import WorkoutExerciseCard from './workout-exercise-card'
+import WorkoutExerciseCard from '@/components/workout-session/workout-exercise-card'
 
 type WorkoutExercisesListProps = {
 	exercises: WorkoutExercise[]

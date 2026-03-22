@@ -12,7 +12,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { exerciseTypeConfig, exerciseTypes, isExerciseType } from '@/lib/exerciseTypeIcons'
 import { useSearchParams, useRouter } from 'next/navigation'
 import type { MuscleGroup } from '@/types/view'

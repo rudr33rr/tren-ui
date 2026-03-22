@@ -1,6 +1,6 @@
 'use client'
 
-import { ExerciseCard } from '@/components/exercise-card'
+import { ExerciseCard } from '@/components/exercise/exercise-card'
 import { useCreateWorkoutStore } from '@/stores/createWorkout.store'
 import type { ExerciseCardData } from '@/types/view'
 

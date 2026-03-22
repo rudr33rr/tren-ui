@@ -1,7 +1,7 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardAction } from './ui/card'
-import { StartWorkoutButton } from './shared/start-workout-button'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardAction } from '@/components/ui/card'
+import { StartWorkoutButton } from '@/components/workout-session/start-workout-button'
 import type { WorkoutCardData } from '@/types/view'
-import { WorkoutCardActions } from './workout-card-actions'
+import { WorkoutCardActions } from '@/components/workout/workout-card-actions'
 
 export const WorkoutCard = ({ workout }: { workout: WorkoutCardData }) => {
 	return (

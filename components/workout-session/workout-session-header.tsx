@@ -6,8 +6,8 @@ import { ArrowLeft } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 import type { WorkoutExercise } from '@/types/view'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
-import { Button } from '../ui/button'
-import FinishWorkoutButton from './finish-workout-button'
+import { Button } from '@/components/ui/button'
+import FinishWorkoutButton from '@/components/workout-session/finish-workout-button'
 import {
 	AlertDialog,
 	AlertDialogTrigger,
@@ -16,7 +16,7 @@ import {
 	AlertDialogCancel,
 	AlertDialogFooter,
 	AlertDialogTitle,
-} from '../ui/alert-dialog'
+} from '@/components/ui/alert-dialog'
 
 type WorkoutSessionHeaderProps = {
 	workoutId: string

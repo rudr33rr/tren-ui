@@ -2,8 +2,8 @@
 
 import { SquarePen } from 'lucide-react'
 
-import { AddWorkoutExercisesGrid } from '@/components/add-workout-exercises-grid'
-import { ExerciseSearch } from '@/components/exercise-search'
+import { AddWorkoutExercisesGrid } from '@/components/workout/builder/add-workout-exercises-grid'
+import { ExerciseSearch } from '@/components/exercise/exercise-search'
 import { Button } from '@/components/ui/button'
 import {
 	Drawer,

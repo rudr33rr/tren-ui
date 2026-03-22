@@ -5,8 +5,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { EllipsisVertical, SquarePen, Trash } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from './ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 
 export function WorkoutCardActions({ workoutId }: { workoutId: number }) {
 	const supabase = createClient()

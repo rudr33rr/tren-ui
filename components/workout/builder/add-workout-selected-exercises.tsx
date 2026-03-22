@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button'
 import { useCreateWorkoutStore } from '@/stores/createWorkout.store'
 import { exerciseTypeConfig } from '@/lib/exerciseTypeIcons'
 import type { ExerciseCardData } from '@/types/view'
-import { Item, ItemActions, ItemContent, ItemMedia } from './ui/item'
+import { Item, ItemActions, ItemContent, ItemMedia } from '@/components/ui/item'
 
 type SortableExerciseItemProps = {
 	exercise: ExerciseCardData
