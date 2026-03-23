@@ -1,19 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { WorkoutExercise } from '@/types/view'
 import WorkoutExerciseCard from '@/components/workout-session/workout-exercise-card'
+import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 
 type WorkoutExercisesListProps = {
 	exercises: WorkoutExercise[]
 }
 
 export default function WorkoutExercisesList({ exercises }: WorkoutExercisesListProps) {
+	const activeExercises = useWorkoutSessionStore(s => s.activeExercises)
+	const initSessionExercises = useWorkoutSessionStore(s => s.initSessionExercises)
+
 	const [openExerciseId, setOpenExerciseId] = useState<number | null>(exercises[0]?.id ?? null)
+
+	useEffect(() => {
+		initSessionExercises(exercises)
+	}, [exercises, initSessionExercises])
 
 	return (
 		<div className='space-y-2 overflow-hidden'>
-			{exercises.map(exercise => (
+			{activeExercises.map(exercise => (
 				<WorkoutExerciseCard
 					key={exercise.id}
 					exercise={exercise}

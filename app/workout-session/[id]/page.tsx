@@ -51,7 +51,7 @@ export default async function WorkoutSessionPage({ params }: { params: Promise<{
 
 	return (
 		<div>
-			<WorkoutSessionHeader workoutId={id} workoutLabel={workout.name} exercises={exercises} />
+			<WorkoutSessionHeader workoutId={id} workoutLabel={workout.name} />
 			<div className='w-full space-y-6 p-4 max-w-7xl mx-auto mb-20'>
 				<WorkoutExercisesList exercises={exercises} />
 			</div>
