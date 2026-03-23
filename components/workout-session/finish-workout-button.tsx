@@ -95,7 +95,7 @@ export default function FinishWorkoutButton({ workoutId, canSave = true }: Finis
 	return (
 		<Button onClick={finishWorkout} disabled={loading || finished || !canSave}>
 			<Save className='ml-1 h-4 w-4' />
-			Save
+			Save workout
 		</Button>
 	)
 }
