@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Trash, Plus, ChevronDown, EllipsisVertical, Check, CircleCheckBig } from 'lucide-react'
+import { X, Trash, Plus, ChevronDown, EllipsisVertical, Check, CircleCheckBig } from 'lucide-react'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 import type { WorkoutExercise } from '@/types/view'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
@@ -39,6 +39,7 @@ type WorkoutExerciseCardProps = {
 
 export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: WorkoutExerciseCardProps) {
 	const upsertExercise = useWorkoutSessionStore(s => s.upsertExercise)
+	const removeSessionExercise = useWorkoutSessionStore(s => s.removeSessionExercise)
 	const storedSets = useWorkoutSessionStore(s => s.exercises[exercise.id]?.sets)
 
 	const [sets, setSets] = useState<SetData[]>(() => {
@@ -60,6 +61,10 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 	const completedSets = sets.filter(set => set.completed).length
 	const isExerciseCompleted = sets.length > 0 && completedSets === sets.length
 
+	useEffect(() => {
+		if (isExerciseCompleted) onOpenChange(false)
+	}, [isExerciseCompleted])
+
 	const isSetReady = (set: SetData) => set.reps > 0 && set.weight > 0 && set.intensity > 0
 
 	const syncExercise = (nextSets: SetData[]) => {
@@ -69,16 +74,29 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 		})
 	}
 
+	const setsRef = useRef(sets)
+	setsRef.current = sets
+
+	const completionTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
+
 	const updateSet = (index: number, field: keyof SetData, value: number) => {
 		const newSets = [...sets]
 		newSets[index] = {
 			...newSets[index],
 			[field]: value,
+			completed: false,
 		}
-		newSets[index].completed = isSetReady(newSets[index])
 
 		setSets(newSets)
 		syncExercise(newSets)
+
+		clearTimeout(completionTimers.current[index])
+		completionTimers.current[index] = setTimeout(() => {
+			const updated = [...setsRef.current]
+			updated[index] = { ...updated[index], completed: isSetReady(updated[index]) }
+			setSets(updated)
+			syncExercise(updated)
+		}, 600)
 	}
 
 	const toggleSetCompleted = (index: number, checked: boolean) => {
@@ -110,30 +128,47 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 
 	return (
 		<div className='w-full'>
-			<Button
-				variant='ghost'
-				className={`h-14 flex items-center gap-2 w-full justify-start px-2 md:px-4 ${
+			<div
+				className={`h-14 flex items-center gap-2 w-full px-2 md:px-4 rounded-md ${
 					isExerciseCompleted
-						? 'bg-green-100/70 text-green-900 hover:bg-green-100 border border-green-300/70 dark:bg-green-950/30 dark:text-green-300 dark:border-green-800'
+						? 'bg-green-100/70 text-green-900 border border-green-300/70 dark:bg-green-950/30 dark:text-green-300 dark:border-green-800'
 						: ''
-				}`}
-				onClick={() => onOpenChange(!isOpen)}>
-				<ChevronDown
-					className={`h-4 w-4 transition-transform ${isExerciseCompleted ? 'text-green-800 dark:text-green-300' : ''} ${
-						isOpen ? 'rotate-180' : ''
-					}`}
-				/>
-				<div className='w-full flex items-center justify-between'>
-					<span className='flex gap-2 items-center'>
-						{isExerciseCompleted && <CircleCheckBig className='text-green-700 dark:text-green-300' />}
-						<h3 className='font-medium text-lg'>{exercise.name ?? 'Unnamed Exercise'}</h3>
+				}`}>
+				<button
+					className='flex items-center gap-2 flex-1 min-w-0 h-full text-left hover:opacity-80 transition-opacity'
+					onClick={() => onOpenChange(!isOpen)}>
+					<ChevronDown
+						className={`h-4 w-4 shrink-0 transition-transform ${isExerciseCompleted ? 'text-green-800 dark:text-green-300' : ''} ${
+							isOpen ? 'rotate-180' : ''
+						}`}
+					/>
+					<span className='flex gap-2 items-center min-w-0'>
+						{isExerciseCompleted && <CircleCheckBig className='h-4 w-4 shrink-0 text-green-700 dark:text-green-300' />}
+						<h3 className='font-medium text-lg truncate'>{exercise.name ?? 'Unnamed Exercise'}</h3>
 					</span>
+				</button>
+				<div className='flex items-center gap-1 shrink-0'>
 					<p
 						className={`text-xs ${isExerciseCompleted ? 'text-green-800 dark:text-green-300' : 'text-muted-foreground'}`}>
 						{completedSets} / {sets.length}
 					</p>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant='ghost' size='icon-sm' aria-label='Exercise actions'>
+								<EllipsisVertical />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align='end' className='w-40'>
+							<DropdownMenuItem
+								onSelect={() => removeSessionExercise(exercise.id)}
+								className='text-destructive focus:text-destructive'>
+								<Trash className='h-4 w-4' />
+								<span>Delete exercise</span>
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				</div>
-			</Button>
+			</div>
 			<div
 				className={`grid transition-[grid-template-rows,opacity,margin] duration-200 ease-out ${
 					isOpen ? 'grid-rows-[1fr] opacity-100 md:mt-4 mt-2' : 'grid-rows-[0fr] opacity-0'
@@ -215,22 +250,15 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 										</div>
 									</div>
 									<div className='row-start-1 col-start-3 justify-self-end md:row-auto md:col-auto'>
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<Button variant='ghost' size='icon-sm' aria-label='Workout actions'>
-													<EllipsisVertical />
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent align='end' className='w-36'>
-												<DropdownMenuItem
-													disabled={sets.length === 1}
-													onSelect={() => removeSet(index)}
-													className='text-destructive focus:text-destructive disabled:opacity-30'>
-													<Trash className='h-4 w-4' />
-													<span>Delete</span>
-												</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
+										<Button
+											variant='ghost'
+											size='icon-sm'
+											aria-label='Remove set'
+											disabled={sets.length === 1}
+											onClick={() => removeSet(index)}
+											className='text-muted-foreground hover:text-destructive disabled:opacity-30'>
+											<X className='h-4 w-4' />
+										</Button>
 									</div>
 								</div>
 							))}

@@ -4,7 +4,6 @@ import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
-import type { WorkoutExercise } from '@/types/view'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 import { Button } from '@/components/ui/button'
 import FinishWorkoutButton from '@/components/workout-session/finish-workout-button'
@@ -21,13 +20,13 @@ import {
 type WorkoutSessionHeaderProps = {
 	workoutId: string
 	workoutLabel: string
-	exercises: WorkoutExercise[]
 }
 
 const DEFAULT_SETS_PER_EXERCISE = 3
 
-export default function WorkoutSessionHeader({ workoutId, workoutLabel, exercises }: WorkoutSessionHeaderProps) {
+export default function WorkoutSessionHeader({ workoutId, workoutLabel }: WorkoutSessionHeaderProps) {
 	const router = useRouter()
+	const activeExercises = useWorkoutSessionStore(s => s.activeExercises)
 	const exerciseState = useWorkoutSessionStore(s => s.exercises)
 	const setActiveWorkout = useWorkoutSessionStore(s => s.setActiveWorkout)
 	const clearWorkoutSession = useWorkoutSessionStore(s => s.clear)
@@ -41,12 +40,12 @@ export default function WorkoutSessionHeader({ workoutId, workoutLabel, exercise
 	}, [workoutId, setActiveWorkout])
 
 	const progress = useMemo(() => {
-		const totalSets = exercises.reduce((sum, exercise) => {
+		const totalSets = activeExercises.reduce((sum, exercise) => {
 			const sets = exerciseState[exercise.id]?.sets
 			return sum + (sets?.length ?? DEFAULT_SETS_PER_EXERCISE)
 		}, 0)
 
-		const completedSets = exercises.reduce((sum, exercise) => {
+		const completedSets = activeExercises.reduce((sum, exercise) => {
 			const sets = exerciseState[exercise.id]?.sets ?? []
 			return sum + sets.filter(set => set.completed).length
 		}, 0)
@@ -58,7 +57,7 @@ export default function WorkoutSessionHeader({ workoutId, workoutLabel, exercise
 			totalSets,
 			value,
 		}
-	}, [exerciseState, exercises])
+	}, [exerciseState, activeExercises])
 
 	return (
 		<div className='w-full sticky top-0 bg-background z-10'>

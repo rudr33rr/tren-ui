@@ -70,7 +70,7 @@ export default function FinishWorkoutButton({ workoutId, canSave = true }: Finis
 						session_id: insertedSession.id,
 						reps: set.reps,
 						weight: set.weight ?? null,
-						inensity: set.intensity ?? null,
+						intensity: set.intensity ?? null,
 						user_id: user.id,
 					}))
 				})
@@ -95,7 +95,7 @@ export default function FinishWorkoutButton({ workoutId, canSave = true }: Finis
 	return (
 		<Button onClick={finishWorkout} disabled={loading || finished || !canSave}>
 			<Save className='ml-1 h-4 w-4' />
-			Save
+			Save workout
 		</Button>
 	)
 }
