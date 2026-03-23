@@ -1,7 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
-import { WorkoutCard } from '@/components/workout/workout-card'
+import { WorkoutsInfiniteList } from '@/components/workout/workouts-infinite-list'
 import type { WorkoutCardData } from '@/types/view'
 import type { Tables } from '@/types/supabase'
+
+const PAGE_SIZE = 20
 
 export const WorkoutsList = async () => {
 	const supabase = await createClient()
@@ -19,37 +21,24 @@ export const WorkoutsList = async () => {
 		.select('id, name, description, workout_exercises(id)')
 		.eq('user_id', user.id)
 		.order('id', { ascending: true })
+		.range(0, PAGE_SIZE - 1)
 
 	if (error) {
 		return <div className='text-sm text-destructive'>Error: {error.message}</div>
 	}
 
-	if (!workoutsData || workoutsData.length === 0) {
-		return <div className='text-sm opacity-70'>No workouts available</div>
-	}
-
 	const workouts: WorkoutCardData[] = (
-		workoutsData as Array<
+		(workoutsData ?? []) as Array<
 			Tables<'workouts'> & {
 				workout_exercises: { id: number }[] | null
 			}
 		>
-	).map(w => {
-		const exercisesRel = Array.isArray(w.workout_exercises) ? w.workout_exercises : []
+	).map(w => ({
+		id: w.id,
+		name: w.name,
+		description: w.description,
+		exerciseCount: Array.isArray(w.workout_exercises) ? w.workout_exercises.length : 0,
+	}))
 
-		return {
-			id: w.id,
-			name: w.name,
-			description: w.description,
-			exerciseCount: exercisesRel.length,
-		}
-	})
-
-	return (
-		<div className='grid sm:grid-cols-2 xl:grid-cols-3 gap-4'>
-			{workouts.map(w => (
-				<WorkoutCard key={w.id} workout={w} />
-			))}
-		</div>
-	)
+	return <WorkoutsInfiniteList initialWorkouts={workouts} initialHasMore={workouts.length === PAGE_SIZE} userId={user.id} />
 }

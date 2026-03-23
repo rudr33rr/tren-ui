@@ -1,26 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { WorkoutExercise, ExerciseCardData, MuscleGroup } from '@/types/view'
+import type { WorkoutExercise, MuscleGroup } from '@/types/view'
 import WorkoutExerciseCard from '@/components/workout-session/workout-exercise-card'
 import AddExerciseDrawer from '@/components/workout-session/add-exercise-drawer'
 import { useWorkoutSessionStore } from '@/stores/workoutSession.store'
 
 type WorkoutExercisesListProps = {
 	exercises: WorkoutExercise[]
-	availableExercises: ExerciseCardData[]
 	muscles: MuscleGroup[]
 	musclesError: boolean
-	exercisesErrorMessage?: string
 }
 
-export default function WorkoutExercisesList({
-	exercises,
-	availableExercises,
-	muscles,
-	musclesError,
-	exercisesErrorMessage,
-}: WorkoutExercisesListProps) {
+export default function WorkoutExercisesList({ exercises, muscles, musclesError }: WorkoutExercisesListProps) {
 	const activeExercises = useWorkoutSessionStore(s => s.activeExercises)
 	const initSessionExercises = useWorkoutSessionStore(s => s.initSessionExercises)
 
@@ -40,12 +32,7 @@ export default function WorkoutExercisesList({
 					onOpenChange={isOpen => setOpenExerciseId(isOpen ? exercise.id : null)}
 				/>
 			))}
-			<AddExerciseDrawer
-				exercises={availableExercises}
-				muscles={muscles}
-				musclesError={musclesError}
-				exercisesErrorMessage={exercisesErrorMessage}
-			/>
+			<AddExerciseDrawer muscles={muscles} musclesError={musclesError} />
 		</div>
 	)
 }
