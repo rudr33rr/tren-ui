@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
-import ActiveWorkoutDialog from '@/components/workout-session/active-workout-dialog'
+import ActiveWorkoutDialog from '@/features/workout-session/components/active-workout-dialog'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 

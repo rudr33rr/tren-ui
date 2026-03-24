@@ -1,6 +1,7 @@
-import WorkoutExercisesList from '@/components/workout-session/workout-exercises-list'
-import WorkoutSessionHeader from '@/components/workout-session/workout-session-header'
+import WorkoutExercisesList from '@/features/workout-session/components/workout-exercises-list'
+import WorkoutSessionHeader from '@/features/workout-session/components/workout-session-header'
 import { createClient } from '@/lib/supabase/server'
+import { fetchMuscleGroups } from '@/features/exercises/queries/exercises.server'
 import { notFound } from 'next/navigation'
 
 export default async function WorkoutSessionPage({
@@ -53,20 +54,13 @@ export default async function WorkoutSessionPage({
 			name: item.exercise.exercise_name,
 		})) ?? []
 
-	const { data: musclesData, error: musclesFetchError } = await supabase
-		.from('muscle_groups')
-		.select('id, name')
-		.order('name')
+	const { muscles, error: musclesError } = await fetchMuscleGroups(supabase)
 
 	return (
 		<div>
 			<WorkoutSessionHeader workoutId={id} workoutLabel={workout.name} />
 			<div className='w-full space-y-6 p-4 max-w-7xl mx-auto mb-20'>
-				<WorkoutExercisesList
-					exercises={exercises}
-					muscles={musclesData ?? []}
-					musclesError={Boolean(musclesFetchError)}
-				/>
+				<WorkoutExercisesList exercises={exercises} muscles={muscles} musclesError={musclesError} />
 			</div>
 		</div>
 	)

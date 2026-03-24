@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { ExerciseCardData } from '@/types/view'
+import type { ExerciseCardData } from '@/features/exercises/exercise.types'
 
 type CreateWorkoutState = {
 	name: string

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { EditWorkoutForm } from '@/components/workout/builder/edit-workout-form'
+import { EditWorkoutForm } from '@/features/workouts/components/builder/edit-workout-form'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function EditWorkoutPage({ params }: { params: Promise<{ id: string }> }) {

@@ -1,16 +1,13 @@
-import { AddWorkoutExerciseDrawer } from '@/components/workout/builder/add-workout-exercise-drawer'
-import { AddWorkoutNameInput } from '@/components/workout/builder/add-workout-name-input'
-import { AddWorkoutSaveButton } from '@/components/workout/builder/add-workout-save-button'
-import { AddWorkoutSelectedExercises } from '@/components/workout/builder/add-workout-selected-exercises'
+import { AddWorkoutExerciseDrawer } from '@/features/workouts/components/builder/add-workout-exercise-drawer'
+import { AddWorkoutNameInput } from '@/features/workouts/components/builder/add-workout-name-input'
+import { AddWorkoutSaveButton } from '@/features/workouts/components/builder/add-workout-save-button'
+import { AddWorkoutSelectedExercises } from '@/features/workouts/components/builder/add-workout-selected-exercises'
 import { createClient } from '@/lib/supabase/server'
+import { fetchMuscleGroups } from '@/features/exercises/queries/exercises.server'
 
 export default async function NewWorkoutPage() {
 	const supabase = await createClient()
-
-	const { data: musclesData, error: musclesFetchError } = await supabase
-		.from('muscle_groups')
-		.select('id, name')
-		.order('name')
+	const { muscles, error: musclesError } = await fetchMuscleGroups(supabase)
 
 	return (
 		<div className='w-full space-y-6 p-4 h-full'>
@@ -23,10 +20,7 @@ export default async function NewWorkoutPage() {
 				<AddWorkoutSelectedExercises />
 			</div>
 			<div className='flex justify-end'>
-				<AddWorkoutExerciseDrawer
-					muscles={musclesData ?? []}
-					musclesError={Boolean(musclesFetchError)}
-				/>
+				<AddWorkoutExerciseDrawer muscles={muscles} musclesError={musclesError} />
 			</div>
 		</div>
 	)
