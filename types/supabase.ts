@@ -163,16 +163,19 @@ export type Database = {
 			workout_exercises: {
 				Row: {
 					exercise_id: number
+					exercise_order: number
 					id: number
 					workout_id: number
 				}
 				Insert: {
 					exercise_id: number
+					exercise_order: number
 					id?: number
 					workout_id: number
 				}
 				Update: {
 					exercise_id?: number
+					exercise_order?: number
 					id?: number
 					workout_id?: number
 				}
