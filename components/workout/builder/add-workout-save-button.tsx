@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { createClient } from '@/lib/supabase/client'
-import { useCreateWorkoutStore } from '@/stores/createWorkout.store'
+import { useCreateWorkoutStore } from '@/stores/create-workout.store'
 import type { ExerciseCardData } from '@/types/view'
 
 export function AddWorkoutSaveButton() {
@@ -62,9 +62,10 @@ export function AddWorkoutSaveButton() {
 				throw workoutError ?? new Error('Failed to create workout.')
 			}
 
-			const rows = selectedExercises.map(exercise => ({
+			const rows = selectedExercises.map((exercise, index) => ({
 				workout_id: workout.id,
 				exercise_id: exercise.id,
+				exercise_order: index + 1,
 			}))
 
 			const { error: exercisesError } = await supabase.from('workout_exercises').insert(rows)

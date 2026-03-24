@@ -1,7 +1,7 @@
 'use client'
 
 import { ExerciseCard } from '@/components/exercise/exercise-card'
-import { useCreateWorkoutStore } from '@/stores/createWorkout.store'
+import { useCreateWorkoutStore } from '@/stores/create-workout.store'
 import type { ExerciseCardData } from '@/types/view'
 
 type Props = {

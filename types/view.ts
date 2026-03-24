@@ -1,4 +1,4 @@
-import type { Tables, Enums } from './supabase'
+import type { Tables, Enums } from './database.types'
 
 type ExerciseRow = Tables<'exercises'>
 type MuscleRow = Tables<'muscle_groups'>
@@ -30,4 +30,4 @@ export type WorkoutCardData = {
 	exerciseCount: number
 }
 
-export type WorkoutExercise = Pick<ExerciseCardData, 'id' | 'name' >
+export type WorkoutExercise = Pick<ExerciseCardData, 'id' | 'name'>

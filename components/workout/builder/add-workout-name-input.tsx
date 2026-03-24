@@ -1,7 +1,7 @@
 'use client'
 
 import { Input } from '@/components/ui/input'
-import { useCreateWorkoutStore } from '@/stores/createWorkout.store'
+import { useCreateWorkoutStore } from '@/stores/create-workout.store'
 
 export function AddWorkoutNameInput() {
 	const name = useCreateWorkoutStore(state => state.name)

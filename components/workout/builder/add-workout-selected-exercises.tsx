@@ -20,7 +20,7 @@ import {
 import { restrictToParentElement, restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { CSS } from '@dnd-kit/utilities'
 import { Button } from '@/components/ui/button'
-import { useCreateWorkoutStore } from '@/stores/createWorkout.store'
+import { useCreateWorkoutStore } from '@/stores/create-workout.store'
 import { exerciseTypeConfig } from '@/lib/exerciseTypeIcons'
 import type { ExerciseCardData } from '@/types/view'
 import { Item, ItemActions, ItemContent, ItemMedia } from '@/components/ui/item'

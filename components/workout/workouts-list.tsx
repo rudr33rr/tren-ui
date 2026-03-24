@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { WorkoutsInfiniteList } from '@/components/workout/workouts-infinite-list'
 import type { WorkoutCardData } from '@/types/view'
-import type { Tables } from '@/types/supabase'
+import type { Tables } from '@/types/database.types'
 
 const PAGE_SIZE = 20
 
@@ -40,5 +40,7 @@ export const WorkoutsList = async () => {
 		exerciseCount: Array.isArray(w.workout_exercises) ? w.workout_exercises.length : 0,
 	}))
 
-	return <WorkoutsInfiniteList initialWorkouts={workouts} initialHasMore={workouts.length === PAGE_SIZE} userId={user.id} />
+	return (
+		<WorkoutsInfiniteList initialWorkouts={workouts} initialHasMore={workouts.length === PAGE_SIZE} userId={user.id} />
+	)
 }
