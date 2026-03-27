@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { X, Trash, Plus, ChevronDown, EllipsisVertical, Check, CircleCheckBig } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { useWorkoutSessionStore } from '@/stores/workout-session.store'
 import type { WorkoutExercise } from '../../../types/workout-session.types'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
@@ -44,12 +45,19 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 	const removeSessionExercise = useWorkoutSessionStore(s => s.removeSessionExercise)
 	const storedSets = useWorkoutSessionStore(s => s.exercises[exercise.id]?.sets)
 
+	const isBodyweight = exercise.weightType !== 'weighted'
+
 	const [sets, setSets] = useState<SetData[]>(() => {
 		if (storedSets && storedSets.length > 0) {
 			return storedSets.map(set => normalizeSet(set))
 		}
 
 		return createDefaultSets()
+	})
+
+	const [weightVisible, setWeightVisible] = useState<boolean[]>(() => {
+		const base = storedSets && storedSets.length > 0 ? storedSets : createDefaultSets()
+		return base.map(s => (s.weight ?? 0) > 0)
 	})
 
 	useEffect(() => {
@@ -122,6 +130,7 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 		const newSets = [...sets, { ...DEFAULT_SET }]
 		setSets(newSets)
 		syncExercise(newSets)
+		setWeightVisible(prev => [...prev, false])
 	}
 
 	const removeSet = (index: number) => {
@@ -130,6 +139,16 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 		const newSets = sets.filter((_, i) => i !== index)
 		setSets(newSets)
 		syncExercise(newSets)
+		setWeightVisible(prev => prev.filter((_, i) => i !== index))
+	}
+
+	const showWeight = (index: number) => {
+		setWeightVisible(prev => prev.map((v, i) => (i === index ? true : v)))
+	}
+
+	const hideWeight = (index: number) => {
+		setWeightVisible(prev => prev.map((v, i) => (i === index ? false : v)))
+		updateSet(index, 'weight', 0)
 	}
 
 	return (
@@ -151,6 +170,12 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 					<span className='flex gap-2 items-center min-w-0'>
 						{isExerciseCompleted && <CircleCheckBig className='h-4 w-4 shrink-0 text-green-700 dark:text-green-300' />}
 						<h3 className='font-medium text-lg truncate'>{exercise.name ?? 'Unnamed Exercise'}</h3>
+						{isBodyweight && (
+							<Badge variant='secondary' className='shrink-0'>Bodyweight</Badge>
+						)}
+						{exercise.isUnilateral && (
+							<Badge variant='secondary' className='shrink-0'>Per side</Badge>
+						)}
 					</span>
 				</button>
 				<div className='flex items-center gap-1 shrink-0'>
@@ -237,7 +262,43 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 													</InputGroupAddon>
 												</InputGroup>
 											)}
-											{exercise.weightType !== 'bodyweight' && (
+											{isBodyweight ? (
+												weightVisible[index] ? (
+													<div className='flex items-center gap-1 w-full md:w-auto'>
+														<InputGroup className='w-full md:max-w-40'>
+															<InputGroupInput
+																type='number'
+																min={0}
+																disabled={set.completed}
+																value={set.weight || ''}
+																onChange={e => updateSet(index, 'weight', Number(e.target.value))}
+															/>
+															<InputGroupAddon align='inline-end'>kg</InputGroupAddon>
+														</InputGroup>
+														<Button
+															type='button'
+															variant='ghost'
+															size='icon-sm'
+															aria-label='Remove added weight'
+															disabled={set.completed}
+															onClick={() => hideWeight(index)}
+															className='text-muted-foreground hover:text-destructive shrink-0'>
+															<X className='h-4 w-4' />
+														</Button>
+													</div>
+												) : (
+													<Button
+														type='button'
+														variant='outline'
+														size='sm'
+														disabled={set.completed}
+														onClick={() => showWeight(index)}
+														className='w-full md:w-auto text-muted-foreground'>
+														<Plus className='h-3 w-3' />
+														Add weight
+													</Button>
+												)
+											) : (
 												<InputGroup className='w-full md:max-w-40'>
 													<InputGroupInput
 														type='number'
