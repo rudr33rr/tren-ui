@@ -85,8 +85,8 @@ export default function WorkoutSessionHeader({ workoutId, workoutLabel }: Workou
 				</AlertDialog>
 				<h1 className='font-semibold md:text-xl'>
 					{workoutLabel}{' '}
-					<span className='text-muted-foreground ms-4'>
-						{progress.value}% ({progress.completedSets}/{progress.totalSets})
+					<span className='text-muted-foreground ms-1'>
+						({progress.completedSets}/{progress.totalSets})
 					</span>
 				</h1>
 				<FinishWorkoutButton workoutId={workoutId} canSave={progress.value === 100} />
