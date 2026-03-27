@@ -8,7 +8,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { fetchExercisesPage } from '../queries/exercises.client'
 import { ExerciseCard } from './exercise-card'
-import type { ExerciseCardData } from '../exercise.types'
+import type { ExerciseCardData } from '../../../types/exercise.types'
 
 const PAGE_SIZE = 20
 
@@ -28,7 +28,11 @@ export function ExercisesInfiniteList({ initialExercises, initialHasMore, search
 		[search, muscle, type],
 	)
 
-	const { items: exercises, loading, sentinelRef } = useInfiniteScroll({
+	const {
+		items: exercises,
+		loading,
+		sentinelRef,
+	} = useInfiniteScroll({
 		fetchPage,
 		initialItems: initialExercises,
 		initialHasMore,

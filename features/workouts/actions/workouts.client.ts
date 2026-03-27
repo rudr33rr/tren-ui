@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database } from '@/types/database.types'
-import type { ExerciseCardData } from '@/features/exercises/exercise.types'
+import type { ExerciseCardData } from '@/types/exercise.types'
 
 type AppSupabaseClient = SupabaseClient<Database>
 

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { WorkoutExercise } from '../workout-session.types'
-import type { MuscleGroup } from '@/features/exercises/exercise.types'
+import type { WorkoutExercise } from '../../../types/workout-session.types'
+import type { MuscleGroup } from '@/types/exercise.types'
 import WorkoutExerciseCard from './workout-exercise-card'
 import AddExerciseDrawer from './add-exercise-drawer'
 import { useWorkoutSessionStore } from '@/stores/workout-session.store'

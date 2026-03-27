@@ -2,7 +2,7 @@
 
 import { ExerciseCard } from '@/features/exercises/components/exercise-card'
 import { useWorkoutSessionStore } from '@/stores/workout-session.store'
-import type { ExerciseCardData } from '@/features/exercises/exercise.types'
+import type { ExerciseCardData } from '@/types/exercise.types'
 
 type Props = {
 	exercises: ExerciseCardData[]
@@ -22,7 +22,10 @@ export function AddSessionExercisesGrid({ exercises, onSelect }: Props) {
 				<button
 					key={exercise.id}
 					type='button'
-					onClick={() => { addSessionExercise({ id: exercise.id, name: exercise.name }); onSelect() }}
+					onClick={() => {
+						addSessionExercise({ id: exercise.id, name: exercise.name })
+						onSelect()
+					}}
 					className='text-left rounded-xl'>
 					<ExerciseCard exercise={exercise} variant='workout' selected={false} />
 				</button>

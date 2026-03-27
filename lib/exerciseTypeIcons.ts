@@ -1,5 +1,5 @@
 import { CircleDotDashed, Dumbbell, Heart, PersonStanding, Sword, type LucideIcon } from 'lucide-react'
-import type { ExerciseType } from '@/features/exercises/exercise.types'
+import type { ExerciseType } from '@/types/exercise.types'
 
 export type ExerciseTypeMeta = {
 	label: string

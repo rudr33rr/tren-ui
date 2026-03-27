@@ -13,7 +13,7 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from '@/components/ui/drawer'
-import type { MuscleGroup } from '@/features/exercises/exercise.types'
+import type { MuscleGroup } from '@/types/exercise.types'
 import { AddSessionExercisesGrid } from './add-session-exercises-grid'
 
 type Props = {
@@ -43,9 +43,7 @@ export default function AddExerciseDrawer({ muscles, musclesError }: Props) {
 					<ExerciseSearch muscles={muscles} musclesError={musclesError} />
 					<div className='mt-4 min-h-0 flex-1 flex flex-col'>
 						<DrawerExercisesInfiniteList>
-							{exercises => (
-								<AddSessionExercisesGrid exercises={exercises} onSelect={() => setOpen(false)} />
-							)}
+							{exercises => <AddSessionExercisesGrid exercises={exercises} onSelect={() => setOpen(false)} />}
 						</DrawerExercisesInfiniteList>
 					</div>
 				</div>

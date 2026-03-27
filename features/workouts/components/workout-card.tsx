@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardAction } from '@/components/ui/card'
 import { StartWorkoutButton } from '@/features/workout-session/components/start-workout-button'
-import type { WorkoutCardData } from '../workout.types'
+import type { WorkoutCardData } from '../../../types/workout.types'
 import { WorkoutCardActions } from './workout-card-actions'
 
 export const WorkoutCard = ({ workout }: { workout: WorkoutCardData }) => {

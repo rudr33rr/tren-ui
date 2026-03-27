@@ -13,7 +13,7 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from '@/components/ui/drawer'
-import type { MuscleGroup } from '@/features/exercises/exercise.types'
+import type { MuscleGroup } from '@/types/exercise.types'
 import { AddWorkoutExercisesGrid } from './add-workout-exercises-grid'
 
 type Props = {

@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { X, Trash, Plus, ChevronDown, EllipsisVertical, Check, CircleCheckBig } from 'lucide-react'
 import { useWorkoutSessionStore } from '@/stores/workout-session.store'
-import type { WorkoutExercise } from '../workout-session.types'
+import type { WorkoutExercise } from '../../../types/workout-session.types'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 

@@ -8,7 +8,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { fetchExercisesPage } from '../queries/exercises.client'
-import type { ExerciseCardData } from '../exercise.types'
+import type { ExerciseCardData } from '../../../types/exercise.types'
 
 const PAGE_SIZE = 20
 
@@ -30,7 +30,12 @@ export function DrawerExercisesInfiniteList({ children }: Props) {
 		[search, muscle, type],
 	)
 
-	const { items: exercises, loading, error, sentinelRef } = useInfiniteScroll({
+	const {
+		items: exercises,
+		loading,
+		error,
+		sentinelRef,
+	} = useInfiniteScroll({
 		fetchPage,
 		pageSize: PAGE_SIZE,
 		scrollRoot: scrollContainerRef,

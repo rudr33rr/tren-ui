@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
 import { fetchWorkoutsPage } from '../queries/workouts.client'
 import { WorkoutCard } from './workout-card'
-import type { WorkoutCardData } from '../workout.types'
+import type { WorkoutCardData } from '../../../types/workout.types'
 
 const PAGE_SIZE = 20
 
@@ -21,12 +21,13 @@ type Props = {
 export function WorkoutsInfiniteList({ initialWorkouts, initialHasMore, userId }: Props) {
 	const supabaseRef = useRef(createClient())
 
-	const fetchPage = useCallback(
-		(page: number) => fetchWorkoutsPage(supabaseRef.current, userId, page),
-		[userId],
-	)
+	const fetchPage = useCallback((page: number) => fetchWorkoutsPage(supabaseRef.current, userId, page), [userId])
 
-	const { items: workouts, loading, sentinelRef } = useInfiniteScroll({
+	const {
+		items: workouts,
+		loading,
+		sentinelRef,
+	} = useInfiniteScroll({
 		fetchPage,
 		initialItems: initialWorkouts,
 		initialHasMore,

@@ -1,7 +1,7 @@
 import { Card, CardTitle } from '@/components/ui/card'
 import { Check, Plus } from 'lucide-react'
 import { exerciseTypeConfig } from '@/lib/exerciseTypeIcons'
-import type { ExerciseCardData } from '../exercise.types'
+import type { ExerciseCardData } from '../../../types/exercise.types'
 import { Item, ItemActions, ItemContent, ItemMedia } from '@/components/ui/item'
 
 export const ExerciseCard = ({

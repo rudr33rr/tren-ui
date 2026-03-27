@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { WorkoutExercise } from '@/features/workout-session/workout-session.types'
+import type { WorkoutExercise } from '@/types/workout-session.types'
 
 type SetEntry = {
 	reps: number

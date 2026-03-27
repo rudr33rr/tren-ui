@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database, Tables } from '@/types/database.types'
-import type { WorkoutCardData } from '../workout.types'
+import type { WorkoutCardData } from '../../../types/workout.types'
 
 type AppSupabaseClient = SupabaseClient<Database>
 
@@ -24,9 +24,7 @@ export async function fetchInitialWorkouts(
 
 	if (error) throw error
 
-	return (
-		(data ?? []) as Array<Tables<'workouts'> & { workout_exercises: { id: number }[] | null }>
-	).map(w => ({
+	return ((data ?? []) as Array<Tables<'workouts'> & { workout_exercises: { id: number }[] | null }>).map(w => ({
 		id: w.id,
 		name: w.name,
 		description: w.description,

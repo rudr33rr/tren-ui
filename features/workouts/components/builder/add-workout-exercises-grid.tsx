@@ -2,7 +2,7 @@
 
 import { ExerciseCard } from '@/features/exercises/components/exercise-card'
 import { useCreateWorkoutStore } from '@/stores/create-workout.store'
-import type { ExerciseCardData } from '@/features/exercises/exercise.types'
+import type { ExerciseCardData } from '@/types/exercise.types'
 
 type Props = {
 	exercises: ExerciseCardData[]

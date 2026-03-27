@@ -10,7 +10,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { createClient } from '@/lib/supabase/client'
 import { useCreateWorkoutStore } from '@/stores/create-workout.store'
 import { createWorkout } from '../../actions/workouts.client'
-import type { ExerciseCardData } from '@/features/exercises/exercise.types'
+import type { ExerciseCardData } from '@/types/exercise.types'
 
 export function AddWorkoutSaveButton() {
 	const router = useRouter()

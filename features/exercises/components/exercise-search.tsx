@@ -15,7 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { exerciseTypeConfig, exerciseTypes, isExerciseType } from '@/lib/exerciseTypeIcons'
 import { useSearchParams, useRouter } from 'next/navigation'
-import type { MuscleGroup } from '../exercise.types'
+import type { MuscleGroup } from '../../../types/exercise.types'
 
 type Props = {
 	muscles: MuscleGroup[]
