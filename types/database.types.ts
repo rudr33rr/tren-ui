@@ -283,7 +283,7 @@ export type Database = {
         | "flexibility"
         | "core"
         | "plyometric"
-      exercise_weight_type: "weighted" | "bodyweight" | "bodyweight_plus"
+      exercise_weight_type: "weighted" | "bodyweight"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -423,7 +423,7 @@ export const Constants = {
         "core",
         "plyometric",
       ],
-      exercise_weight_type: ["weighted", "bodyweight", "bodyweight_plus"],
+      exercise_weight_type: ["weighted", "bodyweight"],
     },
   },
 } as const

@@ -8,7 +8,7 @@ import { X, Trash, Plus, ChevronDown, EllipsisVertical, Check, CircleCheckBig } 
 import { Badge } from '@/components/ui/badge'
 import { useWorkoutSessionStore } from '@/stores/workout-session.store'
 import type { WorkoutExercise } from '../../../types/workout-session.types'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 
 type SetData = {
@@ -171,10 +171,14 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 						{isExerciseCompleted && <CircleCheckBig className='h-4 w-4 shrink-0 text-green-700 dark:text-green-300' />}
 						<h3 className='font-medium text-lg truncate'>{exercise.name ?? 'Unnamed Exercise'}</h3>
 						{isBodyweight && (
-							<Badge variant='secondary' className='shrink-0'>Bodyweight</Badge>
+							<Badge variant='secondary' className='shrink-0'>
+								Bodyweight
+							</Badge>
 						)}
 						{exercise.isUnilateral && (
-							<Badge variant='secondary' className='shrink-0'>Per side</Badge>
+							<Badge variant='secondary' className='shrink-0'>
+								Per side
+							</Badge>
 						)}
 					</span>
 				</button>
@@ -257,43 +261,39 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 														value={set.reps || ''}
 														onChange={e => updateSet(index, 'reps', Number(e.target.value))}
 													/>
-													<InputGroupAddon align='inline-end'>
-														{exercise.isUnilateral ? 'per side' : 'reps'}
+													<InputGroupAddon align='inline-start'>
+														reps:
 													</InputGroupAddon>
 												</InputGroup>
 											)}
 											{isBodyweight ? (
 												weightVisible[index] ? (
-													<div className='flex items-center gap-1 w-full md:w-auto'>
-														<InputGroup className='w-full md:max-w-40'>
-															<InputGroupInput
-																type='number'
-																min={0}
+													<InputGroup className='w-full md:max-w-40'>
+														<InputGroupAddon align='inline-end'>
+															<InputGroupButton
+																size={'icon-xs'}
+																aria-label='Remove added weight'
 																disabled={set.completed}
-																value={set.weight || ''}
-																onChange={e => updateSet(index, 'weight', Number(e.target.value))}
-															/>
-															<InputGroupAddon align='inline-end'>kg</InputGroupAddon>
-														</InputGroup>
-														<Button
-															type='button'
-															variant='ghost'
-															size='icon-sm'
-															aria-label='Remove added weight'
+																onClick={() => hideWeight(index)}>
+																<X/>
+															</InputGroupButton>
+														</InputGroupAddon>
+														<InputGroupInput
+															type='number'
+															min={0}
 															disabled={set.completed}
-															onClick={() => hideWeight(index)}
-															className='text-muted-foreground hover:text-destructive shrink-0'>
-															<X className='h-4 w-4' />
-														</Button>
-													</div>
+															value={set.weight || ''}
+															onChange={e => updateSet(index, 'weight', Number(e.target.value))}
+														/>
+														<InputGroupAddon align='inline-start'>kg:</InputGroupAddon>
+													</InputGroup>
 												) : (
 													<Button
 														type='button'
 														variant='outline'
-														size='sm'
 														disabled={set.completed}
 														onClick={() => showWeight(index)}
-														className='w-full md:w-auto text-muted-foreground'>
+														className='w-full h-full md:max-w-40 text-muted-foreground outline-dotted'>
 														<Plus className='h-3 w-3' />
 														Add weight
 													</Button>
@@ -307,7 +307,7 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 														value={set.weight || ''}
 														onChange={e => updateSet(index, 'weight', Number(e.target.value))}
 													/>
-													<InputGroupAddon align='inline-end'>kg</InputGroupAddon>
+													<InputGroupAddon align='inline-start'>kg:</InputGroupAddon>
 												</InputGroup>
 											)}
 										</div>
