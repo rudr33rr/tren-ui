@@ -75,9 +75,9 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 		if (isExerciseCompleted) onOpenChange(false)
 	}, [isExerciseCompleted])
 
-	const isSetReady = (set: SetData) => {
+	const isSetReady = (set: SetData, weightShown: boolean) => {
 		const hasActivity = exercise.trackingType === 'duration' ? set.durationSec > 0 : set.reps > 0
-		const hasWeight = exercise.weightType === 'weighted' ? set.weight > 0 : true
+		const hasWeight = !isBodyweight || weightShown ? set.weight > 0 : true
 		return hasActivity && hasWeight && set.intensity > 0
 	}
 
@@ -90,6 +90,9 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 
 	const setsRef = useRef(sets)
 	setsRef.current = sets
+
+	const weightVisibleRef = useRef(weightVisible)
+	weightVisibleRef.current = weightVisible
 
 	const completionTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
 
@@ -107,14 +110,14 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 		clearTimeout(completionTimers.current[index])
 		completionTimers.current[index] = setTimeout(() => {
 			const updated = [...setsRef.current]
-			updated[index] = { ...updated[index], completed: isSetReady(updated[index]) }
+			updated[index] = { ...updated[index], completed: isSetReady(updated[index], weightVisibleRef.current[index]) }
 			setSets(updated)
 			syncExercise(updated)
 		}, 600)
 	}
 
 	const toggleSetCompleted = (index: number, checked: boolean) => {
-		if (checked && !isSetReady(sets[index])) return
+		if (checked && !isSetReady(sets[index], weightVisible[index])) return
 
 		const newSets = [...sets]
 		newSets[index] = {
@@ -223,13 +226,13 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 												? 'bg-green-600 text-white hover:bg-green-500'
 												: 'border border-border bg-background text-muted-foreground hover:bg-accent hover:text-foreground'
 										} ${
-											!isSetReady(set) && !set.completed
+											!isSetReady(set, weightVisible[index]) && !set.completed
 												? 'cursor-not-allowed border-dashed bg-muted text-muted-foreground/45 hover:bg-muted hover:text-muted-foreground/45'
 												: ''
 										}`}
 										aria-label={set.completed ? 'Unmark set as done' : 'Mark set as done'}
 										onClick={() => toggleSetCompleted(index, !set.completed)}
-										disabled={!isSetReady(set) && !set.completed}>
+										disabled={!isSetReady(set, weightVisible[index]) && !set.completed}>
 										<Check
 											className={`transition-opacity ${
 												set.completed ? 'opacity-100' : 'opacity-0 group-hover:opacity-70'
