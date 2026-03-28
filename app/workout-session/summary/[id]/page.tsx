@@ -46,8 +46,6 @@ export default async function WorkoutSummaryPage({ params }: { params: Promise<{
 		notFound()
 	}
 
-	const totalSets = session.exercise_session.reduce((acc, es) => acc + es.exercise_set.length, 0)
-
 	const totalVolume = session.exercise_session.reduce((acc, es) => {
 		return (
 			acc +
@@ -57,6 +55,23 @@ export default async function WorkoutSummaryPage({ params }: { params: Promise<{
 			}, 0)
 		)
 	}, 0)
+
+	const allIntensities = session.exercise_session
+		.flatMap(es => es.exercise_set)
+		.map(s => s.intensity)
+		.filter((i): i is number => i != null && i > 0)
+
+	const avgIntensity =
+		allIntensities.length > 0
+			? Math.round(allIntensities.reduce((a, b) => a + b, 0) / allIntensities.length)
+			: null
+
+	function intensityColor(rpe: number): { border: string; text: string } {
+		if (rpe <= 4) return { border: 'border-green-500', text: 'text-green-500' }
+		if (rpe <= 6) return { border: 'border-yellow-500', text: 'text-yellow-500' }
+		if (rpe <= 8) return { border: 'border-orange-500', text: 'text-orange-500' }
+		return { border: 'border-red-500', text: 'text-red-500' }
+	}
 
 	const formattedDate = session.created_at
 		? new Date(session.created_at).toLocaleDateString('en-US', {
@@ -75,63 +90,27 @@ export default async function WorkoutSummaryPage({ params }: { params: Promise<{
 				<p className='text-muted-foreground text-sm'>{formattedDate}</p>
 			</div>
 
-			<div className='w-full rounded-lg border p-4 mb-6'>
-				<h2 className='text-lg font-medium mb-4'>{session.workout.name}</h2>
-
-				<div className='flex gap-6 text-sm'>
-					<div>
-						<p className='text-muted-foreground'>Sets</p>
-						<p className='font-semibold text-base'>{totalSets}</p>
+			<div className='flex justify-center gap-8 mb-8'>
+				{totalVolume > 0 && (
+					<div className='flex flex-col items-center justify-center w-36 h-36 rounded-full border-4 border-primary gap-1'>
+						<p className='font-bold text-xl leading-none'>{totalVolume.toLocaleString()}</p>
+						<p className='text-xs text-muted-foreground'>kg volume</p>
 					</div>
-					{totalVolume > 0 && (
-						<div>
-							<p className='text-muted-foreground'>Volume</p>
-							<p className='font-semibold text-base'>{totalVolume.toLocaleString()} kg</p>
-						</div>
-					)}
-					<div>
-						<p className='text-muted-foreground'>Exercises</p>
-						<p className='font-semibold text-base'>{session.exercise_session.length}</p>
-					</div>
+				)}
+				<div className='flex flex-col items-center justify-center w-36 h-36 rounded-full border-4 border-primary gap-1'>
+					<p className='font-bold text-xl leading-none'>{session.exercise_session.length}</p>
+					<p className='text-xs text-muted-foreground'>exercises</p>
 				</div>
 			</div>
 
-			<div className='w-full space-y-3 mb-8'>
-				{session.exercise_session.map(es => {
-					const isBodyweight = es.exercise.weight_type !== 'weighted'
-					const isTime = es.exercise.tracking_type === 'duration'
-
-					return (
-						<div key={es.id} className='rounded-lg border p-4'>
-							<h3 className='font-medium mb-3'>{es.exercise.exercise_name}</h3>
-
-							{es.notes && <p className='text-sm text-muted-foreground mb-3 italic'>{es.notes}</p>}
-
-							<div className='space-y-1'>
-								{es.exercise_set.map((set, index) => (
-									<div key={index} className='flex items-center gap-4 text-sm'>
-										<span className='text-muted-foreground w-6'>{index + 1}.</span>
-
-										{isTime ? (
-											<span>{set.duration_sec ?? 0}s</span>
-										) : (
-											<span>{set.reps ?? 0} reps</span>
-										)}
-
-										{!isBodyweight && set.weight != null && (
-											<span className='text-muted-foreground'>{set.weight} kg</span>
-										)}
-
-										{set.intensity != null && set.intensity > 0 && (
-											<span className='text-muted-foreground ml-auto'>RPE {set.intensity}</span>
-										)}
-									</div>
-								))}
-							</div>
-						</div>
-					)
-				})}
-			</div>
+			{avgIntensity != null && (
+				<div className='flex justify-center mb-8'>
+					<div className={`flex flex-col items-center justify-center w-36 h-36 rounded-full border-4 gap-1 ${intensityColor(avgIntensity).border}`}>
+						<p className={`font-bold text-2xl leading-none ${intensityColor(avgIntensity).text}`}>{avgIntensity}</p>
+						<p className='text-xs text-muted-foreground'>avg intensity</p>
+					</div>
+				</div>
+			)}
 
 			<div className='flex flex-col gap-2 w-full'>
 				<Button asChild>

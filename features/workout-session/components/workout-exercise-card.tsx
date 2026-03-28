@@ -253,7 +253,7 @@ export default function WorkoutExerciseCard({ exercise, isOpen, onOpenChange }: 
 														value={set.durationSec || ''}
 														onChange={e => updateSet(index, 'durationSec', Number(e.target.value))}
 													/>
-													<InputGroupAddon align='inline-start'>sec</InputGroupAddon>
+													<InputGroupAddon align='inline-start'>sec:</InputGroupAddon>
 												</InputGroup>
 											) : (
 												<InputGroup className='w-full md:max-w-40'>
