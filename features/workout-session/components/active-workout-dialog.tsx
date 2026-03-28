@@ -29,11 +29,11 @@ export default function ActiveWorkoutDialog() {
 
 	return (
 		<AlertDialog open={shouldPrompt}>
-			<AlertDialogContent size='sm'>
+			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>Active workout found</AlertDialogTitle>
 					<AlertDialogDescription>
-						You have an unfinished workout. Resume it or abandon and clear it from local state.
+						You have an unfinished workout. Resume it or abandon it if you want to start a new one.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
