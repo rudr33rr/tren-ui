@@ -121,8 +121,7 @@ export function AddWorkoutSelectedExercises() {
 	}
 
 	return (
-		<div className='space-y-3'>
-			<p className='text-sm text-muted-foreground'>Selected: {selectedExercises.length}</p>
+		<div className='space-y-3 mt-4'>
 			<DndContext
 				sensors={sensors}
 				collisionDetection={closestCenter}

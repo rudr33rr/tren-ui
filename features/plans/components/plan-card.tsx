@@ -1,7 +1,8 @@
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardAction } from '@/components/ui/card'
 import type { PlanWithDays } from '../queries/plans.server'
 import { PlanCardActions } from './plan-card-actions'
+import { SetActivePlanButton } from './set-active-plan-button'
 
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
@@ -11,14 +12,15 @@ export function PlanCard({ plan }: { plan: PlanWithDays }) {
 			<CardHeader className='px-0'>
 				<CardTitle className='mt-3 flex items-center gap-2'>
 					{plan.name}
-					{plan.isActive && <Badge>Active</Badge>}
+					{plan.isActive && <Badge variant={'secondary'}>Active</Badge>}
 				</CardTitle>
+				<CardAction>
+					<PlanCardActions planId={plan.id} />
+				</CardAction>
 			</CardHeader>
 
-			<CardContent className='px-0 space-y-4'>
-				{plan.description && <p className='text-sm text-muted-foreground'>{plan.description}</p>}
-
-				<div className='grid grid-cols-7 gap-1 text-center'>
+			<CardContent className='px-0 space-y-4 h-full'>
+				<div className='grid grid-cols-7 gap-1 text-center mt-8'>
 					{DAY_LABELS.map((label, i) => {
 						const day = plan.days.find(d => d.dayIndex === i)
 						return (
@@ -29,8 +31,7 @@ export function PlanCard({ plan }: { plan: PlanWithDays }) {
 										day
 											? 'bg-primary text-primary-foreground border-primary'
 											: 'border-muted-foreground/20 text-muted-foreground/40'
-									}`}
-								>
+									}`}>
 									{day ? '●' : '–'}
 								</div>
 								{day && (
@@ -44,8 +45,8 @@ export function PlanCard({ plan }: { plan: PlanWithDays }) {
 				</div>
 			</CardContent>
 
-			<CardFooter className='px-0 mb-2 mt-4'>
-				<PlanCardActions planId={plan.id} isActive={plan.isActive} />
+			<CardFooter className='px-0 mb-2 mt-4 flex items-center gap-2'>
+				<SetActivePlanButton planId={plan.id} isActive={plan.isActive} />
 			</CardFooter>
 		</Card>
 	)

@@ -66,6 +66,7 @@ export async function fetchPlans(supabase: AppSupabaseClient, userId: string): P
 		.from('workout_plans')
 		.select(PLAN_SELECT)
 		.eq('user_id', userId)
+		.order('is_active', { ascending: false })
 		.order('created_at', { ascending: false })
 
 	if (error) throw error

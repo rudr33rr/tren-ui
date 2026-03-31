@@ -2,17 +2,17 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Trash } from 'lucide-react'
+import { EllipsisVertical, Trash } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { deletePlan, setActivePlan } from '../actions/plans.client'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { deletePlan } from '../actions/plans.client'
 
-export function PlanCardActions({ planId, isActive }: { planId: number; isActive: boolean }) {
+export function PlanCardActions({ planId }: { planId: number }) {
 	const supabase = createClient()
 	const router = useRouter()
 	const [deleting, setDeleting] = useState(false)
-	const [activating, setActivating] = useState(false)
 
 	async function handleDelete() {
 		if (deleting) return
@@ -32,37 +32,24 @@ export function PlanCardActions({ planId, isActive }: { planId: number; isActive
 		}
 	}
 
-	async function handleSetActive() {
-		if (activating) return
-		setActivating(true)
-		try {
-			await setActivePlan(supabase, planId)
-			toast.success('Plan set as active')
-			router.refresh()
-		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Failed to set active plan.'
-			toast.error(message)
-		} finally {
-			setActivating(false)
-		}
-	}
-
 	return (
-		<div className='flex gap-2'>
-			{!isActive && (
-				<Button size='sm' onClick={handleSetActive} disabled={activating}>
-					{activating ? 'Setting...' : 'Set as active'}
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button variant='ghost' size='icon' aria-label='Plan actions' disabled={deleting}>
+					<EllipsisVertical />
 				</Button>
-			)}
-			<Button
-				variant='ghost'
-				size='sm'
-				className='text-destructive hover:text-destructive ml-auto'
-				onClick={handleDelete}
-				disabled={deleting}
-			>
-				<Trash className='w-4 h-4' />
-			</Button>
-		</div>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align='end' className='w-36'>
+				<DropdownMenuItem
+					disabled={deleting}
+					onSelect={() => {
+						void handleDelete()
+					}}
+					className='text-destructive focus:text-destructive'>
+					<Trash className='h-4 w-4' />
+					<span>{deleting ? 'Deleting...' : 'Delete'}</span>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	)
 }

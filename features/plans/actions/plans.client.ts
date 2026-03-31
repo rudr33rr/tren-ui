@@ -57,6 +57,22 @@ export async function deletePlan(supabase: AppSupabaseClient, planId: number): P
 	if (error) throw error
 }
 
+export async function deactivatePlan(supabase: AppSupabaseClient, planId: number): Promise<void> {
+	const {
+		data: { user },
+		error: userError,
+	} = await supabase.auth.getUser()
+	if (userError || !user) throw userError ?? new Error('User not authenticated.')
+
+	const { error } = await supabase
+		.from('workout_plans')
+		.update({ is_active: false })
+		.eq('id', planId)
+		.eq('user_id', user.id)
+
+	if (error) throw error
+}
+
 export async function setActivePlan(supabase: AppSupabaseClient, planId: number): Promise<void> {
 	const {
 		data: { user },
