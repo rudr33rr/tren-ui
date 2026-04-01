@@ -1,5 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { fetchActivePlan } from '@/features/plans/queries/plans.server'
+import { fetchDashboardStats } from '@/features/dashboard/queries/dashboard.server'
+import { DashboardStats } from '@/features/dashboard/components/dashboard-stats'
+import { TodayWorkout } from '@/features/dashboard/components/today-workout'
 
 export default async function DashboardPage() {
 	const supabase = await createClient()
@@ -8,50 +12,43 @@ export default async function DashboardPage() {
 		data: { user },
 		error,
 	} = await supabase.auth.getUser()
-	if (error || !user) {
-		redirect('/auth/login')
+	if (error || !user) redirect('/auth/login')
+
+	const [stats, activePlan] = await Promise.all([
+		fetchDashboardStats(supabase, user.id),
+		fetchActivePlan(supabase, user.id),
+	])
+
+	let todayWorkoutSessionId: number | null = null
+	if (activePlan) {
+		const todayDayIndex = (new Date().getDay() + 6) % 7
+		const todayPlanDay = activePlan.days.find(d => d.dayIndex === todayDayIndex)
+		if (todayPlanDay) {
+			const dayStart = new Date()
+			dayStart.setHours(0, 0, 0, 0)
+			const dayEnd = new Date()
+			dayEnd.setHours(23, 59, 59, 999)
+
+			const { data: todaySession } = await supabase
+				.from('workout_session')
+				.select('id')
+				.eq('user_id', user.id)
+				.eq('workout_id', todayPlanDay.workoutId)
+				.gte('created_at', dayStart.toISOString())
+				.lte('created_at', dayEnd.toISOString())
+				.maybeSingle()
+
+			todayWorkoutSessionId = todaySession?.id ?? null
+		}
 	}
 
-	const { data: lastSession } = await supabase
-		.from('workout_session')
-		.select(
-			`
-    id,
-		created_at,
-    workout_id,
-    workout:workouts (
-      id,
-      name,
-		description
-    )
-  `,
-		)
-		.eq('user_id', user.id)
-		.order('created_at', { ascending: false })
-		.limit(1)
-		.single()
-
 	return (
-		<div className='w-full p-4 space-y-6'>
+		<div className='w-full p-4 space-y-4'>
 			<h1 className='text-2xl font-medium'>Dashboard</h1>
 
-			<section className='rounded-lg border p-4'>
-				<h2 className='text-lg font-medium mb-2'>Last workout session</h2>
+			<DashboardStats stats={stats} />
 
-				{!lastSession ? (
-					<p className='text-sm opacity-60'>No completed workouts yet.</p>
-				) : (
-					<div className='space-y-1'>
-						<p className='font-medium'>{lastSession.workout.name}</p>
-
-						{lastSession.workout.description && <p className='text-sm opacity-70'>{lastSession.workout.description}</p>}
-
-						<div className='text-xs opacity-60 flex gap-3'>
-							{lastSession.created_at && <span>Date: {new Date(lastSession.created_at).toLocaleDateString()}</span>}
-						</div>
-					</div>
-				)}
-			</section>
+			<TodayWorkout activePlan={activePlan} todayWorkoutSessionId={todayWorkoutSessionId} />
 		</div>
 	)
 }
