@@ -40,14 +40,109 @@ const durationConfig = {
 	maxDuration: { label: 'Duration', color: 'hsl(var(--chart-1))' },
 } satisfies ChartConfig
 
-const intensityConfig = {
-	avgIntensity: { label: 'Avg intensity (RPE)', color: 'hsl(var(--chart-3))' },
-} satisfies ChartConfig
-
 function formatDuration(sec: number) {
 	const m = Math.floor(sec / 60)
 	const s = sec % 60
 	return m > 0 ? `${m}m ${s}s` : `${s}s`
+}
+
+function intensityColor(value: number) {
+	if (value <= 3) return 'oklch(0.72 0.17 145)'
+	if (value <= 6) return 'oklch(0.78 0.17 95)'
+	if (value <= 8) return 'oklch(0.6 0.22 20)'
+	return 'oklch(0.5 0.22 15)'
+}
+
+function intensityLabel(value: number) {
+	if (value <= 3) return 'Easy'
+	if (value <= 6) return 'Moderate'
+	if (value <= 8) return 'Hard'
+	return 'Max effort'
+}
+
+function IntensityGauge({ value }: { value: number }) {
+	const r = 58
+	const cx = 88
+	const cy = 76
+	const arcLength = Math.PI * r
+	const filled = Math.min(value / 10, 1) * arcLength
+	const color = intensityColor(value)
+
+	return (
+		<div className='flex flex-col rounded-lg border p-4'>
+			<p className='text-xs opacity-55'>Avg intensity</p>
+			<div className='flex flex-1 flex-col items-center justify-center pt-1'>
+				<svg viewBox='0 0 176 100' className='w-full'>
+					<path
+						d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
+						fill='none'
+						stroke='currentColor'
+						strokeOpacity={0.1}
+						strokeWidth={11}
+						strokeLinecap='round'
+					/>
+					<path
+						d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
+						fill='none'
+						stroke={color}
+						strokeWidth={11}
+						strokeLinecap='round'
+						strokeDasharray={`${filled} ${arcLength}`}
+					/>
+					<text
+						x={cx}
+						y={cy - 9}
+						textAnchor='middle'
+						dominantBaseline='auto'
+						fontSize={24}
+						fontWeight={700}
+						fill='currentColor'
+					>
+						{value.toFixed(1)}
+					</text>
+					<text
+						x={cx}
+						y={cy + 1}
+						textAnchor='middle'
+						dominantBaseline='hanging'
+						fontSize={10}
+						fill='currentColor'
+						opacity={0.45}
+					>
+						/ 10 RPE
+					</text>
+				</svg>
+				<p className='text-[11px] font-semibold' style={{ color }}>
+					{intensityLabel(value)}
+				</p>
+			</div>
+		</div>
+	)
+}
+
+function StatTile({
+	value,
+	label,
+	small,
+}: {
+	value: string | number
+	label: string
+	small?: boolean
+}) {
+	return (
+		<div className='flex flex-col items-center justify-center rounded-lg border p-4 text-center'>
+			<p
+				className={
+					small
+						? 'text-sm font-semibold leading-tight'
+						: 'text-2xl font-semibold tabular-nums'
+				}
+			>
+				{value}
+			</p>
+			<p className='mt-1 text-xs opacity-55'>{label}</p>
+		</div>
+	)
 }
 
 function StatChart({
@@ -134,24 +229,36 @@ export function ExerciseStats({ trackingType, weightType, history }: Props) {
 	const prDescription =
 		isWeighted && isReps ? 'PR (weight)' : isReps ? 'PR (reps)' : 'PR (duration)'
 
-	const hasIntensity = history.some(h => h.avgIntensity != null)
+	const intensitySessions = history.filter(h => h.avgIntensity != null)
+	const avgRPE =
+		intensitySessions.length > 0
+			? intensitySessions.reduce((sum, h) => sum + (h.avgIntensity ?? 0), 0) /
+				intensitySessions.length
+			: null
 
 	return (
 		<div className='space-y-4'>
-			<div className='grid grid-cols-3 gap-3'>
-				<div className='rounded-lg border p-4 text-center'>
-					<p className='text-2xl font-semibold tabular-nums'>{history.length}</p>
-					<p className='mt-1 text-xs opacity-60'>Sessions</p>
+			{avgRPE != null ? (
+				<div className='grid grid-cols-2 gap-3'>
+					<div className='flex h-full flex-col gap-3'>
+						<div className='grid grid-cols-2 gap-3'>
+							<StatTile value={history.length} label='Sessions' />
+							<StatTile value={prLabel} label={prDescription} />
+						</div>
+						<div className='flex flex-1 flex-col items-center justify-center rounded-lg border p-4 text-center'>
+							<p className='text-sm font-semibold leading-tight'>{lastDate ?? '—'}</p>
+							<p className='mt-1 text-xs opacity-55'>Last session</p>
+						</div>
+					</div>
+					<IntensityGauge value={avgRPE} />
 				</div>
-				<div className='rounded-lg border p-4 text-center'>
-					<p className='text-2xl font-semibold tabular-nums'>{prLabel}</p>
-					<p className='mt-1 text-xs opacity-60'>{prDescription}</p>
+			) : (
+				<div className='grid grid-cols-3 gap-3'>
+					<StatTile value={history.length} label='Sessions' />
+					<StatTile value={prLabel} label={prDescription} />
+					<StatTile value={lastDate ?? '—'} label='Last session' small />
 				</div>
-				<div className='rounded-lg border p-4 text-center'>
-					<p className='text-sm font-semibold leading-tight'>{lastDate}</p>
-					<p className='mt-1 text-xs opacity-60'>Last session</p>
-				</div>
-			</div>
+			)}
 
 			{isWeighted && isReps && (
 				<>
@@ -186,15 +293,6 @@ export function ExerciseStats({ trackingType, weightType, history }: Props) {
 					data={history}
 					dataKey='maxDuration'
 					yTickFormatter={formatDuration}
-				/>
-			)}
-
-			{hasIntensity && (
-				<StatChart
-					title='Average intensity (RPE)'
-					config={intensityConfig}
-					data={history}
-					dataKey='avgIntensity'
 				/>
 			)}
 		</div>
