@@ -13,14 +13,27 @@ export async function signUpWithEmail(
 		return { error: 'Email address is required.' }
 	}
 
-	const { error } = await auth.signUp.email({
-		email,
-		name: formData.get('name') as string,
-		password: formData.get('password') as string,
-	})
+	let hasError = false
+	let errorMessage = ''
 
-	if (error) {
-		return { error: error.message || 'Failed to create account.' }
+	try {
+		const { error } = await auth.signUp.email({
+			email,
+			name: formData.get('name') as string,
+			password: formData.get('password') as string,
+		})
+
+		if (error) {
+			hasError = true
+			errorMessage = error.message || 'Failed to create account.'
+		}
+	} catch (e) {
+		hasError = true
+		errorMessage = e instanceof Error ? e.message : 'An error occurred. Please try again.'
+	}
+
+	if (hasError) {
+		return { error: errorMessage }
 	}
 
 	redirect('/dashboard')
