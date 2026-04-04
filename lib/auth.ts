@@ -1,7 +1,7 @@
-import { auth } from '@/lib/auth/server'
+import { getAuth } from '@/lib/auth/server'
 
 export async function getCurrentUserId(): Promise<string> {
-	const { data: session } = await auth.getSession()
+	const { data: session } = await getAuth().getSession()
 	if (!session?.user?.id) {
 		throw new Error('Unauthorized')
 	}

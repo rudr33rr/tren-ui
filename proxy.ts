@@ -1,7 +1,5 @@
 import { type NextRequest } from 'next/server'
-import { auth } from '@/lib/auth/server'
-
-const authMiddleware = auth.middleware({ loginUrl: '/auth/sign-in' })
+import { getAuth } from '@/lib/auth/server'
 
 export default function middleware(req: NextRequest) {
 	// Skip auth check for Next.js server action POST requests.
@@ -11,7 +9,7 @@ export default function middleware(req: NextRequest) {
 		return
 	}
 
-	return authMiddleware(req)
+	return getAuth().middleware({ loginUrl: '/auth/sign-in' })(req)
 }
 
 export const config = {
