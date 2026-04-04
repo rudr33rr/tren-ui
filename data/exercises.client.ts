@@ -1,8 +1,8 @@
 'use server'
 
 import { ilike, eq, asc, and } from 'drizzle-orm'
-import { db } from '@/lib/db'
-import { exercises } from '@/lib/db/schema'
+import { db } from '@/db'
+import { exercises } from '@/db/schema'
 import { isExerciseType } from '@/lib/exerciseTypeIcons'
 import type { ExerciseCardData, ExerciseType } from '@/types/exercise.types'
 

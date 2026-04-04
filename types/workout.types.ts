@@ -1,6 +1,6 @@
-import type { Tables } from '@/types/database.types'
+import type { workouts } from '@/db/schema'
 
-type WorkoutRow = Tables<'workouts'>
+type WorkoutRow = typeof workouts.$inferSelect
 
 export type WorkoutCardData = {
 	id: WorkoutRow['id']

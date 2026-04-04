@@ -1,7 +1,7 @@
 'use server'
 
-import { db } from '@/lib/db'
-import { workoutSession, exerciseSession, exerciseSet } from '@/lib/db/schema'
+import { db } from '@/db'
+import { workoutSession, exerciseSession, exerciseSet } from '@/db/schema'
 import { getCurrentUserId } from '@/lib/auth'
 
 type SetEntry = {

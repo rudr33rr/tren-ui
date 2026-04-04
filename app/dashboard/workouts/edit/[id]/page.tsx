@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { eq, and } from 'drizzle-orm'
-import { db } from '@/lib/db'
-import { workouts } from '@/lib/db/schema'
+import { db } from '@/db'
+import { workouts } from '@/db/schema'
 import { getCurrentUserId } from '@/lib/auth'
 import { EditWorkoutForm } from '@/components/workouts/builder/edit-workout-form'
 

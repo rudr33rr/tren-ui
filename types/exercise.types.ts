@@ -1,11 +1,17 @@
-import type { Tables, Enums } from '@/types/database.types'
+import type {
+	exercises,
+	muscleGroups,
+	exerciseTypeEnum,
+	exerciseTrackingTypeEnum,
+	exerciseWeightTypeEnum,
+} from '@/db/schema'
 
-type ExerciseRow = Tables<'exercises'>
-type MuscleRow = Tables<'muscle_groups'>
+type ExerciseRow = typeof exercises.$inferSelect
+type MuscleRow = typeof muscleGroups.$inferSelect
 
-export type ExerciseType = NonNullable<Enums<'exercise_type'>>
-export type ExerciseTrackingType = NonNullable<Enums<'exercise_tracking_type'>>
-export type ExerciseWeightType = NonNullable<Enums<'exercise_weight_type'>>
+export type ExerciseType = (typeof exerciseTypeEnum.enumValues)[number]
+export type ExerciseTrackingType = (typeof exerciseTrackingTypeEnum.enumValues)[number]
+export type ExerciseWeightType = (typeof exerciseWeightTypeEnum.enumValues)[number]
 
 export type MuscleGroup = {
 	id: MuscleRow['id']
@@ -14,13 +20,13 @@ export type MuscleGroup = {
 
 export type ExerciseCardData = {
 	id: ExerciseRow['id']
-	name: ExerciseRow['exercise_name']
+	name: ExerciseRow['exerciseName']
 	primaryMuscle: MuscleGroup | null
 	secondaryMuscles: MuscleGroup[]
 	type: ExerciseType | null
 	trackingType: ExerciseTrackingType
 	weightType: ExerciseWeightType
-	isUnilateral: ExerciseRow['is_unilateral']
+	isUnilateral: ExerciseRow['isUnilateral']
 }
 
 export type ExercisePageData = ExerciseCardData & {

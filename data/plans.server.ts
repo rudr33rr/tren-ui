@@ -1,6 +1,6 @@
 import { eq, desc } from 'drizzle-orm'
-import { db } from '@/lib/db'
-import { workoutPlans } from '@/lib/db/schema'
+import { db } from '@/db'
+import { workoutPlans } from '@/db/schema'
 
 export type PlanDay = {
 	id: number

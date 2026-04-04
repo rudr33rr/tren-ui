@@ -1,6 +1,6 @@
 import { eq, and, gte, lte } from 'drizzle-orm'
-import { db } from '@/lib/db'
-import { workoutSession } from '@/lib/db/schema'
+import { db } from '@/db'
+import { workoutSession } from '@/db/schema'
 import { getCurrentUserId } from '@/lib/auth'
 import { fetchActivePlan } from '@/data/plans.server'
 import { fetchDashboardStats } from '@/data/dashboard.server'
@@ -10,10 +10,7 @@ import { TodayWorkout } from '@/components/dashboard/today-workout'
 export default async function DashboardPage() {
 	const userId = await getCurrentUserId()
 
-	const [stats, activePlan] = await Promise.all([
-		fetchDashboardStats(userId),
-		fetchActivePlan(userId),
-	])
+	const [stats, activePlan] = await Promise.all([fetchDashboardStats(userId), fetchActivePlan(userId)])
 
 	let todayWorkoutSessionId: number | null = null
 	if (activePlan) {

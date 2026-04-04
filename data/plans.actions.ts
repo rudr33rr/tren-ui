@@ -1,8 +1,8 @@
 'use server'
 
 import { eq, count } from 'drizzle-orm'
-import { db } from '@/lib/db'
-import { workoutPlans, workoutPlanDays } from '@/lib/db/schema'
+import { db } from '@/db'
+import { workoutPlans, workoutPlanDays } from '@/db/schema'
 import { getCurrentUserId } from '@/lib/auth'
 
 export async function createPlan({
@@ -28,9 +28,9 @@ export async function createPlan({
 			.returning({ id: workoutPlans.id })
 
 		if (days.length > 0) {
-			await tx.insert(workoutPlanDays).values(
-				days.map(d => ({ planId: plan.id, dayIndex: d.dayIndex, workoutId: d.workoutId })),
-			)
+			await tx
+				.insert(workoutPlanDays)
+				.values(days.map(d => ({ planId: plan.id, dayIndex: d.dayIndex, workoutId: d.workoutId })))
 		}
 	})
 }
@@ -51,9 +51,6 @@ export async function setActivePlan(planId: number): Promise<void> {
 
 	await db.transaction(async tx => {
 		await tx.update(workoutPlans).set({ isActive: false }).where(eq(workoutPlans.userId, userId))
-		await tx
-			.update(workoutPlans)
-			.set({ isActive: true })
-			.where(eq(workoutPlans.id, planId))
+		await tx.update(workoutPlans).set({ isActive: true }).where(eq(workoutPlans.id, planId))
 	})
 }

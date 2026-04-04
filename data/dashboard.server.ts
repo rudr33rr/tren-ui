@@ -1,6 +1,6 @@
 import { count, eq, gte, and } from 'drizzle-orm'
-import { db } from '@/lib/db'
-import { workoutSession } from '@/lib/db/schema'
+import { db } from '@/db'
+import { workoutSession } from '@/db/schema'
 
 export type DashboardStats = {
 	totalSessions: number

@@ -1,6 +1,6 @@
 import { eq, asc } from 'drizzle-orm'
-import { db } from '@/lib/db'
-import { workouts } from '@/lib/db/schema'
+import { db } from '@/db'
+import { workouts } from '@/db/schema'
 import type { WorkoutCardData } from '@/types/workout.types'
 
 const PAGE_SIZE = 20

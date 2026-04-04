@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CheckCircle2, ChevronRight } from 'lucide-react'
 import { eq } from 'drizzle-orm'
-import { db } from '@/lib/db'
-import { workoutSession } from '@/lib/db/schema'
+import { db } from '@/db'
+import { workoutSession } from '@/db/schema'
 import { Button } from '@/components/ui/button'
 
 export default async function WorkoutSummaryPage({ params }: { params: Promise<{ id: string }> }) {
@@ -51,9 +51,7 @@ export default async function WorkoutSummaryPage({ params }: { params: Promise<{
 		.filter((i): i is number => i != null && i > 0)
 
 	const avgIntensity =
-		allIntensities.length > 0
-			? Math.round(allIntensities.reduce((a, b) => a + b, 0) / allIntensities.length)
-			: null
+		allIntensities.length > 0 ? Math.round(allIntensities.reduce((a, b) => a + b, 0) / allIntensities.length) : null
 
 	function intensityColor(rpe: number): { border: string; text: string } {
 		if (rpe <= 4) return { border: 'border-green-500', text: 'text-green-500' }
@@ -94,7 +92,8 @@ export default async function WorkoutSummaryPage({ params }: { params: Promise<{
 
 			{avgIntensity != null && (
 				<div className='flex justify-center mb-8'>
-					<div className={`flex flex-col items-center justify-center w-36 h-36 rounded-full border-4 gap-1 ${intensityColor(avgIntensity).border}`}>
+					<div
+						className={`flex flex-col items-center justify-center w-36 h-36 rounded-full border-4 gap-1 ${intensityColor(avgIntensity).border}`}>
 						<p className={`font-bold text-2xl leading-none ${intensityColor(avgIntensity).text}`}>{avgIntensity}</p>
 						<p className='text-xs text-muted-foreground'>avg intensity</p>
 					</div>

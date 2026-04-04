@@ -1,8 +1,8 @@
 'use server'
 
 import { eq, inArray } from 'drizzle-orm'
-import { db } from '@/lib/db'
-import { workouts, workoutExercises, workoutSession, exerciseSession, exerciseSet } from '@/lib/db/schema'
+import { db } from '@/db'
+import { workouts, workoutExercises, workoutSession, exerciseSession, exerciseSet } from '@/db/schema'
 import { getCurrentUserId } from '@/lib/auth'
 import type { ExerciseCardData } from '@/types/exercise.types'
 
@@ -54,10 +54,7 @@ export async function createWorkout({
 	const userId = await getCurrentUserId()
 
 	await db.transaction(async tx => {
-		const [workout] = await tx
-			.insert(workouts)
-			.values({ name: name.trim(), userId })
-			.returning({ id: workouts.id })
+		const [workout] = await tx.insert(workouts).values({ name: name.trim(), userId }).returning({ id: workouts.id })
 
 		if (exercises.length > 0) {
 			await tx.insert(workoutExercises).values(
