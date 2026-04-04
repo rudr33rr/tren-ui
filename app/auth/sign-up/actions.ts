@@ -1,6 +1,6 @@
 'use server'
 
-import { getAuth } from '@/lib/auth/server'
+import { auth } from '@/lib/auth/server'
 import { redirect } from 'next/navigation'
 
 export async function signUpWithEmail(
@@ -17,7 +17,7 @@ export async function signUpWithEmail(
 	let errorMessage = ''
 
 	try {
-		const { error } = await getAuth().signUp.email({
+		const { error } = await auth.signUp.email({
 			email,
 			name: formData.get('name') as string,
 			password: formData.get('password') as string,
