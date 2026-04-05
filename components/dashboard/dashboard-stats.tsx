@@ -1,5 +1,5 @@
 import { BarChart2, CalendarDays, TrendingUp } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Item } from '@/components/ui/item'
 import type { DashboardStats } from '@/data/dashboard.server'
 
 export function DashboardStats({ stats }: { stats: DashboardStats }) {
@@ -14,14 +14,12 @@ export function DashboardStats({ stats }: { stats: DashboardStats }) {
 
 function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {
 	return (
-		<Card className='px-5 py-4 gap-2'>
-			<CardContent className='px-0 py-0 space-y-1'>
-				<div className='flex items-center gap-2 text-muted-foreground text-sm'>
-					{icon}
-					{label}
-				</div>
-				<p className='text-2xl font-bold'>{value}</p>
-			</CardContent>
-		</Card>
+		<Item variant='outline' className='flex-col items-start gap-1'>
+			<div className='flex items-center gap-2 text-muted-foreground text-sm'>
+				{icon}
+				{label}
+			</div>
+			<p className='text-2xl font-bold'>{value}</p>
+		</Item>
 	)
 }

@@ -1,5 +1,8 @@
+'use client'
+
 import { Calendar, ClipboardList, Dumbbell, Home } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 import {
 	Sidebar,
@@ -10,11 +13,12 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	useSidebar,
 } from '@/components/ui/sidebar'
 
 const items = [
 	{
-		title: 'Dashboard',
+		title: 'Home',
 		url: '/dashboard',
 		icon: Home,
 	},
@@ -36,6 +40,9 @@ const items = [
 ]
 
 export function AppSidebar() {
+	const { setOpenMobile } = useSidebar()
+	const pathname = usePathname()
+
 	return (
 		<Sidebar variant='inset'>
 			<SidebarContent>
@@ -43,16 +50,22 @@ export function AppSidebar() {
 					<SidebarGroupLabel>TrenUI</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{items.map(item => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<Link href={item.url}>
-											<item.icon />
-											<span>{item.title}</span>
-										</Link>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
+							{items.map(item => {
+								const isActive = item.url === '/dashboard'
+									? pathname === '/dashboard'
+									: pathname.startsWith(item.url)
+
+								return (
+									<SidebarMenuItem key={item.title}>
+										<SidebarMenuButton asChild isActive={isActive}>
+											<Link href={item.url} onClick={() => setOpenMobile(false)}>
+												<item.icon />
+												<span>{item.title}</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								)
+							})}
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>

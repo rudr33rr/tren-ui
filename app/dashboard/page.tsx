@@ -38,7 +38,7 @@ export default async function DashboardPage() {
 
 	return (
 		<div className='w-full p-4 space-y-4'>
-			<h1 className='text-2xl font-medium'>Dashboard</h1>
+			<h1 className='text-2xl font-medium'>Home</h1>
 
 			<DashboardStats stats={stats} />
 
