@@ -92,6 +92,8 @@ npm run dev
 
 Aplikacja będzie dostępna pod adresem [http://localhost:3000](http://localhost:3000).
 
+> **Wersja produkcyjna** jest dostępna pod adresem: [https://tren-ui.vercel.app](https://tren-ui.vercel.app)
+
 ### 6. Budowanie wersji produkcyjnej
 
 ```bash

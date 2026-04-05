@@ -2,7 +2,7 @@
 
 import { eq, inArray } from 'drizzle-orm'
 import { db } from '@/db'
-import { workouts, workoutExercises, workoutSession, exerciseSession, exerciseSet } from '@/db/schema'
+import { workouts, workoutExercises, workoutPlanDays, workoutSession, exerciseSession, exerciseSet } from '@/db/schema'
 import { getCurrentUserId } from '@/lib/auth'
 import type { ExerciseCardData } from '@/types/exercise.types'
 
@@ -38,6 +38,7 @@ export async function deleteWorkout(workoutId: number): Promise<void> {
 			await tx.delete(exerciseSession).where(inArray(exerciseSession.sessionId, sessionIds))
 		}
 
+		await tx.delete(workoutPlanDays).where(eq(workoutPlanDays.workoutId, workoutId))
 		await tx.delete(workoutSession).where(eq(workoutSession.workoutId, workoutId))
 		await tx.delete(workoutExercises).where(eq(workoutExercises.workoutId, workoutId))
 		await tx.delete(workouts).where(eq(workouts.id, workoutId))

@@ -15,5 +15,5 @@ export const WorkoutsList = async () => {
 		return <div className='text-sm text-destructive'>Error: {message}</div>
 	}
 
-	return <WorkoutsInfiniteList initialWorkouts={workouts} initialHasMore={workouts.length === PAGE_SIZE} />
+	return <WorkoutsInfiniteList key={workouts.map(w => w.id).join(',')} initialWorkouts={workouts} initialHasMore={workouts.length === PAGE_SIZE} />
 }
