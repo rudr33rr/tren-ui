@@ -6,17 +6,16 @@ import { EllipsisVertical, Trash } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { deletePlan } from '@/data/plans.actions'
 
 export function PlanCardActions({ planId }: { planId: number }) {
 	const router = useRouter()
+	const [open, setOpen] = useState(false)
 	const [deleting, setDeleting] = useState(false)
 
 	async function handleDelete() {
 		if (deleting) return
-		const confirmed = window.confirm('Delete this plan?')
-		if (!confirmed) return
-
 		setDeleting(true)
 		try {
 			await deletePlan(planId)
@@ -31,23 +30,39 @@ export function PlanCardActions({ planId }: { planId: number }) {
 	}
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button variant='ghost' size='icon' aria-label='Plan actions' disabled={deleting}>
-					<EllipsisVertical />
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align='end' className='w-36'>
-				<DropdownMenuItem
-					disabled={deleting}
-					onSelect={() => {
-						void handleDelete()
-					}}
-					className='text-destructive focus:text-destructive'>
-					<Trash className='h-4 w-4' />
-					<span>{deleting ? 'Deleting...' : 'Delete'}</span>
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
+		<AlertDialog open={open} onOpenChange={setOpen}>
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<Button variant='ghost' size='icon' aria-label='Plan actions' disabled={deleting}>
+						<EllipsisVertical />
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align='end' className='w-36'>
+					<DropdownMenuItem
+						disabled={deleting}
+						onSelect={e => {
+							e.preventDefault()
+							setOpen(true)
+						}}
+						className='text-destructive focus:text-destructive'>
+						<Trash className='h-4 w-4' />
+						<span>Delete</span>
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
+
+			<AlertDialogContent size='sm'>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Delete plan?</AlertDialogTitle>
+					<AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction variant='destructive' onClick={() => void handleDelete()}>
+						Delete
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
 	)
 }

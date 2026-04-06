@@ -7,22 +7,17 @@ import { EllipsisVertical, SquarePen, Trash } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { deleteWorkout } from '@/data/workouts.actions'
 
 export function WorkoutCardActions({ workoutId }: { workoutId: number }) {
 	const router = useRouter()
+	const [open, setOpen] = useState(false)
 	const [deleting, setDeleting] = useState(false)
-	const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
 	async function handleDeleteWorkout() {
 		if (deleting) return
-
-		const confirmed = window.confirm('Delete this workout and all related sessions?')
-		if (!confirmed) return
-
 		setDeleting(true)
-		setErrorMessage(null)
-
 		try {
 			await deleteWorkout(workoutId)
 			toast.success('Workout deleted')
@@ -30,7 +25,6 @@ export function WorkoutCardActions({ workoutId }: { workoutId: number }) {
 		} catch (error) {
 			console.error('Failed to delete workout:', error)
 			const message = error instanceof Error ? error.message : 'Failed to delete workout.'
-			setErrorMessage(message)
 			toast.error(message)
 		} finally {
 			setDeleting(false)
@@ -38,7 +32,7 @@ export function WorkoutCardActions({ workoutId }: { workoutId: number }) {
 	}
 
 	return (
-		<div className='flex flex-col items-end gap-1'>
+		<AlertDialog open={open} onOpenChange={setOpen}>
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
 					<Button variant='ghost' size='icon' aria-label='Workout actions' disabled={deleting}>
@@ -54,16 +48,29 @@ export function WorkoutCardActions({ workoutId }: { workoutId: number }) {
 					</DropdownMenuItem>
 					<DropdownMenuItem
 						disabled={deleting}
-						onSelect={() => {
-							void handleDeleteWorkout()
+						onSelect={e => {
+							e.preventDefault()
+							setOpen(true)
 						}}
 						className='text-destructive focus:text-destructive'>
 						<Trash className='h-4 w-4' />
-						<span>{deleting ? 'Deleting...' : 'Delete'}</span>
+						<span>Delete</span>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
-			{errorMessage ? <p className='text-xs text-destructive'>{errorMessage}</p> : null}
-		</div>
+
+			<AlertDialogContent size='sm'>
+				<AlertDialogHeader>
+					<AlertDialogTitle>Delete workout?</AlertDialogTitle>
+					<AlertDialogDescription>This will also delete all related sessions. This action cannot be undone.</AlertDialogDescription>
+				</AlertDialogHeader>
+				<AlertDialogFooter>
+					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogAction variant='destructive' onClick={() => void handleDeleteWorkout()}>
+						Delete
+					</AlertDialogAction>
+				</AlertDialogFooter>
+			</AlertDialogContent>
+		</AlertDialog>
 	)
 }

@@ -1,3 +1,6 @@
+import Link from 'next/link'
+import { CalendarDays } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { getCurrentUserId } from '@/lib/auth'
 import { fetchPlans } from '@/data/plans.server'
 import { PlanCard } from './plan-card'
@@ -16,7 +19,14 @@ export async function PlansList() {
 	if (plans.length === 0) {
 		return (
 			<div className='flex flex-col items-center gap-3 py-16 text-center'>
-				<p className='text-sm text-muted-foreground'>No plans yet. Create your first training plan.</p>
+				<CalendarDays className='size-8 text-muted-foreground/50' />
+				<div className='space-y-1'>
+					<p className='font-medium'>No plans yet</p>
+					<p className='text-sm text-muted-foreground'>Create a training plan to schedule your workouts.</p>
+				</div>
+				<Button asChild variant='secondary' size='sm'>
+					<Link href='/dashboard/plans/add-plan'>Create first plan</Link>
+				</Button>
 			</div>
 		)
 	}
