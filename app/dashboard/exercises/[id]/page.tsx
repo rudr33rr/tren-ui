@@ -66,7 +66,7 @@ export default async function ExercisePage({ params }: { params: Promise<{ id: s
 
 	return (
 		<div className='w-full space-y-6 p-4'>
-			<h1 className='text-2xl font-medium'>{exercise.exerciseName}</h1>
+<h1 className='text-2xl font-medium'>{exercise.exerciseName}</h1>
 			<ExerciseStats trackingType={exercise.trackingType} weightType={exercise.weightType} history={history} />
 		</div>
 	)
