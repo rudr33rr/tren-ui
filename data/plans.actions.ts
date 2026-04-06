@@ -1,9 +1,40 @@
 'use server'
 
 import { eq, count } from 'drizzle-orm'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { workoutPlans, workoutPlanDays } from '@/db/schema'
 import { getCurrentUserId } from '@/lib/auth'
+
+export async function updatePlan({
+	planId,
+	name,
+	days,
+}: {
+	planId: number
+	name: string
+	days: { dayIndex: number; workoutId: number }[]
+}): Promise<void> {
+	const userId = await getCurrentUserId()
+
+	await db.transaction(async tx => {
+		const plan = await tx.query.workoutPlans.findFirst({
+			where: (wp, { and }) => and(eq(wp.id, planId), eq(wp.userId, userId)),
+			columns: { id: true },
+		})
+		if (!plan) throw new Error('Plan not found.')
+
+		await tx.update(workoutPlans).set({ name: name.trim() }).where(eq(workoutPlans.id, planId))
+		await tx.delete(workoutPlanDays).where(eq(workoutPlanDays.planId, planId))
+
+		if (days.length > 0) {
+			await tx.insert(workoutPlanDays).values(
+				days.map(d => ({ planId, dayIndex: d.dayIndex, workoutId: d.workoutId })),
+			)
+		}
+	})
+	revalidatePath('/dashboard/plans')
+}
 
 export async function createPlan({
 	name,
@@ -33,13 +64,13 @@ export async function createPlan({
 				.values(days.map(d => ({ planId: plan.id, dayIndex: d.dayIndex, workoutId: d.workoutId })))
 		}
 	})
+	revalidatePath('/dashboard/plans')
 }
 
 export async function deletePlan(planId: number): Promise<void> {
 	const userId = await getCurrentUserId()
-	await db.delete(workoutPlans).where(eq(workoutPlans.id, planId)).returning()
-	// Note: user check will be added when auth is implemented
-	void userId
+	await db.delete(workoutPlans).where(eq(workoutPlans.id, planId) && eq(workoutPlans.userId, userId))
+	revalidatePath('/dashboard/plans')
 }
 
 export async function deactivatePlan(planId: number): Promise<void> {

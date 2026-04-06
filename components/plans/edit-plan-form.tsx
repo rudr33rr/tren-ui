@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import type { WorkoutCardData } from '@/types/workout.types'
 import { X } from 'lucide-react'
+import type { WorkoutCardData } from '@/types/workout.types'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { createPlan } from '@/data/plans.actions'
+import { updatePlan } from '@/data/plans.actions'
 
 const DAYS = [
 	{ label: 'Monday', short: 'Mon' },
@@ -19,11 +19,25 @@ const DAYS = [
 	{ label: 'Sunday', short: 'Sun' },
 ]
 
-export function AddPlanForm({ workouts, id }: { workouts: WorkoutCardData[]; id?: string }) {
+type Props = {
+	planId: number
+	initialName: string
+	initialDays: { dayIndex: number; workoutId: number }[]
+	workouts: WorkoutCardData[]
+	id?: string
+}
+
+export function EditPlanForm({ planId, initialName, initialDays, workouts, id }: Props) {
 	const router = useRouter()
 
-	const [name, setName] = useState('')
-	const [dayWorkouts, setDayWorkouts] = useState<Record<number, number | null>>({})
+	const [name, setName] = useState(initialName)
+	const [dayWorkouts, setDayWorkouts] = useState<Record<number, number | null>>(() => {
+		const initial: Record<number, number | null> = {}
+		for (const d of initialDays) {
+			initial[d.dayIndex] = d.workoutId
+		}
+		return initial
+	})
 	const [saving, setSaving] = useState(false)
 
 	function handleDayChange(dayIndex: number, value: string) {
@@ -44,11 +58,11 @@ export function AddPlanForm({ workouts, id }: { workouts: WorkoutCardData[]; id?
 
 		setSaving(true)
 		try {
-			await createPlan({ name: name.trim(), days })
-			toast.success('Plan created')
+			await updatePlan({ planId, name: name.trim(), days })
+			toast.success('Plan updated')
 			router.push('/dashboard/plans')
 		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Failed to create plan.'
+			const message = err instanceof Error ? err.message : 'Failed to update plan.'
 			toast.error(message)
 			setSaving(false)
 		}
@@ -76,21 +90,14 @@ export function AddPlanForm({ workouts, id }: { workouts: WorkoutCardData[]; id?
 						return (
 							<div
 								key={i}
-								className={`flex items-center gap-4 py-3 border-b border-border/40 lg:odd:border-r lg:odd:border-r-border/40 lg:odd:pr-6 lg:even:pl-6 transition-colors ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}
-							>
+								className={`flex items-center gap-4 py-3 border-b border-border/40 lg:odd:border-r lg:odd:border-r-border/40 lg:odd:pr-6 lg:even:pl-6 transition-colors ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
 								<div className='flex items-center gap-3 flex-1'>
-									<div
-										className={`w-2 h-2 rounded-full shrink-0 transition-colors ${isActive ? 'bg-primary' : 'bg-muted-foreground/30'}`}
-									/>
+									<div className={`w-2 h-2 rounded-full shrink-0 transition-colors ${isActive ? 'bg-primary' : 'bg-muted-foreground/30'}`} />
 									<span className='text-sm font-medium hidden sm:block'>{label}</span>
 									<span className='text-sm font-medium sm:hidden'>{short}</span>
 								</div>
 								<div className='relative w-44'>
-									<Select
-										onValueChange={v => handleDayChange(i, v)}
-										value={selectValue}
-										disabled={saving}
-									>
+									<Select onValueChange={v => handleDayChange(i, v)} value={selectValue} disabled={saving}>
 										<SelectTrigger className={`w-full transition-colors ${isActive ? 'pr-8' : ''} ${!isActive ? 'text-muted-foreground' : ''}`}>
 											<SelectValue />
 										</SelectTrigger>
@@ -111,8 +118,7 @@ export function AddPlanForm({ workouts, id }: { workouts: WorkoutCardData[]; id?
 											type='button'
 											onClick={e => { e.stopPropagation(); handleDayChange(i, 'rest') }}
 											disabled={saving}
-											className='absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'
-										>
+											className='absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors'>
 											<X className='h-4 w-4' />
 										</button>
 									)}

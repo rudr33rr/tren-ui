@@ -4,14 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Save } from 'lucide-react'
 import { toast } from 'sonner'
-
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { useCreateWorkoutStore } from '@/stores/create-workout.store'
-import { createWorkout } from '@/data/workouts.actions'
+import { updateWorkout } from '@/data/workouts.actions'
 import type { ExerciseCardData } from '@/types/exercise.types'
 
-export function AddWorkoutSaveButton() {
+export function EditWorkoutSaveButton({ workoutId }: { workoutId: number }) {
 	const router = useRouter()
 
 	const name = useCreateWorkoutStore(state => state.name)
@@ -23,29 +22,30 @@ export function AddWorkoutSaveButton() {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
 	const orderedExercises = exerciseOrder
-		.map(exerciseId => exercisesMap[exerciseId])
-		.filter((exercise): exercise is ExerciseCardData => Boolean(exercise))
+		.map(id => exercisesMap[id])
+		.filter((ex): ex is ExerciseCardData => Boolean(ex))
 
-	const selectedExercises = [
+	const exercises = [
 		...orderedExercises,
-		...Object.values(exercisesMap).filter(exercise => !exerciseOrder.includes(exercise.id)),
+		...Object.values(exercisesMap).filter(ex => !exerciseOrder.includes(ex.id)),
 	]
-	const canSave = name.trim().length > 0 && selectedExercises.length > 0 && !loading
 
-	async function saveWorkout() {
+	const canSave = name.trim().length > 0 && exercises.length > 0 && !loading
+
+	async function handleSave() {
 		if (!canSave) return
 
 		setLoading(true)
 		setErrorMessage(null)
 
 		try {
-			await createWorkout({ name, exercises: selectedExercises })
+			await updateWorkout({ workoutId, name, exercises })
 			clear()
-			toast.success('Workout saved!')
+			toast.success('Changes saved!')
 			router.push('/dashboard/workouts')
 		} catch (error) {
-			console.error('Failed to save workout:', error)
-			const message = error instanceof Error ? error.message : 'Failed to save workout.'
+			console.error('Failed to update workout:', error)
+			const message = error instanceof Error ? error.message : 'Failed to update workout.'
 			setErrorMessage(message)
 			toast.error(message)
 		} finally {
@@ -55,9 +55,9 @@ export function AddWorkoutSaveButton() {
 
 	return (
 		<div className='flex flex-col items-start gap-1'>
-			<Button type='button' variant='secondary' onClick={saveWorkout} disabled={!canSave}>
+			<Button type='button' variant='secondary' onClick={handleSave} disabled={!canSave}>
 				{loading ? <Spinner className='mr-1' /> : <Save className='h-4 w-4' />}
-				{loading ? 'Saving...' : 'Save workout'}
+				{loading ? 'Saving...' : 'Save changes'}
 			</Button>
 			{errorMessage && <p className='text-xs text-destructive'>{errorMessage}</p>}
 		</div>

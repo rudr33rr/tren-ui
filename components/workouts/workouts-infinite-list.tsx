@@ -1,7 +1,9 @@
 'use client'
 
 import { useCallback } from 'react'
-
+import Link from 'next/link'
+import { Dumbbell } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
@@ -31,7 +33,18 @@ export function WorkoutsInfiniteList({ initialWorkouts, initialHasMore }: Props)
 	})
 
 	if (workouts.length === 0) {
-		return <div className='text-sm opacity-70'>No workouts available</div>
+		return (
+			<div className='flex flex-col items-center gap-3 py-16 text-center'>
+				<Dumbbell className='size-8 text-muted-foreground/50' />
+				<div className='space-y-1'>
+					<p className='font-medium'>No workouts yet</p>
+					<p className='text-sm text-muted-foreground'>Create your first workout to get started.</p>
+				</div>
+				<Button asChild variant='secondary' size='sm'>
+					<Link href='/dashboard/workouts/add-workout'>Create first workout</Link>
+				</Button>
+			</div>
+		)
 	}
 
 	return (

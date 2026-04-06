@@ -1,6 +1,7 @@
 'use server'
 
 import { eq, inArray } from 'drizzle-orm'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { workouts, workoutExercises, workoutPlanDays, workoutSession, exerciseSession, exerciseSet } from '@/db/schema'
 import { getCurrentUserId } from '@/lib/auth'
@@ -67,27 +68,40 @@ export async function createWorkout({
 			)
 		}
 	})
+	revalidatePath('/dashboard/workouts')
 }
 
 export async function updateWorkout({
 	workoutId,
 	name,
-	description,
+	exercises,
 }: {
 	workoutId: number
 	name: string
-	description: string
+	exercises: ExerciseCardData[]
 }): Promise<void> {
 	const userId = await getCurrentUserId()
 
-	await db
-		.update(workouts)
-		.set({
-			name: name.trim(),
-			description: description.trim().length > 0 ? description.trim() : null,
+	await db.transaction(async tx => {
+		const workout = await tx.query.workouts.findFirst({
+			where: (w, { and }) => and(eq(w.id, workoutId), eq(w.userId, userId)),
+			columns: { id: true },
 		})
-		.where(eq(workouts.id, workoutId))
+		if (!workout) throw new Error('Workout not found.')
 
-	// Note: userId check will be added when auth is implemented
-	void userId
+		await tx.update(workouts).set({ name: name.trim() }).where(eq(workouts.id, workoutId))
+
+		await tx.delete(workoutExercises).where(eq(workoutExercises.workoutId, workoutId))
+
+		if (exercises.length > 0) {
+			await tx.insert(workoutExercises).values(
+				exercises.map((exercise, index) => ({
+					workoutId,
+					exerciseId: exercise.id,
+					exerciseOrder: index + 1,
+				})),
+			)
+		}
+	})
+	revalidatePath('/dashboard/workouts')
 }

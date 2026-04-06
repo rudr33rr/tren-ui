@@ -134,8 +134,8 @@ tren-ui/
 │   ├── auth/                   # Strony logowania i rejestracji
 │   ├── dashboard/              # Chronione strony aplikacji
 │   │   ├── exercises/          # Biblioteka ćwiczeń + szczegóły
-│   │   ├── plans/              # Plany treningowe
-│   │   └── workouts/           # Lista i kreator treningów
+│   │   ├── plans/              # Plany treningowe (lista, dodawanie, edycja)
+│   │   └── workouts/           # Lista, kreator i edycja treningów
 │   ├── workout-session/        # Aktywna sesja + podsumowanie
 │   └── api/auth/               # Endpointy Neon Auth (GET, POST)
 │
@@ -163,7 +163,7 @@ tren-ui/
 │
 ├── drizzle/                    # Migracje SQL (generowane automatycznie)
 ├── stores/                     # Zustand — stan po stronie klienta
-│   ├── create-workout.store.ts # Stan formularza tworzenia treningu
+│   ├── create-workout.store.ts # Stan formularza tworzenia i edycji treningu
 │   └── workout-session.store.ts# Stan aktywnej sesji (+ localStorage)
 │
 ├── hooks/                      # Własne hooki React
@@ -193,7 +193,7 @@ Next.js App Router
 
 ### Ochrona tras
 
-Middleware w pliku `middleware.ts` weryfikuje sesję przy każdym żądaniu. Nieuwierzytelnieni użytkownicy próbujący wejść na ścieżki `/dashboard/*` lub `/workout-session/*` są automatycznie przekierowywani na `/auth/sign-in`.
+Ochrona tras realizowana jest bezpośrednio w Server Components i Server Actions przez funkcję `getCurrentUserId()`, która wywołuje `auth.getSession()` i rzuca wyjątek `'Unauthorized'` gdy sesja nie istnieje.
 
 ---
 
@@ -214,13 +214,14 @@ Middleware w pliku `middleware.ts` weryfikuje sesję przy każdym żądaniu. Nie
 
 ### Zarządzanie treningami
 - Tworzenie własnych treningów z dowolnego zestawu ćwiczeń z biblioteki
-- Edycja nazwy treningu i kolejności ćwiczeń metodą przeciągnij-i-upuść
+- Edycja treningu: zmiana nazwy, dodawanie/usuwanie ćwiczeń, zmiana kolejności metodą przeciągnij-i-upuść
 - Usuwanie treningu (kaskadowe usunięcie powiązanych sesji)
 - Lista treningów z nieskończonym przewijaniem
 
 ### Plany treningowe
 - Tworzenie tygodniowych harmonogramów (7 dni, od poniedziałku do niedzieli)
 - Przypisywanie konkretnego treningu do każdego dnia tygodnia
+- Edycja istniejących planów (zmiana nazwy i przypisań dni)
 - Ustawianie jednego planu jako aktywnego
 - Aktywacja i dezaktywacja planów
 

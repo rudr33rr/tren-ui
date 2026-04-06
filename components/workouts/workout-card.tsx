@@ -1,23 +1,23 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardAction } from '@/components/ui/card'
+import { Item } from '@/components/ui/item'
 import { StartWorkoutButton } from '@/components/workout-session/start-workout-button'
 import type { WorkoutCardData } from '@/types/workout.types'
 import { WorkoutCardActions } from './workout-card-actions'
 
 export const WorkoutCard = ({ workout }: { workout: WorkoutCardData }) => {
 	return (
-		<Card className='px-5 py-3 gap-0'>
-			<CardHeader className='px-0'>
-				<CardTitle className='mt-3'>{workout.name}</CardTitle>
-				<CardAction>
+		<Item variant='outline' className='flex-col items-start gap-3'>
+			<div className='flex w-full items-center gap-2'>
+				<span className='font-medium'>{workout.name}</span>
+				<div className='ml-auto'>
 					<WorkoutCardActions workoutId={workout.id} />
-				</CardAction>
-			</CardHeader>
-			<CardContent className='px-0 text-sm text-muted-foreground'>
-				{typeof workout.exerciseCount === 'number' ? <span>{workout.exerciseCount} exercises</span> : null}
-			</CardContent>
-			<CardFooter className='px-0 mb-2 mt-6'>
-				<StartWorkoutButton workoutId={workout.id} />
-			</CardFooter>
-		</Card>
+				</div>
+			</div>
+
+			{typeof workout.exerciseCount === 'number' && (
+				<span className='text-sm text-muted-foreground'>{workout.exerciseCount} exercises</span>
+			)}
+
+			<StartWorkoutButton workoutId={workout.id} />
+		</Item>
 	)
 }
