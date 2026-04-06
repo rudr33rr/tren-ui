@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import type { WorkoutCardData } from '@/types/workout.types'
-import { X } from 'lucide-react'
+import { Save, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createPlan } from '@/data/plans.actions'
@@ -25,6 +26,9 @@ export function AddPlanForm({ workouts, id }: { workouts: WorkoutCardData[]; id?
 	const [name, setName] = useState('')
 	const [dayWorkouts, setDayWorkouts] = useState<Record<number, number | null>>({})
 	const [saving, setSaving] = useState(false)
+
+	const hasDay = Object.values(dayWorkouts).some(v => v !== null)
+	const canSave = name.trim().length > 0 && hasDay && !saving
 
 	function handleDayChange(dayIndex: number, value: string) {
 		setDayWorkouts(prev => ({
@@ -56,6 +60,10 @@ export function AddPlanForm({ workouts, id }: { workouts: WorkoutCardData[]; id?
 
 	return (
 		<form id={id} onSubmit={e => { e.preventDefault(); void handleSave() }} className='flex flex-col gap-6'>
+			<div className='flex items-center justify-between'>
+				<h1 className='text-2xl font-medium'>New Plan</h1>
+				<Button type='submit' disabled={!canSave}><Save className='h-4 w-4' />Save plan</Button>
+			</div>
 			<Input
 				type='text'
 				placeholder='Plan name...'

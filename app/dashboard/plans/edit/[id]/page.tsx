@@ -5,9 +5,6 @@ import { workoutPlans } from '@/db/schema'
 import { getCurrentUserId } from '@/lib/auth'
 import { fetchInitialWorkouts } from '@/data/workouts.server'
 import { EditPlanForm } from '@/components/plans/edit-plan-form'
-import { Button } from '@/components/ui/button'
-
-const FORM_ID = 'edit-plan-form'
 
 export default async function EditPlanPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id } = await params
@@ -37,18 +34,11 @@ export default async function EditPlanPage({ params }: { params: Promise<{ id: s
 
 	return (
 		<div className='w-full space-y-6 p-4 h-full'>
-			<div className='flex items-center justify-between'>
-				<h1 className='text-2xl font-medium'>Edit Plan</h1>
-				<Button type='submit' form={FORM_ID}>
-					Save changes
-				</Button>
-			</div>
 			<EditPlanForm
 				planId={plan.id}
 				initialName={plan.name}
 				initialDays={plan.days}
 				workouts={workouts}
-				id={FORM_ID}
 			/>
 		</div>
 	)
