@@ -9,7 +9,7 @@ import {
 	SidebarContent,
 	SidebarGroup,
 	SidebarGroupContent,
-	SidebarGroupLabel,
+	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
@@ -45,9 +45,16 @@ export function AppSidebar() {
 
 	return (
 		<Sidebar variant='inset'>
+			<SidebarHeader className='p-4'>
+				<div className='flex items-center gap-2'>
+					<div className='flex size-8 items-center justify-center rounded-md bg-primary'>
+						<Dumbbell className='size-4 text-primary-foreground' />
+					</div>
+					<span className='text-base font-semibold tracking-tight'>TrenUI</span>
+				</div>
+			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupLabel>TrenUI</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{items.map(item => {
