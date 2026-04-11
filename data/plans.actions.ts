@@ -38,11 +38,9 @@ export async function updatePlan({
 
 export async function createPlan({
 	name,
-	description,
 	days,
 }: {
 	name: string
-	description?: string
 	days: { dayIndex: number; workoutId: number }[]
 }): Promise<void> {
 	const userId = await getCurrentUserId()
@@ -55,7 +53,7 @@ export async function createPlan({
 
 		const [plan] = await tx
 			.insert(workoutPlans)
-			.values({ name, description: description || null, userId, isActive: planCount === 0 })
+			.values({ name, userId, isActive: planCount === 0 })
 			.returning({ id: workoutPlans.id })
 
 		if (days.length > 0) {

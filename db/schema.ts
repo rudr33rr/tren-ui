@@ -43,7 +43,6 @@ export const workouts = pgTable('workouts', {
 	id: serial('id').primaryKey(),
 	userId: text('user_id'),
 	name: text('name').notNull(),
-	description: text('description'),
 	createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
 })
 
@@ -62,7 +61,6 @@ export const workoutPlans = pgTable('workout_plans', {
 	id: serial('id').primaryKey(),
 	userId: text('user_id').notNull(),
 	name: text('name').notNull(),
-	description: text('description'),
 	isActive: boolean('is_active').notNull().default(false),
 	createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
 })

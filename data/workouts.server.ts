@@ -17,7 +17,6 @@ export async function fetchInitialWorkouts(userId: string, page = 0): Promise<Wo
 	return data.map(w => ({
 		id: w.id,
 		name: w.name,
-		description: w.description,
 		exerciseCount: w.exercises.length,
 	}))
 }

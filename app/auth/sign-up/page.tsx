@@ -2,56 +2,80 @@
 
 import { useActionState } from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { signUpWithEmail } from './actions'
 
 export default function SignUpPage() {
 	const [state, formAction, isPending] = useActionState(signUpWithEmail, null)
 
 	return (
-		<div className='min-h-screen flex items-center justify-center p-4'>
-			<Card className='w-full max-w-sm'>
-				<CardHeader>
-					<CardTitle>Create account</CardTitle>
-					<CardDescription>Sign up to start tracking your workouts.</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<form action={formAction} className='flex flex-col gap-4'>
-						<div className='flex flex-col gap-1.5'>
-							<Label htmlFor='name'>Name</Label>
-							<Input id='name' name='name' type='text' required placeholder='John Doe' />
-						</div>
+		<form action={formAction} className='flex flex-col gap-6'>
+			<div className='space-y-1'>
+				<h2 className='text-xl font-bold'>Create account</h2>
+				<p className='text-muted-foreground text-sm'>Start tracking your progress today.</p>
+			</div>
 
-						<div className='flex flex-col gap-1.5'>
-							<Label htmlFor='email'>Email</Label>
-							<Input id='email' name='email' type='email' required placeholder='you@example.com' />
-						</div>
+			<div className='flex flex-col gap-4'>
+				<div className='flex flex-col gap-1.5'>
+					<label htmlFor='name' className='text-xs font-medium uppercase tracking-widest text-muted-foreground'>
+						Name
+					</label>
+					<input
+						id='name'
+						name='name'
+						type='text'
+						required
+						placeholder='John Doe'
+						className='w-full bg-muted border border-border rounded-xl px-4 py-3.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/40 transition-all text-sm'
+					/>
+				</div>
 
-						<div className='flex flex-col gap-1.5'>
-							<Label htmlFor='password'>Password</Label>
-							<Input id='password' name='password' type='password' required placeholder='••••••••' />
-						</div>
+				<div className='flex flex-col gap-1.5'>
+					<label htmlFor='email' className='text-xs font-medium uppercase tracking-widest text-muted-foreground'>
+						Email
+					</label>
+					<input
+						id='email'
+						name='email'
+						type='email'
+						required
+						placeholder='you@example.com'
+						className='w-full bg-muted border border-border rounded-xl px-4 py-3.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/40 transition-all text-sm'
+					/>
+				</div>
 
-						{state?.error && (
-							<p className='text-sm text-destructive'>{state.error}</p>
-						)}
+				<div className='flex flex-col gap-1.5'>
+					<label htmlFor='password' className='text-xs font-medium uppercase tracking-widest text-muted-foreground'>
+						Password
+					</label>
+					<input
+						id='password'
+						name='password'
+						type='password'
+						required
+						placeholder='••••••••'
+						className='w-full bg-muted border border-border rounded-xl px-4 py-3.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/40 transition-all text-sm'
+					/>
+				</div>
+			</div>
 
-						<Button type='submit' disabled={isPending} className='w-full'>
-							{isPending ? 'Creating account...' : 'Create account'}
-						</Button>
+			{state?.error && (
+				<p className='text-sm text-destructive'>{state.error}</p>
+			)}
 
-						<p className='text-sm text-center text-muted-foreground'>
-							Already have an account?{' '}
-							<Link href='/auth/sign-in' className='underline underline-offset-4 text-foreground'>
-								Sign in
-							</Link>
-						</p>
-					</form>
-				</CardContent>
-			</Card>
-		</div>
+			<button
+				type='submit'
+				disabled={isPending}
+				className='w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-xl hover:bg-primary/90 active:scale-[0.98] transition-all text-sm disabled:opacity-50'
+			>
+				{isPending ? 'Creating account…' : 'Create account'}
+			</button>
+
+			<p className='text-sm text-center text-muted-foreground'>
+				Already have an account?{' '}
+				<Link href='/auth/sign-in' className='text-foreground font-medium hover:underline underline-offset-4'>
+					Sign in
+				</Link>
+			</p>
+		</form>
 	)
 }

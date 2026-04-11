@@ -13,7 +13,6 @@ export type PlanDay = {
 export type PlanWithDays = {
 	id: number
 	name: string
-	description: string | null
 	isActive: boolean
 	createdAt: string
 	days: PlanDay[]
@@ -23,7 +22,6 @@ function transformPlan(raw: Awaited<ReturnType<typeof queryPlans>>[number]): Pla
 	return {
 		id: raw.id,
 		name: raw.name,
-		description: raw.description,
 		isActive: raw.isActive,
 		createdAt: raw.createdAt?.toISOString() ?? '',
 		days: raw.days.map(d => ({

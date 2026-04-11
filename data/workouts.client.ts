@@ -22,7 +22,6 @@ export async function fetchWorkoutsPage(page: number): Promise<WorkoutCardData[]
 	return data.map(w => ({
 		id: w.id,
 		name: w.name,
-		description: w.description,
 		exerciseCount: w.exercises.length,
 	}))
 }

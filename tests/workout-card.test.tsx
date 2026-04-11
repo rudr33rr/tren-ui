@@ -13,7 +13,6 @@ jest.mock('@/components/workouts/workout-card-actions', () => ({
 const base: WorkoutCardData = {
 	id: 1,
 	name: 'Push Day',
-	description: null,
 	exerciseCount: 4,
 }
 

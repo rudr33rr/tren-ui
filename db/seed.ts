@@ -98,7 +98,7 @@ async function seedUserData(userId: string, exerciseMap: Map<string, number>, wo
 	// Create a PPL plan
 	const [plan] = await db
 		.insert(schema.workoutPlans)
-		.values({ userId, name: 'PPL Plan', description: 'Push / Pull / Legs — 3 days a week', isActive: true })
+		.values({ userId, name: 'PPL Plan', isActive: true })
 		.returning({ id: schema.workoutPlans.id })
 
 	// Mon=0 Wed=2 Fri=4 (0=Monday in our system: (getDay()+6)%7)
@@ -217,7 +217,7 @@ async function main() {
 	// Push workout
 	const [pushWorkout] = await db
 		.insert(schema.workouts)
-		.values({ userId, name: 'Push Day', description: 'Chest, shoulders and triceps' })
+		.values({ userId, name: 'Push Day' })
 		.returning({ id: schema.workouts.id })
 
 	const pushExercises = ['Bench Press', 'Incline Dumbbell Press', 'Cable Fly', 'Overhead Press', 'Lateral Raise', 'Tricep Pushdown', 'Skull Crusher']
@@ -231,7 +231,7 @@ async function main() {
 	// Pull workout
 	const [pullWorkout] = await db
 		.insert(schema.workouts)
-		.values({ userId, name: 'Pull Day', description: 'Back and biceps' })
+		.values({ userId, name: 'Pull Day' })
 		.returning({ id: schema.workouts.id })
 
 	const pullExercises = ['Deadlift', 'Pull-up', 'Barbell Row', 'Lat Pulldown', 'Seated Cable Row', 'Barbell Curl', 'Hammer Curl']
@@ -245,7 +245,7 @@ async function main() {
 	// Legs workout
 	const [legsWorkout] = await db
 		.insert(schema.workouts)
-		.values({ userId, name: 'Leg Day', description: 'Quads, hamstrings, glutes and calves' })
+		.values({ userId, name: 'Leg Day' })
 		.returning({ id: schema.workouts.id })
 
 	const legsExercises = ['Squat', 'Leg Press', 'Bulgarian Split Squat', 'Romanian Deadlift', 'Leg Curl', 'Hip Thrust', 'Calf Raise']

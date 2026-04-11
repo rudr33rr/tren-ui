@@ -2,51 +2,66 @@
 
 import { useActionState } from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { signInWithEmail } from './actions'
 
 export default function SignInPage() {
 	const [state, formAction, isPending] = useActionState(signInWithEmail, null)
 
 	return (
-		<div className='min-h-screen flex items-center justify-center p-4'>
-			<Card className='w-full max-w-sm'>
-				<CardHeader>
-					<CardTitle>Sign in</CardTitle>
-					<CardDescription>Enter your credentials to access your account.</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<form action={formAction} className='flex flex-col gap-4'>
-						<div className='flex flex-col gap-1.5'>
-							<Label htmlFor='email'>Email</Label>
-							<Input id='email' name='email' type='email' required placeholder='you@example.com' />
-						</div>
+		<form action={formAction} className='flex flex-col gap-6'>
+			<div className='space-y-1'>
+				<h2 className='text-xl font-bold'>Welcome back</h2>
+				<p className='text-muted-foreground text-sm'>Sign in to your account to continue.</p>
+			</div>
 
-						<div className='flex flex-col gap-1.5'>
-							<Label htmlFor='password'>Password</Label>
-							<Input id='password' name='password' type='password' required placeholder='••••••••' />
-						</div>
+			<div className='flex flex-col gap-4'>
+				<div className='flex flex-col gap-1.5'>
+					<label htmlFor='email' className='text-xs font-medium uppercase tracking-widest text-muted-foreground'>
+						Email
+					</label>
+					<input
+						id='email'
+						name='email'
+						type='email'
+						required
+						placeholder='you@example.com'
+						className='w-full bg-muted border border-border rounded-xl px-4 py-3.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/40 transition-all text-sm'
+					/>
+				</div>
 
-						{state?.error && (
-							<p className='text-sm text-destructive'>{state.error}</p>
-						)}
+				<div className='flex flex-col gap-1.5'>
+					<label htmlFor='password' className='text-xs font-medium uppercase tracking-widest text-muted-foreground'>
+						Password
+					</label>
+					<input
+						id='password'
+						name='password'
+						type='password'
+						required
+						placeholder='••••••••'
+						className='w-full bg-muted border border-border rounded-xl px-4 py-3.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/40 transition-all text-sm'
+					/>
+				</div>
+			</div>
 
-						<Button type='submit' disabled={isPending} className='w-full'>
-							{isPending ? 'Signing in...' : 'Sign in'}
-						</Button>
+			{state?.error && (
+				<p className='text-sm text-destructive'>{state.error}</p>
+			)}
 
-						<p className='text-sm text-center text-muted-foreground'>
-							Don&apos;t have an account?{' '}
-							<Link href='/auth/sign-up' className='underline underline-offset-4 text-foreground'>
-								Sign up
-							</Link>
-						</p>
-					</form>
-				</CardContent>
-			</Card>
-		</div>
+			<button
+				type='submit'
+				disabled={isPending}
+				className='w-full bg-primary text-primary-foreground font-semibold py-3.5 rounded-xl hover:bg-primary/90 active:scale-[0.98] transition-all text-sm disabled:opacity-50'
+			>
+				{isPending ? 'Signing in…' : 'Sign in'}
+			</button>
+
+			<p className='text-sm text-center text-muted-foreground'>
+				Don&apos;t have an account?{' '}
+				<Link href='/auth/sign-up' className='text-foreground font-medium hover:underline underline-offset-4'>
+					Sign up
+				</Link>
+			</p>
+		</form>
 	)
 }
