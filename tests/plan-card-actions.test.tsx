@@ -1,3 +1,4 @@
+import React from 'react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { PlanCardActions } from '@/components/plans/plan-card-actions'
 import { toast } from 'sonner'
@@ -38,9 +39,33 @@ jest.mock('@/components/ui/dropdown-menu', () => ({
 	),
 }))
 
+// Mock AlertDialog — renders content only when open=true
+jest.mock('@/components/ui/alert-dialog', () => {
+	const React = require('react')
+	const AlertDialogContext = React.createContext(false)
+	return {
+		AlertDialog: ({ children, open }: { children: React.ReactNode; open: boolean }) => (
+			<AlertDialogContext.Provider value={open}>
+				<div>{children}</div>
+			</AlertDialogContext.Provider>
+		),
+		AlertDialogContent: ({ children }: { children: React.ReactNode }) => {
+			const open = React.useContext(AlertDialogContext)
+			return open ? <div role='alertdialog'>{children}</div> : null
+		},
+		AlertDialogHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+		AlertDialogTitle: ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>,
+		AlertDialogDescription: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
+		AlertDialogFooter: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+		AlertDialogCancel: ({ children }: { children: React.ReactNode }) => <button>{children}</button>,
+		AlertDialogAction: ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) => (
+			<button onClick={onClick}>{children}</button>
+		),
+	}
+})
+
 beforeEach(() => {
 	jest.clearAllMocks()
-	window.confirm = jest.fn(() => true)
 })
 
 describe('PlanCardActions', () => {
@@ -50,23 +75,24 @@ describe('PlanCardActions', () => {
 	})
 
 	describe('delete', () => {
-		it('shows confirm dialog when Delete is clicked', () => {
+		it('opens confirm dialog when Delete is clicked', () => {
 			render(<PlanCardActions planId={1} />)
 			fireEvent.click(screen.getByText('Delete'))
-			expect(window.confirm).toHaveBeenCalledWith('Delete this plan?')
+			expect(screen.getByRole('alertdialog')).toBeInTheDocument()
 		})
 
 		it('calls deletePlan with the correct planId when confirmed', async () => {
 			deletePlanMock.mockResolvedValue(undefined)
 			render(<PlanCardActions planId={7} />)
 			fireEvent.click(screen.getByText('Delete'))
+			fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
 			await waitFor(() => expect(deletePlanMock).toHaveBeenCalledWith(7))
 		})
 
 		it('does not call deletePlan when cancelled', () => {
-			window.confirm = jest.fn(() => false)
 			render(<PlanCardActions planId={1} />)
 			fireEvent.click(screen.getByText('Delete'))
+			fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
 			expect(deletePlanMock).not.toHaveBeenCalled()
 		})
 
@@ -74,6 +100,7 @@ describe('PlanCardActions', () => {
 			deletePlanMock.mockResolvedValue(undefined)
 			render(<PlanCardActions planId={1} />)
 			fireEvent.click(screen.getByText('Delete'))
+			fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
 			await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Plan deleted'))
 		})
 
@@ -81,23 +108,26 @@ describe('PlanCardActions', () => {
 			deletePlanMock.mockResolvedValue(undefined)
 			render(<PlanCardActions planId={1} />)
 			fireEvent.click(screen.getByText('Delete'))
+			fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
 			await waitFor(() => expect(refreshMock).toHaveBeenCalled())
 		})
 
 		it('shows error toast when deletePlan throws', async () => {
 			deletePlanMock.mockRejectedValue(new Error('Server error'))
 			render(<PlanCardActions planId={1} />)
+			fireEvent.click(screen.getByText('Delete'))
 			await act(async () => {
-				fireEvent.click(screen.getByText('Delete'))
+				fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
 			})
-			expect(toast.error).toHaveBeenCalledWith('Server error')
+			await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Server error'))
 		})
 
 		it('does not call router.refresh on error', async () => {
 			deletePlanMock.mockRejectedValue(new Error('Server error'))
 			render(<PlanCardActions planId={1} />)
+			fireEvent.click(screen.getByText('Delete'))
 			await act(async () => {
-				fireEvent.click(screen.getByText('Delete'))
+				fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
 			})
 			expect(refreshMock).not.toHaveBeenCalled()
 		})
