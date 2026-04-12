@@ -28,7 +28,7 @@ Aplikacja została zbudowana z użyciem **Next.js 16** (App Router, React Server
 | Biblioteka UI | React 19 |
 | Baza danych | PostgreSQL (Neon serverless) |
 | ORM | Drizzle ORM 0.45.2 |
-| Uwierzytelnianie | Better Auth |
+| Uwierzytelnianie | Neon Auth (Better Auth) |
 | Stan klienta | Zustand 5 |
 | Style | Tailwind CSS 4, shadcn/ui, Radix UI |
 | Wykresy | Recharts 3 |
@@ -94,6 +94,10 @@ Aplikacja będzie dostępna pod adresem [http://localhost:3000](http://localhost
 
 > **Wersja produkcyjna** jest dostępna pod adresem: [https://tren-ui.vercel.app](https://tren-ui.vercel.app)
 
+> **Konto demo** — możesz zalogować się na gotowe konto z przykładowymi danymi:
+> - E-mail: `example@test.com`
+> - Hasło: `Testowy!23`
+
 ### 6. Budowanie wersji produkcyjnej
 
 ```bash
@@ -108,13 +112,14 @@ npm run start
 Utwórz plik `.env.local` w głównym katalogu projektu. Wszystkie wymagane wartości znajdziesz w panelu projektu na [neon.tech](https://neon.tech) po założeniu konta i projektu.
 
 ```env
-# Połączenie z bazą danych PostgreSQL (Neon)
+# Połączenie z bazą danych PostgreSQL (Neon) — pooled connection string
 DATABASE_URL=...
 
-# Integracja Neon Auth
-VITE_NEON_AUTH_URL=...
+# Bazowy URL instancji Neon Auth (Neon Console → Auth → Configuration)
+NEON_AUTH_BASE_URL=...
 
-# Klucz do szyfrowania ciasteczek sesji (dowolny losowy ciąg, minimum 32 znaki)
+# Klucz do szyfrowania ciasteczek sesji (min. 32 znaki)
+# Wygeneruj: openssl rand -base64 32
 NEON_AUTH_COOKIE_SECRET=...
 ```
 
@@ -205,7 +210,7 @@ Ochrona tras realizowana jest bezpośrednio w Server Components i Server Actions
 - Automatyczne odświeżanie sesji przy każdym żądaniu (middleware)
 
 ### Biblioteka ćwiczeń
-- Ponad 1000 predefiniowanych ćwiczeń z kategoryzacją
+- Predefiniowana biblioteka ćwiczeń z kategoryzacją (załadowana przez `npm run db:seed`)
 - Wyszukiwanie po nazwie ćwiczenia
 - Filtrowanie według grupy mięśniowej (klatka, plecy, nogi itd.)
 - Filtrowanie według typu ćwiczenia (siłowe, kardio, core, plyometryczne, elastyczność)
@@ -275,7 +280,7 @@ npm run db:generate   # Generowanie nowej migracji po zmianie schema.ts
 npm run db:migrate    # Aplikowanie migracji do bazy danych
 npm run db:push       # Szybkie naniesienie zmian (bez migracji, tylko dev)
 npm run db:studio     # Graficzny interfejs Drizzle Studio w przeglądarce
-npm run db:seed       # Załadowanie danych początkowych (ćwiczenia, grupy mięśniowe)
+npm run db:seed       # Załadowanie danych początkowych (grupy mięśniowe + ćwiczenia)
 ```
 
 ---
