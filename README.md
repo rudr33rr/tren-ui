@@ -51,7 +51,7 @@ Aplikacja została zbudowana z użyciem **Next.js 16** (App Router, React Server
 ### 1. Klonowanie repozytorium
 
 ```bash
-git clone https://github.com/mRud3r/tren-ui.git
+git clone https://github.com/rudr33rr/tren-ui.git
 cd tren-ui
 ```
 
@@ -63,22 +63,22 @@ npm install
 
 ### 3. Konfiguracja zmiennych środowiskowych
 
-Utwórz plik `.env.local` w głównym katalogu projektu i uzupełnij go własnymi kluczami (szczegóły w sekcji [Zmienne środowiskowe](#zmienne-środowiskowe)):
+Należy utworzyć plik `.env.local` w głównym katalogu projektu i uzupełnić go własnymi kluczami (szczegóły w sekcji [Zmienne środowiskowe](#zmienne-środowiskowe)):
 
 ```bash
 cp .env.example .env.local
-# następnie otwórz .env.local i uzupełnij wartości
+# następnie należy otworzyć .env.local i uzupełnić wartości
 ```
 
 ### 4. Przygotowanie bazy danych
 
-Uruchom migracje, aby utworzyć wszystkie tabele:
+Należy uruchomić migracje, aby utworzyć wszystkie tabele:
 
 ```bash
 npm run db:migrate
 ```
 
-Załaduj dane początkowe:
+Należy załadować dane początkowe:
 
 ```bash
 npm run db:seed
@@ -109,7 +109,7 @@ npm run start
 
 ## Zmienne środowiskowe
 
-Utwórz plik `.env.local` w głównym katalogu projektu. Wszystkie wymagane wartości znajdziesz w panelu projektu na [neon.tech](https://neon.tech) po założeniu konta i projektu.
+Plik `.env.local` należy utworzyć w głównym katalogu projektu. Wszystkie wymagane wartości można znaleźć w panelu projektu na [neon.tech](https://neon.tech) po założeniu konta i projektu.
 
 ```env
 # Połączenie z bazą danych PostgreSQL (Neon) — pooled connection string
